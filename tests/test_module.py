@@ -27,7 +27,7 @@ candidates = [
             title=None,
             publisher=None,
         ),
-        "query": 'bib.title all "la vie spirituelle" and bib.recordtype all "per" and bib.publicationdate all "1930" and bib.author "Daniélou"',
+        "query": 'bib.title all "la vie spirituelle" and bib.recordtype all "per" and bib.publicationdate all "1930" and bib.author all "Daniélou"',
     }
 ]
 
@@ -43,7 +43,7 @@ def test_article():
     assert isinstance(a, Article)
     assert isinstance(a._source(), Journal)
     assert (
-        a.get_query()
+        a.generate_query()
         == 'bib.publicationdate all "1930" and bib.title all "La vie spirituelle" and bib.recordtype all "per"'
     )
     assert a._source().translate()["title"] == "La vie spirituelle"
