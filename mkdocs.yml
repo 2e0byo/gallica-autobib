@@ -1,0 +1,13 @@
+site_name: gallica-autobib
+site_description: Automatically match bibliography against gallica.bnf.fr
+site_url: https://github.com/2e0byo/pygallica-autobib
+
+theme:
+    name: 'material'
+
+repo_name: 2e0byo/pygallica-autobib
+repo_url: https://github.com/2e0byo/pygallica-autobib
+edit_uri: ''
+
+nav:
+    - gallica-autobib: 'index.md'
