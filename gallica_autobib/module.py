@@ -10,18 +10,15 @@ class BibBase(BaseModel):
     publicationdate: int = Field(None, alias="year")
     publisher: str = None
     title: str = None
-    source = None
 
-    def __post_init__(self):
-        if not self.source:
-            self.source = self
-        else:
-            self.source = self.source(**self.dict())
+    def _source(self):
+        return self
 
     def get_query(self) -> str:
         """Get query str"""
         exclude = {"editor"}
-        data = self.source.dict(by_alias=False, exclude=exclude)
+        data = self._source().dict(by_alias=False, exclude=exclude)
+        data["record_type"] = self._source().record_type
 
         data = {k: v for k, v in data if v}
 
@@ -32,27 +29,38 @@ class Article(BibBase):
     """An article."""
 
     journal_title: str = None
-    recordtype = "per"
     pages: Union[int, List]
     author: str
     editor: str = None
-    source = Journal
+
+    def _source(self):
+        if not self.source:
+            self.source = Journal.parse_obj(self.dict())
+        return self.source
 
 
 class Book(BibBase):
-    recordtype = "mon"
     author: str
     editor: str = None
+
+    def _source(self):
+        self.recordtype = "mon"
+        return self
 
 
 class Collection(BibBase):
-    recordtype = ["rec", "col", "ens"]
     author: str
     editor: str = None
 
+    def _source(self):
+        self.recordtype = ["rec", "col", "ens"]
+        return self
+
 
 class Journal(BibBase):
-    recordtype = "per"
+    def _source(self):
+        self.recordtype = "per"
+        return self
 
 
 class BibRecord(BaseModel):
