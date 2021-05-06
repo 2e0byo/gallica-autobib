@@ -10,6 +10,7 @@ readme = "README.md"
 python = "^3.6.1"
 pydantic = "^1.5.1"
 sruthi = "^0.1.2"
+fuzzywuzzy = "^0.18.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.782"
