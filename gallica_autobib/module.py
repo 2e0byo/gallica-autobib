@@ -1,9 +1,9 @@
 # package imports
 from pydantic import BaseModel, Field
 from typing import Optional, Literal, Union, List, Any
-from .query import assemble_query
-import fuzzywuzzy as fuzz
+from fuzzywuzzy import fuzz
 import unicodedata
+
 
 record_types = {
     "Article": None,
@@ -13,13 +13,13 @@ record_types = {
     # "Collection:", ["rec", "col", "ens"]
 }
 
-type_to_class = {"publication en série imprimée": Journal}
-
 
 def make_string_boring(unicodestr: str) -> str:
     """Return unicode str as ascii for fuzzy matching."""
+    if not unicodestr:
+        return None
     normal = unicodedata.normalize("NFKD", unicodestr)
-    return normal.decode("uft-8").lower().strip()
+    return normal.lower().strip()
 
 
 class BibBase(BaseModel):
@@ -29,11 +29,16 @@ class BibBase(BaseModel):
     publisher: str = None
     ark: str = None
 
+    @staticmethod
+    def assemble_query(**kwargs) -> str:
+        """Put together an sru query from a dict."""
+        return " and ".join(f'{k} all "{v}"' for k, v in kwargs.items())
+
     def _source(self):
         return self
 
     def translate(self):
-        data = self.dict(exclude={"editor"})
+        return self.dict(exclude={"editor"})
 
     def get_query(self) -> str:
         """Get query str"""
@@ -45,7 +50,7 @@ class BibBase(BaseModel):
 
         data = {f"bib.{k}": v for k, v in data.items() if v}
 
-        return assemble_query(**data)
+        return self.assemble_query(**data)
 
 
 class Article(BibBase):
@@ -58,7 +63,7 @@ class Article(BibBase):
     editor: str = None
 
     def _source(self):
-        return Journal.parse_obj(self.dict())
+        return Journal.parse_obj(self.dict(by_alias=True))
 
 
 class Book(BibBase):
@@ -75,6 +80,7 @@ class Collection(BibBase):
 
 class Journal(BibBase):
     journal_title: str
+    publicationdate: Union[list, int] = Field(alias="year")
 
     def translate(self):
         data = self.dict(exclude={"journal_title"})
@@ -110,6 +116,9 @@ class GallicaBibObj(BaseModel):
         return type_to_class[t].from_obj(data)
 
 
+type_to_class = {"publication en série imprimée": Journal}
+
+
 class Match:
     """Object representing a match."""
 
@@ -127,29 +136,34 @@ class Match:
     def _calculate_score(self):
         """Calculate the score for a given match."""
         vals = []
-        for k, v in self.target.dict():
-            if v and not candidate.k:
-                vals.append(0)
+        candidate = self.candidate
+        for k, v in self.target.dict().items():
+            if v and not getattr(candidate, k):
+                vals.append(0.5)
 
             if isinstance(v, str):
                 vals.append(
-                    fuzz.ratio(make_string_boring(v), make_string_boring(candidate.k))
+                    fuzz.ratio(
+                        make_string_boring(v), make_string_boring(getattr(candidate, k))
+                    )
+                    / 100
                 )
             if isinstance(v, int):
-                if isinstance(candidate.k, int):
-                    vals.append(1 if candidate.k == v else 0)
-                elif isinstance(candidate.k, list):
-                    vals.append(1 if v in candidate.k else 0)
+                if isinstance(getattr(candidate, k), int):
+                    vals.append(1 if getattr(candidate, k) == v else 0)
+                elif isinstance(getattr(candidate, k), list):
+                    vals.append(1 if v in getattr(candidate, k) else 0)
                 else:
                     raise NotImplementedError
 
             if isinstance(v, list):
-                if isinstance(candidate.k, list):
-                    matches = [1 if i in candidate.k else 0 for i in v]
+                if isinstance(getattr(candidate, k), list):
+                    matches = [1 if i in getattr(candidate, k) else 0 for i in v]
                     vals.append(sum(matches) / len(matches))
-                elif candidate.k in v:
+                elif getattr(candidate, k) in v:
                     matches.append(1 / len(v))
                 else:
                     matches.append(0)
+        print(vals)
 
         return sum(vals) / len(vals)
