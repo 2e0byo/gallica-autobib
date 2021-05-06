@@ -3,6 +3,11 @@ from pydantic import BaseModel, Field
 from typing import Optional, Literal, Union, List, Any
 from fuzzywuzzy import fuzz
 import unicodedata
+from .query import GallicaFetcher
+import sruthi
+from sruthi.response import SearchRetrieveResponse
+from traceback import print_exception
+from functools import total_ordering
 
 
 record_types = {
@@ -40,7 +45,7 @@ class BibBase(BaseModel):
     def translate(self):
         return self.dict(exclude={"editor"})
 
-    def get_query(self) -> str:
+    def generate_query(self) -> str:
         """Get query str"""
         exclude = {"editor"}
         source = self._source()
@@ -119,6 +124,7 @@ class GallicaBibObj(BaseModel):
 type_to_class = {"publication en série imprimée": Journal}
 
 
+@total_ordering
 class Match:
     """Object representing a match."""
 
@@ -167,3 +173,55 @@ class Match:
         print(vals)
 
         return sum(vals) / len(vals)
+
+    def __lt__(self, other):
+        return self.score < other.score
+
+    def __gt__(self, other):
+        return self.score > other.score
+
+    def __eq__(self, other):
+        return self.score == other.score
+
+
+class GallicaFetcher:
+    """Class to interact wtih Gallica"""
+
+    URL = "http://catalogue.bnf.fr/api/SRU"
+
+    def __init__(self):
+        self.client = sruthi.Client(url=self.URL, record_schema="dublincore")
+
+    def fetch_query(self, query: str) -> SearchRetrieveResponse:
+        return self.client.searchretrieve(query)
+
+
+class Query(GallicaFetcher):
+    """Class to represent a query"""
+
+    def __init__(self, target):
+        super().__init__()
+        self.target = target
+        self.fetcher = GallicaFetcher()
+
+    def run(self, give_up=100) -> Any:
+        """Try to get best match."""
+        query = self.target.generate_query()
+        try:
+            resps = self.fetcher.fetch_query(query)
+        except Exception as e:
+            print_exception(e)
+            return None
+
+        matches = []
+        for resp in resps[:give_up]:
+            candidate = GallicaBibObj.from_obj(resp).convert()
+            match = Match(self.target, candidate)
+            matches.append(match)
+            if any(m.score > 0.7 for m in matches):
+                break
+
+        if not matches:
+            return None
+
+        return max(matches)
