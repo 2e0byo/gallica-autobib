@@ -21,10 +21,10 @@ def test_article():
       pages =     {135-57}}
     """
     art = Article(
-        journaltitle="La vie spirituelle",
+        journaltitle="La Vie spirituelle",
         pages=list(range(135, 158)),
         title="Pour lire saint Augustin",
-        author="Daniélou",
+        author="Jean Daniélou",
         year=1930,
         language="french",
         volume=24,
