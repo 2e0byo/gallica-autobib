@@ -218,6 +218,22 @@ class Query(GallicaFetcher, Representation):
         else:
             return obj[0]
 
+    def resp_to_obj(self, resp: dict) -> GallicaBibObj:
+        """Convert resp to GallicaBibObj"""
+        resp["ark"] = self.get_at_str(resp["identifier"])
+        debug(resp["ark"])
+        # could use a Language() obj to internationalise this
+        resp["language"] = resp["language"][1]
+        resp["type"] = resp["type"][0]["text"]
+        resp["publisher"] = self.get_at_str(resp["publisher"])
+        resp["title"] = self.get_at_str(resp["title"])
+        # resp["publisher"] = resp["publisher"][0]
+        # resp["title"] = resp["title"][0]
+        obj = GallicaBibObj.parse_obj(resp).convert()
+        debug(resp["identifier"])
+        debug(obj.ark)
+        return obj
+
     def run(self, give_up=50) -> Any:
         """Try to get best match."""
         query = self.target.generate_query()
@@ -229,15 +245,9 @@ class Query(GallicaFetcher, Representation):
 
         matches = []
         for i, resp in enumerate(resps[:give_up]):
-            resp["identifier"] = self.get_at_str(resp["identifier"])
-            # could use a Language() obj to internationalise this
-            resp["language"] = resp["language"][1]
-            resp["type"] = resp["type"][0]["text"]
-            resp["publisher"] = self.get_at_str(resp["publisher"])
-            resp["title"] = self.get_at_str(resp["title"])
-            # resp["publisher"] = resp["publisher"][0]
-            # resp["title"] = resp["title"][0]
-            candidate = GallicaBibObj(**resp).convert()
+            debug(resp["identifier"])
+            print(resp)
+            candidate = self.resp_to_obj(resp)
             match = Match(self.target, candidate)
             matches.append(match)
             if i > 3 and any(m.score > 0.7 for m in matches):
