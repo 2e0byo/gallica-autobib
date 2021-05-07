@@ -25,6 +25,8 @@ def test_article():
         == 'bib.publicationdate all "1930" and bib.title all "La vie spirituelle" and bib.recordtype all "per"'
     )
     assert a._source().translate()["title"] == "La vie spirituelle"
+    assert isinstance(a.pages, list)
+    assert isinstance(a.pages[0], str)
 
 
 def test_book():
