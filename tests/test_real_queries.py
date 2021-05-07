@@ -1,4 +1,5 @@
-from gallica_autobib.module import Query, Article
+from gallica_autobib.query import Query
+from gallica_autobib.models import Article
 from devtools import debug
 
 

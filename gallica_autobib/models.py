@@ -2,7 +2,6 @@
 from pydantic import BaseModel, Field
 from pydantic.utils import Representation
 from typing import Optional, Literal, Union, List, Any
-from sruthi.response import SearchRetrieveResponse
 from traceback import print_exception
 from functools import total_ordering
 
