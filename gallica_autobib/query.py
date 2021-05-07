@@ -79,7 +79,7 @@ class Match(Representation):
         return self.__dict__.items()
 
 
-class GallicaFetcher(Representation):
+class GallicaSRU(Representation):
     """Class to interact wtih Gallica"""
 
     URL = "http://catalogue.bnf.fr/api/SRU"
@@ -94,13 +94,13 @@ class GallicaFetcher(Representation):
         return self.__dict__.items()
 
 
-class Query(GallicaFetcher, Representation):
+class Query(GallicaSRU, Representation):
     """Class to represent a query"""
 
     def __init__(self, target):
         super().__init__()
         self.target = target._source()
-        self.fetcher = GallicaFetcher()
+        self.fetcher = GallicaSRU()
 
     @staticmethod
     def get_at_str(obj: Union[str, list]):
