@@ -7,6 +7,7 @@ from gallica_autobib.module import (
     Match,
     BibBase,
     make_string_boring,
+    Query,
 )
 
 strings = [["asciitest", "asciitest"], [None, None]]
@@ -73,6 +74,7 @@ def test_match_duplicate():
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
         author="Daniélou",
+        year=1930,
     )
     b = a.copy()
     m = Match(a, b)
@@ -130,3 +132,17 @@ def test_get_at_str():
     assert q.get_at_str(["this", "that"]) == "this"
     assert q.get_at_str(None) is None
     assert q.get_at_str([None, "this"]) is None
+
+
+def test_match_query():
+    a = Article(
+        journal_title="La vie spirituelle",
+        pages=list(range(135, 138)),
+        title="Pour lire saint Augustin",
+        author="Daniélou",
+        year=1930,
+    )
+    q = Query(a)
+    resp = q.run()
+    assert resp
+    print(resp.candidate)
