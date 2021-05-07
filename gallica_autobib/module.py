@@ -198,8 +198,11 @@ class GallicaFetcher(Representation):
     def fetch_query(self, query: str) -> SearchRetrieveResponse:
         return self.client.searchretrieve(query)
 
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()
 
-class Query(GallicaFetcher):
+
+class Query(GallicaFetcher, Representation):
     """Class to represent a query"""
 
     def __init__(self, target):
