@@ -4,6 +4,7 @@ from pydantic.utils import Representation
 from typing import Optional, Literal, Union, List, Any
 from traceback import print_exception
 from functools import total_ordering
+from .gallipy import Resource, Ark
 
 
 record_types = {
@@ -72,8 +73,19 @@ class Collection(BibBase):
 
 
 class Journal(BibBase):
+    """A Journal
+
+    args:
+      journal_title: the title of the journal
+      year: Union[list, int]: the year(s) of publication
+      number: number
+      volume: vol
+    """
+
     journal_title: str
     publicationdate: Union[list, int] = Field(alias="year")
+    number: int = None
+    volume: int = None
 
     def translate(self):
         data = self.dict(exclude={"journal_title"})
