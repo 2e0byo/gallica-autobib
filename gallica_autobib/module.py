@@ -241,12 +241,16 @@ class Query(GallicaFetcher, Representation):
             candidate = GallicaBibObj(**resp).convert()
             match = Match(self.target, candidate)
             matches.append(match)
-            if any(m.score > 0.7 for m in matches):
+            if i > 3 and any(m.score > 0.7 for m in matches):
                 break
 
         if not matches:
             return None
+        from devtools import debug
+
+        debug(matches)
 
         return max(matches)
+
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()
