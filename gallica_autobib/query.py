@@ -1,6 +1,4 @@
 from .models import GallicaBibObj, Article, Book, Collection, Journal
-from oaipmh.client import Client
-from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from pydantic.utils import Representation
 from traceback import print_exception
 import sruthi
@@ -9,7 +7,7 @@ import unicodedata
 from typing import Optional, Literal, Union, List, Any
 from functools import total_ordering
 from sruthi.response import SearchRetrieveResponse
-from gallipy import Resource, Ark
+from .gallipy import Resource, Ark
 from re import search
 import logging
 
@@ -159,43 +157,10 @@ class Query(GallicaSRU, Representation):
         return self.__dict__.items()
 
 
-ark = "http://catalogue.bnf.fr/ark:/12148/cb34406663m"
-r = Resource(ark).issues_sync(year=1930)
-i = r.value["issues"]["issue"][0]
-a = Ark.parse(ark)
-if a.is_left:
-    raise a.value
-naan = a.value.naan
-issue_ark = Ark(name=i["@ark"], naan=naan)
-issue = Resource(issue_ark)
-from bs4 import BeautifulSoup
-
-t = issue.toc_sync()
-soup = BeautifulSoup(t.value, parser="xml")
-
-contents = []
-for row in soup.table.children:
-    author = row.contents[0].text
-    title = row.contents[1].text
-    start_p = row.contents[2].text
-    contents.append(dict(author=author, title=title, start_p=start_p))
-
-pages = issue.pagination_sync()
-if pages.value["livre"]["structure"]["hasToc"] == "true":
-    toc = issue.toc_sync()
-    soup = BeautifulSoup(t.value, parser="xml")
-
-    # check the toc to see if we match
-    contents = []
-    for row in soup.table.children:
-        author = row.contents[0].text
-        title = row.contents[1].text
-        start_p = row.contents[2].text
-        contents.append(dict(author=author, title=title, start_p=start_p))
-
-
 class GallicaResource(Representation):
     """A resource on Gallica."""
+
+    BASE_TIMEOUT = 60
 
     def __init__(
         self, target: Union[Article, Book, Collection, Journal], source: Journal
@@ -214,6 +179,7 @@ class GallicaResource(Representation):
         self.logger = logging.getLogger(type(self).__name__)  # maybe more precise.
         self._start_p = None
         self._end_p = None
+        self._pages = None
 
     @property
     def ark(self):
@@ -259,11 +225,15 @@ class GallicaResource(Representation):
 
     def get_issue(self):
         """Get the right issue."""
-        issues = Resource(self.series.ark).issues_sync(self.target.year)
+        issues = Resource(self.series_ark).issues_sync(
+            self.target._source().publicationdate
+        )
         arks = []
+        if issues.is_left:
+            raise issues.value
         for detail in issues.value["issues"]["issue"]:
             arks.append(Ark(naan=self.series_ark.naan, name=detail["@ark"]))
-        if self.target.volume or self.target.number:
+        if self.target._source().volume or self.target._source().number:
             self.logger.debug("Trying to match by volume")
             for ark in arks:
                 issue = Resource(ark)
@@ -283,41 +253,57 @@ class GallicaResource(Representation):
         """Resource()"""
         if not self._resource:
             self._resource = Resource(self.ark)
+            self._resource.timeout = self.BASE_TIMEOUT
+        return self._resource
+
+    @property
+    def timeout(self):
+        "Timeout in url requests."
+        return self.resource.timeout
+
+    @timeout.setter
+    def timeout(self, val: int):
+        self.resource.timeout = val
+        return self.resource
 
     @property
     def pages(self):
         if not self._pages:
-            self._pages = self.resource.pagination_sync()
-        return self.pages
+            either = self.resource.pagination_sync()
+            if either.is_left:
+                raise either.value
+            self._pages = either.value
+        return self._pages
 
     def get_physical_pno(self, logical_pno: str) -> int:
         """Get the physical pno for a logical pno."""
         pages = self.pages
-        pnos = pages.value["livre"]["pages"]["page"]
+        pnos = pages["livre"]["pages"]["page"]
         # sadly we have to do it ourselves
         for p in pnos:
             if p["numero"] == logical_pno:
                 break
-        return p
+        return p["ordre"]
 
     @property
     def start_p(self):
         """Physical page we start on."""
         if not self._start_p:
-            self._start_p = get_physical_pno(self.target.pages[0])
+            self._start_p = int(self.get_physical_pno(self.target.pages[0]))
         return self._start_p
 
     @property
     def end_p(self):
         """Physical page we end on."""
         if not self._end_p:
-            self._end_p = self.get_physical_pno(self.target.pages[-1])
+            self._end_p = int(self.get_physical_pno(self.target.pages[-1]))
         return self._end_p
 
     def extract(self):
         self.pdf = self.resource.content_sync(
-            startview=self.start_p, nviews=self.start_p - self.end_p
+            startview=self.start_p, nviews=self.end_p - self.start_p + 1
         )
+        return self.pdf
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()
