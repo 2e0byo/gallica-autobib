@@ -141,14 +141,14 @@ class Match(Representation):
 
     def _calculate_score(self):
         """Calculate the score for a given match."""
-        vals = []
+        vals = {}
         candidate = self.candidate
         for k, v in self.target.dict().items():
             if v and not getattr(candidate, k):
-                vals.append(0.5)
+                vals[k] = 0.5
 
             if isinstance(v, str):
-                vals.append(
+                vals[k] = (
                     fuzz.ratio(
                         make_string_boring(v), make_string_boring(getattr(candidate, k))
                     )
@@ -156,23 +156,23 @@ class Match(Representation):
                 )
             if isinstance(v, int):
                 if isinstance(getattr(candidate, k), int):
-                    vals.append(1 if getattr(candidate, k) == v else 0)
+                    vals[k] = 1 if getattr(candidate, k) == v else 0
                 elif isinstance(getattr(candidate, k), list):
-                    vals.append(1 if v in getattr(candidate, k) else 0)
+                    vals[k] = 1 if v in getattr(candidate, k) == v else 0
                 else:
                     raise NotImplementedError
 
             if isinstance(v, list):
                 if isinstance(getattr(candidate, k), list):
                     matches = [1 if i in getattr(candidate, k) else 0 for i in v]
-                    vals.append(sum(matches) / len(matches))
                 elif getattr(candidate, k) in v:
                     matches.append(1 / len(v))
                 else:
                     matches.append(0)
-        print(vals)
+                vals[k] = sum(matches) / len(matches)
 
-        return sum(vals) / len(vals)
+        self._vals = vals
+        return sum(v for _, v in vals.items()) / len(vals)
 
     def __lt__(self, other):
         return self.score < other.score
