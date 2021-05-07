@@ -23,9 +23,10 @@ from bs4 import BeautifulSoup
 from .monadic import Left, Either
 
 
-_BASE_PARTS = {"scheme":"https", "netloc":"gallica.bnf.fr"}
+_BASE_PARTS = {"scheme": "https", "netloc": "gallica.bnf.fr"}
 
-def fetch(url):
+
+def fetch(url, timeout=30):
     """Fetches data from an URL
 
     Fetch data from URL and wraps the unicode encoded response in an Either object.
@@ -39,7 +40,7 @@ def fetch(url):
             and Exception otherwise.
     """
     try:
-        with urllib.request.urlopen(url, timeout=30) as res:
+        with urllib.request.urlopen(url, timeout=timeout) as res:
             content = res.read()
             if content:
                 return Either.pure(content)
@@ -49,7 +50,8 @@ def fetch(url):
         err = urllib.error.URLError(pattern.format(url, str(ex)))
         return Left(err)
 
-def fetch_xml_html(url, parser='xml'):
+
+def fetch_xml_html(url, parser="xml", timeout=30):
     """Fetches xml or html from an URL
 
     Retrieves xml or html data from an URL and wraps it in an Either object.
@@ -58,25 +60,28 @@ def fetch_xml_html(url, parser='xml'):
     Args:
       url (str): An URL to fetch.
       parser (str): Any BeautifulSoup4 parser, e.g. 'html.parser'. Default: xml.
+      timeout (:obj:int, optional): Sets a timeout delay (Optional).
 
     Returns:
         Either[Exception String]: String if everything went fine, Exception
         otherwise.
     """
     try:
-        return fetch(url).map(lambda res: str(BeautifulSoup(res, parser)))
+        return fetch(url, timeout).map(lambda res: str(BeautifulSoup(res, parser)))
     except urllib.error.URLError as ex:
         pattern = "Error while fetching XML from {}\n{}"
         err = urllib.error.URLError(pattern.format(url, str(ex)))
         return Left(err)
 
-def fetch_json(url):
+
+def fetch_json(url, timeout=30):
     """Fetches json from an URL
 
     Retrieves json data from an URL and wraps it in an Either object.
 
     Args:
         url (str): An URL to fetch.
+        timeout (:obj:int, optional): Sets a timeout delay (Optional).
 
     Returns:
         Either[Exception Unicode]: Unicode if everything went fine and
@@ -89,7 +94,8 @@ def fetch_json(url):
         err = urllib.error.URLError(pattern.format(url, str(ex)))
         return Left(err)
 
-def build_service_url(parts=None, service_name=''):
+
+def build_service_url(parts=None, service_name=""):
     """Creates an URL to access Gallica services
 
     Given a dictionary of urllib URL parts and a service name,
@@ -104,11 +110,12 @@ def build_service_url(parts=None, service_name=''):
     Returns:
         str: A string representation of the URL built.
     """
-    this_parts = {"path": "services/"+service_name}
+    this_parts = {"path": "services/" + service_name}
     all_parts = _BASE_PARTS.copy()
     all_parts.update(this_parts)
     all_parts.update(parts)
     return build_url(all_parts)
+
 
 def build_base_url(parts=None, ark=None):
     """Creates the URL of a Gallica document from its ARK ID.
@@ -129,6 +136,7 @@ def build_base_url(parts=None, ark=None):
     all_parts.update(this_parts)
     all_parts.update(parts)
     return build_url(all_parts)
+
 
 def build_url(parts, quote_via=urllib.parse.quote_plus):
     """Creates a URL from a dictionary of parts.
