@@ -229,8 +229,16 @@ class Query(GallicaFetcher, Representation):
             return None
 
         matches = []
-        for resp in resps[:give_up]:
-            candidate = GallicaBibObj.from_obj(resp).convert()
+        for i, resp in enumerate(resps[:give_up]):
+            resp["identifier"] = self.get_at_str(resp["identifier"])
+            # could use a Language() obj to internationalise this
+            resp["language"] = resp["language"][1]
+            resp["type"] = resp["type"][0]["text"]
+            resp["publisher"] = self.get_at_str(resp["publisher"])
+            resp["title"] = self.get_at_str(resp["title"])
+            # resp["publisher"] = resp["publisher"][0]
+            # resp["title"] = resp["title"][0]
+            candidate = GallicaBibObj(**resp).convert()
             match = Match(self.target, candidate)
             matches.append(match)
             if any(m.score > 0.7 for m in matches):
