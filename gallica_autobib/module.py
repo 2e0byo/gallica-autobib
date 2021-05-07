@@ -144,28 +144,27 @@ class Match(Representation):
         vals = {}
         candidate = self.candidate
         for k, v in self.target.dict().items():
-            if v and not getattr(candidate, k):
+            target_v = getattr(candidate, k)
+            if v and not target_v:
                 vals[k] = 0.5
 
             if isinstance(v, str):
                 vals[k] = (
-                    fuzz.ratio(
-                        make_string_boring(v), make_string_boring(getattr(candidate, k))
-                    )
+                    fuzz.ratio(make_string_boring(v), make_string_boring(target_v))
                     / 100
                 )
             if isinstance(v, int):
-                if isinstance(getattr(candidate, k), int):
-                    vals[k] = 1 if getattr(candidate, k) == v else 0
-                elif isinstance(getattr(candidate, k), list):
-                    vals[k] = 1 if v in getattr(candidate, k) == v else 0
+                if isinstance(target_v, int):
+                    vals[k] = 1 if target_v == v else 0
+                elif isinstance(target_v, list):
+                    vals[k] = 1 if v in target_v == v else 0
                 else:
                     raise NotImplementedError
 
             if isinstance(v, list):
-                if isinstance(getattr(candidate, k), list):
-                    matches = [1 if i in getattr(candidate, k) else 0 for i in v]
-                elif getattr(candidate, k) in v:
+                if isinstance(target_v, list):
+                    matches = [1 if i in target_v else 0 for i in v]
+                elif target_v in v:
                     matches.append(1 / len(v))
                 else:
                     matches.append(0)
