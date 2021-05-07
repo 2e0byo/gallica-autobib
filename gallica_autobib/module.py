@@ -207,7 +207,7 @@ class Query(GallicaFetcher, Representation):
 
     def __init__(self, target):
         super().__init__()
-        self.target = target
+        self.target = target._source()
         self.fetcher = GallicaFetcher()
 
     def run(self, give_up=100) -> Any:
