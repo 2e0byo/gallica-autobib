@@ -1,4 +1,6 @@
-from .models import GallicaBibObj
+from .models import GallicaBibObj, Article, Book, Collection, Journal
+from oaipmh.client import Client
+from oaipmh.metadata import MetadataRegistry, oai_dc_reader
 from pydantic.utils import Representation
 from traceback import print_exception
 import sruthi
@@ -7,6 +9,9 @@ import unicodedata
 from typing import Optional, Literal, Union, List, Any
 from functools import total_ordering
 from sruthi.response import SearchRetrieveResponse
+from gallipy import Resource, Ark
+from re import search
+import logging
 
 
 def make_string_boring(unicodestr: str) -> str:
@@ -149,6 +154,170 @@ class Query(GallicaSRU, Representation):
             return None
 
         return max(matches)
+
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()
+
+
+ark = "http://catalogue.bnf.fr/ark:/12148/cb34406663m"
+r = Resource(ark).issues_sync(year=1930)
+i = r.value["issues"]["issue"][0]
+a = Ark.parse(ark)
+if a.is_left:
+    raise a.value
+naan = a.value.naan
+issue_ark = Ark(name=i["@ark"], naan=naan)
+issue = Resource(issue_ark)
+from bs4 import BeautifulSoup
+
+t = issue.toc_sync()
+soup = BeautifulSoup(t.value, parser="xml")
+
+contents = []
+for row in soup.table.children:
+    author = row.contents[0].text
+    title = row.contents[1].text
+    start_p = row.contents[2].text
+    contents.append(dict(author=author, title=title, start_p=start_p))
+
+pages = issue.pagination_sync()
+if pages.value["livre"]["structure"]["hasToc"] == "true":
+    toc = issue.toc_sync()
+    soup = BeautifulSoup(t.value, parser="xml")
+
+    # check the toc to see if we match
+    contents = []
+    for row in soup.table.children:
+        author = row.contents[0].text
+        title = row.contents[1].text
+        start_p = row.contents[2].text
+        contents.append(dict(author=author, title=title, start_p=start_p))
+
+
+class GallicaResource(Representation):
+    """A resource on Gallica."""
+
+    def __init__(
+        self, target: Union[Article, Book, Collection, Journal], source: Journal
+    ):
+        if any(isinstance(target, x) for x in (Book, Collection, Journal)):
+            raise NotImplementedError("We only handle article for now")
+
+        self.target = target
+        self.source = source
+        a = Ark.parse(source.ark)
+        if a.is_left:
+            raise a.value
+        self.series_ark = a.value
+        self._ark = None
+        self._resource = None  # so we can pass resource around
+        self.logger = logging.getLogger(type(self).__name__)  # maybe more precise.
+        self._start_p = None
+        self._end_p = None
+
+    @property
+    def ark(self):
+        """Ark for the final target."""
+        if not self._ark:
+            if isinstance(self.source, Journal):
+                self.get_issue()
+            else:
+                self._ark = self.series_ark
+
+        return self._ark
+
+    def check_vol_num(self, res):
+        either = res.oairecord_sync()
+        if either.is_left:
+            raise either.value
+        oai = either.value
+        desc = oai["results"]["notice"]["record"]["metadata"]["oai_dc:dc"][
+            "dc:description"
+        ]
+        desc = desc[1]
+        vol = search(r".*T([0-9]+)", desc)
+        vol = int(vol.group(1)) if vol else None
+        no = search(r".*N([0-9]+)", desc)
+        no = int(no.group(1)) if no else None
+        if self.target.volume and self.target.volume == vol:
+            return True
+        if self.target.number and self.target.volume == no:
+            return True
+        return False
+
+    def check_page_range(self, issue):
+        """Check to see if page range in given issue."""
+        either = issue.pagination_sync()
+        if either.is_left:
+            raise either.value
+        pnos = either.value["livre"]["pages"]["page"]
+        target = self.target.pages[0]
+        if any(p["numero"] == target for p in pnos):
+            return True
+        else:
+            return False
+
+    def get_issue(self):
+        """Get the right issue."""
+        issues = Resource(self.series.ark).issues_sync(self.target.year)
+        arks = []
+        for detail in issues.value["issues"]["issue"]:
+            arks.append(Ark(naan=self.series_ark.naan, name=detail["@ark"]))
+        if self.target.volume or self.target.number:
+            self.logger.debug("Trying to match by volume")
+            for ark in arks:
+                issue = Resource(ark)
+                if self.check_vol_num(issue):
+                    self._ark = ark
+                    return ark
+        self.logger.debug("Trying to match by page range.")
+        for ark in arks:
+            issue = Resource(ark)
+            if self.check_page_range(issue):
+                self._ark = ark
+                return ark
+        raise Exception("Failed to find matching issue")
+
+    @property
+    def resource(self):
+        """Resource()"""
+        if not self._resource:
+            self._resource = Resource(self.ark)
+
+    @property
+    def pages(self):
+        if not self._pages:
+            self._pages = self.resource.pagination_sync()
+        return self.pages
+
+    def get_physical_pno(self, logical_pno: str) -> int:
+        """Get the physical pno for a logical pno."""
+        pages = self.pages
+        pnos = pages.value["livre"]["pages"]["page"]
+        # sadly we have to do it ourselves
+        for p in pnos:
+            if p["numero"] == logical_pno:
+                break
+        return p
+
+    @property
+    def start_p(self):
+        """Physical page we start on."""
+        if not self._start_p:
+            self._start_p = get_physical_pno(self.target.pages[0])
+        return self._start_p
+
+    @property
+    def end_p(self):
+        """Physical page we end on."""
+        if not self._end_p:
+            self._end_p = self.get_physical_pno(self.target.pages[-1])
+        return self._end_p
+
+    def extract(self):
+        self.pdf = self.resource.content_sync(
+            startview=self.start_p, nviews=self.start_p - self.end_p
+        )
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()
