@@ -8,7 +8,7 @@ from gallica_autobib.query import GallicaResource
 @pytest.fixture
 def gallica_resource():
     target = Article(
-        journal_title="La vie spirituelle",
+        journaltitle="La vie spirituelle",
         pages=list(range(135, 158)),
         title="Pour lire saint Augustin",
         author="Daniélou",
@@ -46,7 +46,7 @@ def gallica_resource():
         ],
         publisher="Le Cerf (Paris)",
         ark="http://catalogue.bnf.fr/ark:/12148/cb34406663m",
-        journal_title="La Vie spirituelle, ascétique et mystique",
+        journaltitle="La Vie spirituelle, ascétique et mystique",
         number=None,
         volume=None,
     )
