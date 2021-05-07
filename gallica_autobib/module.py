@@ -96,7 +96,7 @@ class Journal(BibBase):
 class GallicaBibObj(BaseModel):
     """Class to represent Gallica's response."""
 
-    identifier: str
+    ark: str
     title: str
     publisher: str
     language: str
@@ -106,7 +106,7 @@ class GallicaBibObj(BaseModel):
     def convert(self):
         """Return the right kind of model."""
         data = {
-            "ark": self.identifier[0],
+            "ark": self.ark,
             "title": self.title,
             "journal_title": self.title,
             "publisher": self.publisher,
