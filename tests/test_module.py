@@ -114,3 +114,19 @@ query_candidates = [
 @pytest.mark.parametrize("kwargs,outstr", query_candidates)
 def test_assemble_query(kwargs, outstr):
     assert BibBase.assemble_query(kwargs=outstr)
+
+
+def test_get_at_str():
+    a = Article(
+        journal_title="La vie spirituelle",
+        pages=list(range(135, 138)),
+        title="Pour lire saint Augustin",
+        author="Daniélou",
+        year=1930,
+    )
+    q = Query(a)
+    assert q.get_at_str("this") == "this"
+    assert q.get_at_str(["this"]) == "this"
+    assert q.get_at_str(["this", "that"]) == "this"
+    assert q.get_at_str(None) is None
+    assert q.get_at_str([None, "this"]) is None
