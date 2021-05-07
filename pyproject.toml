@@ -19,6 +19,8 @@ lark-parser = "^0.11.3"
 lxml = "^4.6.3"
 bibtexparser = "^1.2.0"
 rispy = "^0.6.0"
+roman = "^3.3"
+PyPDF2 = "^1.26.0"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.782"
@@ -36,6 +38,8 @@ pytest-cov = "^2.11.1"
 pytest-coverage = "^0.0"
 devtools = "^0.6.1"
 pytest-regressions = "^2.2.0"
+deepdiff = "^5.5.0"
+pytest-diff = "^0.1.14"
 
 [build-system]
 requires = ["poetry>=0.12"]

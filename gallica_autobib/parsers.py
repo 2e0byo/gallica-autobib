@@ -4,7 +4,7 @@ import rispy
 from .models import Article, Book, Collection
 from typing import Union, List
 from devtools import debug
-import roman
+from roman import fromRoman, toRoman
 
 
 class ParsingError(Exception):
@@ -20,15 +20,18 @@ def parse_bibtex(bibtex: str) -> List[Union[Article, Book, Collection]]:
     for record in db.entries:
         pages = record["pages"]
         roman = "i" in pages.lower()
+        lower = "i" in pages
         try:
             start, end = pages.split("-")
-            startno = roman.fromRoman(start) if roman else int(start)
-            endno = roman.fromRoman(end) if roman else int(end)
+            startno = fromRoman(start.upper()) if roman else int(start)
+            endno = fromRoman(end.upper()) if roman else int(end)
             if not roman and endno < startno:
-                end = f"{start[0]}{end}"
+                endno = int(f"{start[0]}{end}")
             record["pages"] = list(range(startno, endno + 1))
             if roman:
-                record["pages"] = [roman.toRoman(x) for x in record["pages"]]
+                record["pages"] = [
+                    toRoman(x).lower() if lower else toRoman(x) for x in record["pages"]
+                ]
         except ValueError:
             record["pages"] = [record["pages"]]
 

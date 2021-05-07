@@ -1,9 +1,12 @@
 import logging
+import io
 import unicodedata
+from pathlib import Path
 from functools import total_ordering
 from re import search
 from traceback import print_exception
 from typing import Any, List, Literal, Optional, Union
+from PyPDF2 import PdfFileReader, PdfFileMerger, PdfFileWriter, PageRange
 
 import sruthi
 from fuzzywuzzy import fuzz
@@ -11,6 +14,7 @@ from pydantic.utils import Representation
 from sruthi.response import SearchRetrieveResponse
 
 from .gallipy import Ark, Resource
+from .gallipy.monadic import Either
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
 
@@ -306,6 +310,62 @@ class GallicaResource(Representation):
             startview=self.start_p, nviews=self.end_p - self.start_p + 1
         )
         return self.pdf
+
+    def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> None:
+        """Download a resource as a pdf in blocks to avoid timeout."""
+        partials = []
+        print("here")
+        try:
+            for i, (start, length) in enumerate(
+                self._generate_blocks(self.start_p, self.end_p, blocksize)
+            ):
+                either = self._fetch_block(start, length, trials)
+                if either.is_left:
+                    raise Exception("Failed to download.")
+                reader = PdfFileReader(io.BytesIO(either.value))
+                fn = path.with_suffix(f".pdf.{i}")
+                self._save_partial(reader, fn)
+                partials.append(fn)
+            self._merge_partials(path, partials)
+        finally:
+            print(partials)
+            # for fn in partials:
+            #     fn.unlink()
+        assert partials
+
+    @staticmethod
+    def _generate_blocks(start, end, size):
+        """Generate Blocks"""
+        beginnings = range(start, end + 1, size)
+        for i in beginnings:
+            length = end - i + 1 if i + size > end else size  # truncate last block
+            yield (i, length)
+
+    @staticmethod
+    def _merge_partials(path: Path, partials: List[Path]) -> None:
+        """Merge partial files"""
+        merger = PdfFileMerger()
+        for i, fn in enumerate(partials):
+            args = {"pages": PageRange("2:")}  # if i else {}
+            # with partial.open("rb") as f:
+            merger.append(str(fn.resolve()), **args)
+        with path.open("wb") as f:
+            merger.write(f)
+
+    @staticmethod
+    def _save_partial(reader: PdfFileReader, path: Path) -> None:
+        with path.open("wb+") as f:
+            writer = PdfFileWriter()
+            writer.appendPagesFromReader(reader)
+            writer.write(f)
+
+    def _fetch_block(self, startview: int, nviews: int, trials: int) -> Either:
+        """Fetch block.  This fn is recursive."""
+        either = self.resource.content_sync(startview=startview, nviews=nviews)
+        if either.is_left:
+            if trials > 1:
+                return self._fetch_block(self, startview, nviews, trials - 1)
+        return either
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()

@@ -1,8 +1,10 @@
 import pytest
+from pathlib import Path
 from devtools import debug
 from gallica_autobib.gallipy import Resource
 from gallica_autobib.models import Article, Journal
 from gallica_autobib.query import GallicaResource
+from tempfile import TemporaryDirectory
 
 
 @pytest.fixture
@@ -84,3 +86,23 @@ def test_extract(gallica_resource, file_regression):
     assert not either.is_left
     f = either.value
     file_regression.check(f, binary=True, extension=".pdf")
+
+
+def test_generate_blocks(gallica_resource):
+    expected = [(0, 5), (5, 5), (10, 5), (15, 5), (20, 1)]
+    res = list(gallica_resource._generate_blocks(0, 20, 5))
+
+
+def test_generate_short_block(gallica_resource):
+    expected = [(0, 4)]
+    res = list(gallica_resource._generate_blocks(0, 3, 100))
+    assert res == expected
+
+
+def test_download_pdf(gallica_resource, file_regression):
+    gallica_resource.target.pages = gallica_resource.target.pages[:3]
+    # with TemporaryDirectory() as tmpdir:
+    tmpdir = "/tmp"
+    gallica_resource.download_pdf(Path(f"{tmpdir}/test.pdf"))
+    with Path(f"{tmpdir}/test.pdf").open("rb") as f:
+        file_regression.check(f.read(), binary=True, extension=".pdf")
