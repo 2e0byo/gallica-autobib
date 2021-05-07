@@ -1,6 +1,6 @@
 #!/bin/sh -e
 set -x
 
-autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place gallica-autobib tests --exclude=__init__.py
-black gallica-autobib tests
-isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --thirdparty gallica-autobib --apply gallica-autobib tests
+autoflake --remove-all-unused-imports --recursive --remove-unused-variables --in-place gallica_autobib tests --exclude=__init__.py
+black gallica_autobib tests
+isort --multi-line=3 --trailing-comma --force-grid-wrap=0 --combine-as --line-width 88 --recursive --thirdparty gallica_autobib --apply gallica_autobib tests

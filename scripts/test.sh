@@ -3,5 +3,5 @@
 set -e
 set -x
 
-pytest --cov=gallica-autobib --cov=tests --cov-report=term-missing ${@}
+pytest --cov=gallica_autobib --cov=tests --cov-report=term-missing ${@}
 bash ./scripts/lint.sh
