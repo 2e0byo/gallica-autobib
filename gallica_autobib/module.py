@@ -210,7 +210,6 @@ class Query(GallicaFetcher, Representation):
         self.target = target._source()
         self.fetcher = GallicaFetcher()
 
-    def run(self, give_up=100) -> Any:
     @staticmethod
     def get_at_str(obj: Union[str, list]):
         if not obj:
@@ -219,6 +218,8 @@ class Query(GallicaFetcher, Representation):
             return obj
         else:
             return obj[0]
+
+    def run(self, give_up=50) -> Any:
         """Try to get best match."""
         query = self.target.generate_query()
         try:
