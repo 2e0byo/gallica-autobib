@@ -108,17 +108,17 @@ class GallicaBibObj(BaseModel):
         data = {
             "ark": self.identifier[0],
             "title": self.title,
+            "journal_title": self.title,
             "publisher": self.publisher,
-            "date": [],
+            "year": [],
         }
-        for r in date.split(","):
+        for r in self.date.split(","):
             try:
                 start, end = r.split("-")
-                data["date"].append(list(range(int(start), int(end) + 1)))
+                data["year"].append(list(range(int(start), int(end) + 1)))
             except ValueError:
-                data["date"].append(int(r))
-        t = self.type[0]["text"]
-        return type_to_class[t].from_obj(data)
+                data["year"].append(int(r))
+        return type_to_class[self.type].parse_obj(data)
 
 
 type_to_class = {"publication en série imprimée": Journal}
