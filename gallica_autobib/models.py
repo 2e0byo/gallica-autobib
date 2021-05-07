@@ -52,7 +52,7 @@ class Article(BibBase):
 
     title: str
     journal_title: str
-    pages: Union[int, List]
+    pages: List
     author: str
     editor: str = None
 
