@@ -793,6 +793,18 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "rispy"
+version = "0.6.0"
+description = "A Python reader/writer of RIS reference files"
+category = "main"
+optional = false
+python-versions = "*"
+
+[package.extras]
+dev = ["black (==19.10b0)", "flake8 (==3.7.9)", "check-manifest", "twine", "wheel"]
+test = ["coverage", "pytest"]
+
+[[package]]
 name = "six"
 version = "1.16.0"
 description = "Python 2 and 3 compatibility utilities"
@@ -931,7 +943,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.6.1"
-content-hash = "ef58b6f0cb50ba15dbf37eb4753cc61c84e2d95da6c8b2ee85f09247fe8df333"
+content-hash = "cf604575e47c9dc6fca8a614918e351cb1e09e031f376be3378ad263b373621c"
 
 [metadata.files]
 appdirs = [
@@ -1425,6 +1437,10 @@ requests = [
 rfc3987 = [
     {file = "rfc3987-1.3.8-py2.py3-none-any.whl", hash = "sha256:10702b1e51e5658843460b189b185c0366d2cf4cff716f13111b0ea9fd2dce53"},
     {file = "rfc3987-1.3.8.tar.gz", hash = "sha256:d3c4d257a560d544e9826b38bc81db676890c79ab9d7ac92b39c7a253d5ca733"},
+]
+rispy = [
+    {file = "rispy-0.6.0-py3-none-any.whl", hash = "sha256:efe1e907ca4d07f8a474c992768d9c74b63c3573559325d0a8136a7bda9b10ea"},
+    {file = "rispy-0.6.0.tar.gz", hash = "sha256:223b58bcf10203079279d78a73fcaba2a0e9335b900170f0a1a682b6cb7f6ba4"},
 ]
 six = [
     {file = "six-1.16.0-py2.py3-none-any.whl", hash = "sha256:8abb2f1d86890a2dfb989f9a77cfcfd3e47c2a354b01111771326f8aa26e0254"},
