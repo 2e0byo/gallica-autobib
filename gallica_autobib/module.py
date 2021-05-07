@@ -157,7 +157,7 @@ class Match(Representation):
                 if isinstance(target_v, int):
                     vals[k] = 1 if target_v == v else 0
                 elif isinstance(target_v, list):
-                    vals[k] = 1 if v in target_v == v else 0
+                    vals[k] = 1 if v in target_v else 0
                 else:
                     raise NotImplementedError
 
