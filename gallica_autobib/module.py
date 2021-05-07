@@ -3,7 +3,6 @@ from pydantic import BaseModel, Field
 from typing import Optional, Literal, Union, List, Any
 from fuzzywuzzy import fuzz
 import unicodedata
-from .query import GallicaFetcher
 import sruthi
 from sruthi.response import SearchRetrieveResponse
 from traceback import print_exception
