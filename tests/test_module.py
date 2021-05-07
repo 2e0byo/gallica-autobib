@@ -8,7 +8,9 @@ from gallica_autobib.module import (
     BibBase,
     make_string_boring,
     Query,
+    GallicaBibObj,
 )
+from devtools import debug
 
 strings = [["asciitest", "asciitest"], [None, None]]
 
@@ -118,6 +120,42 @@ def test_assemble_query(kwargs, outstr):
     assert BibBase.assemble_query(kwargs=outstr)
 
 
+@pytest.fixture
+def query():
+    a = Article(
+        journal_title="La vie spirituelle",
+        pages=list(range(135, 138)),
+        title="Pour lire saint Augustin",
+        author="Daniélou",
+        year=1930,
+    )
+    q = Query(a)
+    yield q
+
+
+def test_bibobj(query):
+    data = {
+        "schema": "dc",
+        "identifier": [
+            "http://catalogue.bnf.fr/ark:/12148/cb34406663m",
+            "ISSN 09882480",
+        ],
+        "title": "La Vie spirituelle, ascétique et mystique",
+        "publisher": "Le Cerf (Paris)",
+        "date": "1919-1945",
+        "language": ["fre", "français"],
+        "type": [
+            {"lang": "fre", "text": "publication en série imprimée"},
+            {"lang": "eng", "text": "printed serial"},
+            {"lang": "eng", "text": "text"},
+        ],
+    }
+    resp = query.resp_to_obj(data.copy())
+    assert isinstance(resp, Journal)
+    assert resp.ark == data["identifier"][0]
+    assert len(resp.ark) > 1
+    assert resp.journal_title == data["title"]
+    assert resp.publisher == data["publisher"]
 def test_get_at_str():
     a = Article(
         journal_title="La vie spirituelle",
