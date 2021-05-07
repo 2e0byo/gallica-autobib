@@ -1,5 +1,6 @@
 # package imports
 from pydantic import BaseModel, Field
+from pydantic.utils import Representation
 from typing import Optional, Literal, Union, List, Any
 from fuzzywuzzy import fuzz
 import unicodedata
@@ -124,7 +125,7 @@ type_to_class = {"publication en série imprimée": Journal}
 
 
 @total_ordering
-class Match:
+class Match(Representation):
     """Object representing a match."""
 
     def __init__(self, target: Any, candidate: Any):
@@ -182,8 +183,11 @@ class Match:
     def __eq__(self, other):
         return self.score == other.score
 
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()
 
-class GallicaFetcher:
+
+class GallicaFetcher(Representation):
     """Class to interact wtih Gallica"""
 
     URL = "http://catalogue.bnf.fr/api/SRU"
@@ -224,3 +228,5 @@ class Query(GallicaFetcher):
             return None
 
         return max(matches)
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()
