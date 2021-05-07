@@ -156,6 +156,8 @@ def test_bibobj(query):
     assert len(resp.ark) > 1
     assert resp.journal_title == data["title"]
     assert resp.publisher == data["publisher"]
+
+
 def test_get_at_str():
     a = Article(
         journal_title="La vie spirituelle",
@@ -171,16 +173,8 @@ def test_get_at_str():
     assert q.get_at_str(None) is None
     assert q.get_at_str([None, "this"]) is None
 
-
-def test_match_query():
-    a = Article(
-        journal_title="La vie spirituelle",
-        pages=list(range(135, 138)),
-        title="Pour lire saint Augustin",
-        author="Daniélou",
-        year=1930,
-    )
-    q = Query(a)
-    resp = q.run()
-    assert resp
-    print(resp.candidate)
+    l = [
+        "http://catalogue.bnf.fr/ark:/12148/cb34406663m",
+        "ISSN 09882480",
+    ]
+    assert q.get_at_str(l) == "http://catalogue.bnf.fr/ark:/12148/cb34406663m"

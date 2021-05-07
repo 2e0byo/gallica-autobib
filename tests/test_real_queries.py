@@ -1,4 +1,5 @@
 from gallica_autobib.module import Query, Article
+from devtools import debug
 
 
 def test_match_query():
@@ -12,4 +13,4 @@ def test_match_query():
     q = Query(a)
     resp = q.run()
     assert resp.target
-    assert resp.candidate.journal_title == "La vie spirituelle, ascétique et morale"
+    assert resp.candidate.journal_title == "La Vie spirituelle, ascétique et mystique"

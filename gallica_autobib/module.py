@@ -8,6 +8,7 @@ import sruthi
 from sruthi.response import SearchRetrieveResponse
 from traceback import print_exception
 from functools import total_ordering
+from devtools import debug
 
 
 record_types = {
@@ -115,7 +116,7 @@ class GallicaBibObj(BaseModel):
         for r in self.date.split(","):
             try:
                 start, end = r.split("-")
-                data["year"].append(list(range(int(start), int(end) + 1)))
+                data["year"] += list(range(int(start), int(end) + 1))
             except ValueError:
                 data["year"].append(int(r))
         return type_to_class[self.type].parse_obj(data)
@@ -144,27 +145,29 @@ class Match(Representation):
         vals = {}
         candidate = self.candidate
         for k, v in self.target.dict().items():
-            target_v = getattr(candidate, k)
-            if v and not target_v:
+            candidate_v = getattr(candidate, k)
+            if v and not candidate_v:
                 vals[k] = 0.5
 
             if isinstance(v, str):
                 vals[k] = (
-                    fuzz.ratio(make_string_boring(v), make_string_boring(target_v))
+                    fuzz.ratio(make_string_boring(v), make_string_boring(candidate_v))
                     / 100
                 )
             if isinstance(v, int):
-                if isinstance(target_v, int):
-                    vals[k] = 1 if target_v == v else 0
-                elif isinstance(target_v, list):
-                    vals[k] = 1 if v in target_v else 0
+                if isinstance(candidate_v, int):
+                    vals[k] = 1 if candidate_v == v else 0
+                elif isinstance(candidate_v, list):
+                    debug(v, candidate_v, v in candidate_v)
+                    vals[k] = 1 if v in candidate_v else 0
+                    debug(vals[k])
                 else:
                     raise NotImplementedError
 
             if isinstance(v, list):
-                if isinstance(target_v, list):
-                    matches = [1 if i in target_v else 0 for i in v]
-                elif target_v in v:
+                if isinstance(candidate_v, list):
+                    matches = [1 if i in candidate_v else 0 for i in v]
+                elif candidate_v in v:
                     matches.append(1 / len(v))
                 else:
                     matches.append(0)
@@ -250,12 +253,16 @@ class Query(GallicaFetcher, Representation):
             candidate = self.resp_to_obj(resp)
             match = Match(self.target, candidate)
             matches.append(match)
-            if i > 3 and any(m.score > 0.7 for m in matches):
-                break
+            for m in matches:
+                if i < 3:
+                    break
+                if m.score > 0.7:
+                    break
+            # if i > 3 and any(m.score > 0.7 for m in matches):
+            #     break
 
         if not matches:
             return None
-        from devtools import debug
 
         debug(matches)
 
