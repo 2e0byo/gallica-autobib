@@ -12,7 +12,7 @@ from gallica_autobib.models import (
 
 def test_article():
     a = Article(
-        journal_title="La vie spirituelle",
+        journaltitle="La vie spirituelle",
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
         author="Daniélou",

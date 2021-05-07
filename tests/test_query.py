@@ -12,7 +12,7 @@ def test_boring_string(inp, out):
 
 def test_match_duplicate():
     a = Article(
-        journal_title="La vie spirituelle",
+        journaltitle="La vie spirituelle",
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
         author="Daniélou",
@@ -24,9 +24,9 @@ def test_match_duplicate():
 
 
 def test_close_match():
-    a = Journal(journal_title="La vie spirituelle", year=1930)
+    a = Journal(journaltitle="La vie spirituelle", year=1930)
     b = Journal(
-        journal_title="La vie spirituelle, ascétique et mystique",
+        journaltitle="La vie spirituelle, ascétique et mystique",
         year=list(range(1920, 1950)),
     )
     m = Match(a, b)
@@ -58,7 +58,7 @@ query_candidates = [
 @pytest.fixture
 def query():
     a = Article(
-        journal_title="La vie spirituelle",
+        journaltitle="La vie spirituelle",
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
         author="Daniélou",
@@ -89,7 +89,7 @@ def test_bibobj(query):
     assert isinstance(resp, Journal)
     assert resp.ark == data["identifier"][0]
     assert len(resp.ark) > 1
-    assert resp.journal_title == data["title"]
+    assert resp.journaltitle == data["title"]
     assert resp.publisher == data["publisher"]
 
 

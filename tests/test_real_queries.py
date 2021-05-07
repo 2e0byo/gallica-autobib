@@ -5,7 +5,7 @@ from gallica_autobib.query import Query
 
 def test_match_query():
     a = Article(
-        journal_title="La vie spirituelle",
+        journaltitle="La vie spirituelle",
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
         author="Daniélou",
@@ -14,4 +14,4 @@ def test_match_query():
     q = Query(a)
     resp = q.run()
     assert resp.target
-    assert resp.candidate.journal_title == "La Vie spirituelle, ascétique et mystique"
+    assert resp.candidate.journaltitle == "La Vie spirituelle, ascétique et mystique"

@@ -52,7 +52,7 @@ class Article(BibBase):
     """An article."""
 
     title: str
-    journal_title: str
+    journaltitle: str
     pages: List[str]
     author: str
     editor: str = None
@@ -79,20 +79,20 @@ class Journal(BibBase):
     """A Journal
 
     args:
-      journal_title: the title of the journal
+      journaltitle: the title of the journal
       year: Union[list, int]: the year(s) of publication
       number: number
       volume: vol
     """
 
-    journal_title: str
+    journaltitle: str
     publicationdate: Union[list, int] = Field(alias="year")
     number: int = None
     volume: int = None
 
     def translate(self):
-        data = self.dict(exclude={"journal_title"})
-        data["title"] = self.journal_title
+        data = self.dict(exclude={"journaltitle"})
+        data["title"] = self.journaltitle
         return data
 
 
@@ -111,7 +111,7 @@ class GallicaBibObj(BaseModel):
         data = {
             "ark": self.ark,
             "title": self.title,
-            "journal_title": self.title,
+            "journaltitle": self.title,
             "publisher": self.publisher,
             "year": [],
         }
