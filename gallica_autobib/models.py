@@ -1,11 +1,12 @@
 # package imports
+from functools import total_ordering
+from traceback import print_exception
+from typing import Any, List, Literal, Optional, Union
+
 from pydantic import BaseModel, Field
 from pydantic.utils import Representation
-from typing import Optional, Literal, Union, List, Any
-from traceback import print_exception
-from functools import total_ordering
-from .gallipy import Resource, Ark
 
+from .gallipy import Ark, Resource
 
 record_types = {
     "Article": None,

@@ -17,5 +17,5 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 https://github.com/GeoHistoricalData/gallipy
 """
-from .resource import Resource
 from .ark import Ark
+from .resource import Resource

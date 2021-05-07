@@ -1,7 +1,8 @@
 from xmltodict import parse as parsexmltodict
+
 from . import helpers as h
-from .monadic import Left, Future
 from .ark import Ark
+from .monadic import Future, Left
 
 
 class Resource:

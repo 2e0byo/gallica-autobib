@@ -1,6 +1,6 @@
-from gallica_autobib.query import Query
-from gallica_autobib.models import Article
 from devtools import debug
+from gallica_autobib.models import Article
+from gallica_autobib.query import Query
 
 
 def test_match_query():

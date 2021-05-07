@@ -17,11 +17,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 https://github.com/GeoHistoricalData/gallipy
 """
-import urllib.parse
 import json
-from bs4 import BeautifulSoup
-from .monadic import Left, Either
+import urllib.parse
 
+from bs4 import BeautifulSoup
+
+from .monadic import Either, Left
 
 _BASE_PARTS = {"scheme": "https", "netloc": "gallica.bnf.fr"}
 

@@ -1,6 +1,6 @@
 import pytest
-from gallica_autobib.query import make_string_boring, Query, Match
-from gallica_autobib.models import Article, Journal, Book
+from gallica_autobib.models import Article, Book, Journal
+from gallica_autobib.query import Match, Query, make_string_boring
 
 strings = [["asciitest", "asciitest"], [None, None]]
 

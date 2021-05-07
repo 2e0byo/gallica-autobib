@@ -1,15 +1,17 @@
-from .models import GallicaBibObj, Article, Book, Collection, Journal
-from pydantic.utils import Representation
+import logging
+import unicodedata
+from functools import total_ordering
+from re import search
 from traceback import print_exception
+from typing import Any, List, Literal, Optional, Union
+
 import sruthi
 from fuzzywuzzy import fuzz
-import unicodedata
-from typing import Optional, Literal, Union, List, Any
-from functools import total_ordering
+from pydantic.utils import Representation
 from sruthi.response import SearchRetrieveResponse
-from .gallipy import Resource, Ark
-from re import search
-import logging
+
+from .gallipy import Ark, Resource
+from .models import Article, Book, Collection, GallicaBibObj, Journal
 
 
 def make_string_boring(unicodestr: str) -> str:

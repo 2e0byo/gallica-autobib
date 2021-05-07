@@ -18,11 +18,12 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 https://github.com/GeoHistoricalData/gallipy
 """
 import rfc3987
-from lark import Transformer, Lark
+from lark import Lark, Transformer
 from lark.exceptions import ParseError, UnexpectedCharacters
+
 from .monadic import Either, Left
 
-__all__ = ['Ark', 'ArkParsingError']
+__all__ = ["Ark", "ArkParsingError"]
 
 # ARKID structure :  ark:/NAAN/Name[Qualifier]
 _GRAMMAR = """
@@ -74,8 +75,8 @@ class Ark:
         parts = {key: ark_parts.get(key) for key in valid_keys}
         # Scheme must be ark if authority is unset. 'ark' is also scheme's
         # default value.
-        if not(parts["scheme"] and parts["authority"]):
-            parts["scheme"] = 'ark'
+        if not (parts["scheme"] and parts["authority"]):
+            parts["scheme"] = "ark"
 
         # naan and name are required
         if not parts["naan"]:
@@ -87,7 +88,9 @@ class Ark:
             msg = """
             Cannot create an Ark object with parts {}
             Scheme cannot be '{}' if authority is set.
-            """.format(str(parts), _ARKID_SCHEME)
+            """.format(
+                str(parts), _ARKID_SCHEME
+            )
             raise ValueError(msg)
 
         self._ark_parts = parts
@@ -159,8 +162,8 @@ class Ark:
         if self.is_arkid():
             return self
         parts = self.parts
-        parts['scheme'] = 'ark'
-        del parts['authority']
+        parts["scheme"] = "ark"
+        del parts["authority"]
         return Ark(**parts)
 
     @property
@@ -200,13 +203,13 @@ class Ark:
         """
         try:
             parts = rfc3987.parse(ark_str, rule="URI")  # Ensure ark is a URI
-            parser = Lark(_GRAMMAR, start='arkid')
+            parser = Lark(_GRAMMAR, start="arkid")
 
             # Extract an ARK ID from ark_str if ark_str is a full ARK URL.
             if parts["scheme"] != _ARKID_SCHEME:
                 arkid_str = parts["path"].lstrip("/")
                 if not parts["authority"]:  # NMA is required
-                    msg = 'Name Mapping Authority cannot be null.'
+                    msg = "Name Mapping Authority cannot be null."
                     raise ArkParsingError(msg, ark_str)
             else:
                 arkid_str = ark_str
@@ -223,7 +226,7 @@ class Ark:
     def __str__(self):
         """Simple string representation of this Ark"""
         pattern = "{scheme}://{authority}/" if not self.is_arkid() else ""
-        pattern += _ARKID_SCHEME+":/{naan}/{name}"
+        pattern += _ARKID_SCHEME + ":/{naan}/{name}"
         pattern += "/{qualifier}" if self.qualifier else ""
         return pattern.format(**self._ark_parts)
 
@@ -234,11 +237,14 @@ class Ark:
 
 class ArkParsingError(ValueError):
     """A simple parsing exceptions for Arks."""
+
     def __init__(self, message, arkstr):
         string = """
             Parsing error, ARK '{}' is invalid. See details below.
             {}
-        """.format(arkstr, message)
+        """.format(
+            arkstr, message
+        )
         super().__init__(string)
 
 
