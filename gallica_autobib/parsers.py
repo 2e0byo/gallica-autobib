@@ -3,7 +3,6 @@ import bibtexparser
 import rispy
 from .models import Article, Book, Collection
 from typing import Union, List
-from devtools import debug
 from roman import fromRoman, toRoman
 
 
@@ -40,14 +39,17 @@ def parse_bibtex(bibtex: str) -> List[Union[Article, Book, Collection]]:
         if type_ in mapping:
             parsed.append(mapping[type_].parse_obj(record))
         else:
-            raise ParsingError("Unable to parse")
+            raise ParsingError("Unsupported type")
     return parsed
 
 
 def parse_ris(ris: str) -> List[Union[Article, Book, Collection]]:
-    db = rispy.loads(ris)
+    try:
+        db = rispy.loads(ris)
+    except Exception:
+        raise ParsingError("Unable to parse")
+    parsed = []
     for record in db:
-        debug(record)
         record["pages"] = list(
             range(int(record["start_page"]), int(record["end_page"]) + 1)
         )
@@ -56,6 +58,8 @@ def parse_ris(ris: str) -> List[Union[Article, Book, Collection]]:
         mapping = {"JOUR": Article, "BOOK": Book, "COLL": Collection}
         type_ = record["type_of_reference"]
         if type_ in mapping:
-            return mapping[type_].parse_obj(record)
+            parsed.append(mapping[type_].parse_obj(record))
         else:
-            raise ParsingError("Unable to parse")
+            raise ParsingError("Unsupported type")
+
+    return parsed
