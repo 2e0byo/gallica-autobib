@@ -846,6 +846,19 @@ security = ["pyOpenSSL (>=0.14)", "cryptography (>=1.3.4)"]
 socks = ["PySocks (>=1.5.6,!=1.5.7)", "win-inet-pton"]
 
 [[package]]
+name = "requests-downloader"
+version = "0.1.6"
+description = "Python package to download files"
+category = "main"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+beautifulsoup4 = "*"
+requests = "*"
+tqdm = "*"
+
+[[package]]
 name = "rfc3987"
 version = "1.3.8"
 description = "Parsing and validation of URIs (RFC 3986) and IRIs (RFC 3987)"
@@ -931,7 +944,7 @@ python-versions = ">= 3.5"
 name = "tqdm"
 version = "4.60.0"
 description = "Fast, Extensible Progress Meter"
-category = "dev"
+category = "main"
 optional = false
 python-versions = "!=3.0.*,!=3.1.*,!=3.2.*,!=3.3.*,>=2.7"
 
@@ -1011,7 +1024,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "18de6f1a1f49bc46b5736a2deebde76124609f2ac82b967c4ca2917645d7fa7c"
+content-hash = "a99fb15817db74095aa911f1785de4780b45e6c1de00900be453693314139704"
 
 [metadata.files]
 appdirs = [
@@ -1580,6 +1593,10 @@ regex = [
 requests = [
     {file = "requests-2.25.1-py2.py3-none-any.whl", hash = "sha256:c210084e36a42ae6b9219e00e48287def368a26d03a048ddad7bfee44f75871e"},
     {file = "requests-2.25.1.tar.gz", hash = "sha256:27973dd4a904a4f13b263a19c866c13b92a39ed1c964655f025f3f8d3d75b804"},
+]
+requests-downloader = [
+    {file = "requests_downloader-0.1.6-py2.py3-none-any.whl", hash = "sha256:df08c2b9657cabb1e6edc9b3f08fba0336132abe9917a4be1562368de0e6c8be"},
+    {file = "requests_downloader-0.1.6.tar.gz", hash = "sha256:c71030829ea677198cda269d66383dfdf6b6f69c0a9658eb020bf347d155a05a"},
 ]
 rfc3987 = [
     {file = "rfc3987-1.3.8-py2.py3-none-any.whl", hash = "sha256:10702b1e51e5658843460b189b185c0366d2cf4cff716f13111b0ea9fd2dce53"},
