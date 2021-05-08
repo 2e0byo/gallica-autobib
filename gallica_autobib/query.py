@@ -352,6 +352,8 @@ class GallicaResource(Representation):
         with path.open("wb") as f:
             merger.write(f)
 
+    # TODO add downloader using requests_downloder here.  Requires getting the url
+
     @staticmethod
     def _save_partial(reader: PdfFileReader, path: Path) -> None:
         with path.open("wb+") as f:
