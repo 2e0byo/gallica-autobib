@@ -38,6 +38,29 @@ def test_bib_article():
     assert parse_bibtex(bib)[0] == art
 
 
+def test_bib_article_one_page():
+    bib = """
+    @Article{danielou30:_pour_augus,
+      author =       {Jean Daniélou},
+      title =        {Pour lire saint Augustin},
+      journaltitle = {La Vie spirituelle},
+      year =      1930,
+      language =  {french},
+      volume =    24,
+      pages =     12}
+    """
+    art = Article(
+        journaltitle="La Vie spirituelle",
+        pages=[12],
+        title="Pour lire saint Augustin",
+        author="Jean Daniélou",
+        year=1930,
+        language="french",
+        volume=24,
+    )
+    assert parse_bibtex(bib)[0] == art
+
+
 def test_bib_article_roman():
     bib = """
     @Article{danielou30:_pour_augus,
