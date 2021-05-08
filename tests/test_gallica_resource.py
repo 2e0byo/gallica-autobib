@@ -100,9 +100,17 @@ def test_generate_short_block(gallica_resource):
 
 
 def test_download_pdf(gallica_resource, file_regression):
+    """Test for rough size.
+
+    We don't use a test against the file itself as it's binary and is generate
+    every time = changes.
+
+    """
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
-    # with TemporaryDirectory() as tmpdir:
-    tmpdir = "/tmp"
-    gallica_resource.download_pdf(Path(f"{tmpdir}/test.pdf"))
-    with Path(f"{tmpdir}/test.pdf").open("rb") as f:
-        file_regression.check(f.read(), binary=True, extension=".pdf")
+
+    # use a dir so we can operate on it later
+    with TemporaryDirectory() as tmpdir:
+        outf = Path(f"{tmpdir}/test.pdf")
+        gallica_resource.download_pdf(outf)
+        saved = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+        assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
