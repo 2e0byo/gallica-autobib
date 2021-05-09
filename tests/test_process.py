@@ -76,7 +76,10 @@ def test_crop_bounds_rh():
     assert get_crop_bounds(img) == (161, 160, 898, 1394)
 
 
-filter_tests = ["tests/test_process/rh.jpg"]
+filter_tests = [
+    "tests/test_process/rh.jpg",
+    "tests/test_process/lh.jpg",
+]
 
 
 @pytest.mark.parametrize("inf", filter_tests)
