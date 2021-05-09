@@ -13,13 +13,14 @@ from PyPDF4.pdf import PageObject
 from PIL import Image
 from typing import Tuple, Any
 
+from io import BytesIO
+
 
 class ExtractionError(Exception):
     pass
 
 
 def extract_image(page: PageObject) -> Tuple[Any, str]:
-
     if "/XObject" in page["/Resources"]:
         xObject = page["/Resources"]["/XObject"].getObject()
 
@@ -33,18 +34,24 @@ def extract_image(page: PageObject) -> Tuple[Any, str]:
                     mode = "P"
 
                 if "/Filter" in xObject[obj]:
-                    if xObject[obj]["/Filter"] == "/FlateDecode":
+                    filter_ = xObject[obj]["/Filter"][0]
+
+                    if filter_ == "/FlateDecode":
                         data = Image.frombytes(mode, size, data)
                         type_ = "png"
-                    elif xObject[obj]["/Filter"] == "/DCTDecode":
+                    elif filter_ == "/DCTDecode":
                         type_ = "jpg"
-                    elif xObject[obj]["/Filter"] == "/JPXDecode":
+                    elif filter_ == "/JPXDecode":
                         type_ = "jp2"
-                    elif xObject[obj]["/Filter"] == "/CCITTFaxDecode":
+                    elif filter_ == "/CCITTFaxDecode":
                         type_ = "tiff"
                 else:
                     type_ = "png"
                     data = Image.frombytes(mode, size, data)
+                if isinstance(data, bytes):
+                    data = Image.open(BytesIO(data))
+                assert data
+                assert type_
                 return data, type_
     else:
         raise ExtractionError("No image found.")
