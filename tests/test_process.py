@@ -1,4 +1,5 @@
 from gallica_autobib.process import (
+    filter_algorithm_brute_force,
     extract_image,
     ExtractionError,
     get_crop_bounds,
@@ -73,3 +74,17 @@ def test_crop_bounds_rh():
     inf = "tests/test_process/rh.jpg"
     img = Image.open(inf)
     assert get_crop_bounds(img) == (161, 160, 898, 1394)
+
+
+filter_tests = ["tests/test_process/rh.jpg"]
+
+
+@pytest.mark.parametrize("inf", filter_tests)
+def test_filter_brute_force(inf, image_regression):
+    img = Image.open(inf)
+    img = img.crop(get_crop_bounds(img))
+    img = filter_algorithm_brute_force(img)
+    with TemporaryDirectory() as tmpdir:
+        img.save(f"{tmpdir}/test.jpg")
+        with Path(f"{tmpdir}/test.jpg").open("rb") as f:
+            image_regression.check(f.read())
