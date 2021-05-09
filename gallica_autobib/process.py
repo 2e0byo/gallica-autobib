@@ -13,6 +13,8 @@ from PyPDF4.pdf import PageObject
 from PIL import Image, ImageOps, ImageChops
 from typing import Tuple, Any
 import numpy as np
+from devtools import debug
+from collections import namedtuple
 
 from io import BytesIO
 
@@ -21,7 +23,7 @@ class ExtractionError(Exception):
     pass
 
 
-def extract_image(page: PageObject) -> Tuple[Image, str]:
+def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
     if "/XObject" in page["/Resources"]:
         xObject = page["/Resources"]["/XObject"].getObject()
 
@@ -72,6 +74,9 @@ def filter_point(point: int) -> int:
         return point * 2
 
 
+_results = namedtuple("results", ("lh_page", "crop", "bbox"))
+
+
 def filter_algorithm_brute_force(img):
     img = ImageOps.autocontrast(img)
     img = ImageOps.posterize(img, 5)
@@ -83,29 +88,13 @@ def filter_algorithm_brute_force(img):
 def deanomalise(data: list) -> int:
     mean = np.mean(data)
     std = np.std(data)
-    data = [x for x in data if abs(x - mean) < 2 * std]
+    if not std:
+        return data[0]
+    data = [x for x in data if abs(x - mean) < 1.5 * std]
     return round(np.mean(data))
 
 
-def get_crop_bounds(img: Image.Image) -> Tuple:
-    """Get crop bounds for text on page.
-
-    The algorithm:
-      1. grayscales and thresholds the image
-      2. find the side with a vertical black line and crops it out
-      3. crops to content
-    This is not very robust, but Gallica is quite standardised in its pdfs.
-
-    Args:
-      img: Image.Image: The image to process.
-
-    Returns:
-      A tuple of the rectangle to crop to.
-    """
-    img = ImageOps.grayscale(img)
-    img = img.point(lambda p: p > 128 and 255)  # threshold image
-
-    # detect continuous side of image
+def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
     threshold = 50
     midpoint = round(img.height / 2)
     lower = midpoint - 20
@@ -113,29 +102,66 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     first_left = []
     first_right = []
     for height in (midpoint, lower, upper):
-        print(height)
         for i in range(img.width):
             if img.getpixel((i, height)) < threshold:
                 first_left.append(i)
                 break
         for i in range(img.width - 1, 0, -1):
             if img.getpixel((i, height)) < threshold:
-                first_right.append(i)
+                first_right.append(img.width - i)
                 break
+
+    assert first_left
+    assert first_right
     first_left = deanomalise(first_left)
     first_right = deanomalise(first_right)
-    lh_page = first_left < first_right
-    if lh_page:
+    if first_left < first_right:
         crop = first_left + 10
-        img = img.crop((crop, 0, img.width, img.height))
+        return _results(True, crop, (crop, 0, img.width, img.height))
     else:
-        crop = first_right + 10
-        img = img.crop((0, 0, img.width - crop, img.height))
+        crop = first_right - 10
+        return _results(False, crop, (0, 0, img.width - crop, img.height))
+
+
+def prepare_img(img: Image.Image, threshold=75) -> Image.Image:
+    img = ImageOps.grayscale(img)
+    return img.point(lambda p: p > threshold and 255)
+
+
+def get_crop_bounds(img: Image.Image) -> Tuple:
+    """Get crop bounds for text on page.
+
+    The algorithm:
+      1. grayscales and thresholds the image aggressively
+      3. crops to slightly wider than content
+    This is not very robust, but Gallica is quite standardised in its pdfs.
+
+    We don't bother with spine detection as it seems to work fine without it
+    using a very aggressive thresholding.
+
+    Args:
+      img: Image.Image: The image to process.
+
+    Returns:
+      A tuple of the rectangle to crop to.
+
+    """
+
+    img = prepare_img(img)
+    res = detect_spine(img)
+    res = _results(res[0], 0, res[2])
+    # img = img.crop(res.bbox)
+
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
     diff = ImageChops.difference(img, bg)
     left, lower, right, upper = diff.getbbox()
-    if lh_page:
-        return (left + crop, lower, right, upper)
-    else:
-        return (left, lower, right - crop, upper)
+    left -= 10
+    lower -= 10
+    right += 10
+    upper += 10
+    return (left, lower, right, upper)
+    # if res.lh_page:
+    #     return _results(res.lh_page, res.crop, (left + res.crop, lower, right, upper))
+    # else:
+    #     return _results(res.lh_page, res.crop, (left, lower, right - res.crop, upper))
