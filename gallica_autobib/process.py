@@ -198,7 +198,7 @@ def process_pdf(
         outf = pdf.with_stem(f"processed-{pdf.stem}")
         i = 0
         while outf.exists():
-            outf = outf.with_stem(f"{outf.stem-{i}}")
+            outf = outf.with_stem(f"{outf.stem}-{i}")
             i += 1
 
     if preserve_text:
