@@ -10,12 +10,14 @@ itself modified from
 https://stackoverflow.com/questions/2693820/extract-images-from-pdf-without-resampling-in-python
 """
 from PyPDF4.pdf import PageObject
+from PyPDF4 import PdfFileReader, PdfFileWriter
 from PIL import Image, ImageOps, ImageChops
 from typing import Tuple, Any
 import numpy as np
 from devtools import debug
 from collections import namedtuple
-
+from pathlib import Path
+from tempfile import TemporaryDirectory
 from io import BytesIO
 
 
@@ -37,7 +39,9 @@ def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
                     mode = "P"
 
                 if "/Filter" in xObject[obj]:
-                    filter_ = xObject[obj]["/Filter"][0]
+                    filter_ = xObject[obj]["/Filter"]
+                    if isinstance(filter_, list):
+                        filter_ = filter_[0]
 
                     if filter_ == "/FlateDecode":
                         data = Image.frombytes(mode, size, data)
@@ -48,14 +52,16 @@ def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
                         type_ = "jp2"
                     elif filter_ == "/CCITTFaxDecode":
                         type_ = "tiff"
+                    else:
+                        continue
                 else:
                     type_ = "png"
                     data = Image.frombytes(mode, size, data)
                 if isinstance(data, bytes):
                     data = Image.open(BytesIO(data))
-                assert data
-                assert type_
-                return data, type_
+        assert data
+        assert type_
+        return data, type_
     else:
         raise ExtractionError("No image found.")
 
