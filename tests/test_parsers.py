@@ -1,6 +1,7 @@
 import pytest
 from gallica_autobib.models import Article
 from gallica_autobib.parsers import ParsingError, parse_bibtex, parse_ris
+from io import StringIO
 
 
 def test_invalid_bibtex():
@@ -36,6 +37,7 @@ def test_bib_article():
         volume=24,
     )
     assert parse_bibtex(bib)[0] == art
+    assert parse_bibtex(StringIO(bib))[0] == art
 
 
 def test_bib_article_one_page():
@@ -131,6 +133,7 @@ ER  -
         number=4,
     )
     assert parse_ris(ris)[0] == art
+    assert parse_ris(StringIO(ris))[0] == art
 
 
 def test_ris_other():

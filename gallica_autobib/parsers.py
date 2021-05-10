@@ -2,7 +2,7 @@
 import bibtexparser
 import rispy
 from .models import Article, Book, Collection
-from typing import Union, List
+from typing import Union, List, TextIO
 from roman import fromRoman, toRoman
 
 
@@ -10,11 +10,14 @@ class ParsingError(Exception):
     pass
 
 
-def parse_bibtex(bibtex: str) -> List[Union[Article, Book, Collection]]:
+def parse_bibtex(bibtex: Union[str, TextIO]) -> List[Union[Article, Book, Collection]]:
     try:
-        db = bibtexparser.loads(bibtex)
+        db = bibtexparser.load(bibtex)
     except Exception:
-        raise ParsingError("Unable to parse")
+        try:
+            db = bibtexparser.loads(bibtex)
+        except Exception:
+            raise ParsingError("Unable to parse")
     parsed = []
     for record in db.entries:
         pages = record["pages"]
@@ -43,11 +46,14 @@ def parse_bibtex(bibtex: str) -> List[Union[Article, Book, Collection]]:
     return parsed
 
 
-def parse_ris(ris: str) -> List[Union[Article, Book, Collection]]:
+def parse_ris(ris: Union[str, TextIO]) -> List[Union[Article, Book, Collection]]:
     try:
-        db = rispy.loads(ris)
+        db = rispy.load(ris)
     except Exception:
-        raise ParsingError("Unable to parse")
+        try:
+            db = rispy.loads(ris)
+        except Exception:
+            raise ParsingError("Unable to parse")
     parsed = []
     for record in db:
         record["pages"] = list(
