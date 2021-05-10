@@ -1,0 +1,20 @@
+* Status
+ 
+** Jean Daniélou Pour lire saint Augustin
+
+   #+BEGIN_SRC bibtex
+       @Article{danielou30:_pour_augus,
+      author =       {Jean Daniélou},
+      title =        {Pour lire saint Augustin},
+      journaltitle = {La Vie spirituelle},
+      year =      1930,
+      language =  {french},
+      volume = 24,
+      pages =     {135-57}}
+   #+END_SRC
+
+   
+     [[/tmp/pytest-of-john/pytest-220/test_templates_output_org_0/processed-jean-danielou-pour-lire-saint-augustin.pdf][Processed Pdf]] 
+   
+
+ 
