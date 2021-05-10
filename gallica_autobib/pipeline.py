@@ -44,6 +44,7 @@ class InputParser:
         self.process_args = process_args if process_args else {}
         self.download_args = download_args if download_args else {}
         self._outfs = []
+        self.outdir = outdir
 
     @property
     def progress(self):
@@ -55,12 +56,12 @@ class InputParser:
         raise NotImplementedError
 
     def generate_outf(self, result):
-        outf = self.outdir / slugify(f"{result.author} {result.title}.pdf")
+        outf = self.outdir / (slugify(f"{result.author} {result.title}") + ".pdf")
         i = 0
-        while outf in self.outfs:
+        while outf in self._outfs:
             i += 1
             outf = self.outdir / slugify(f"{result.author} {result.title} {i}.pdf")
-        self.outfs.append(outf)
+        self._outfs.append(outf)
         return outf
 
     def run(self, processes=6) -> str:
@@ -68,7 +69,7 @@ class InputParser:
         with Pool(processes=processes) as pool:
             results = []
             tasks = [
-                self._ProcessArgs(
+                _ProcessArgs(
                     record,
                     self.process_args,
                     self.download_args,
@@ -77,12 +78,14 @@ class InputParser:
                 )
                 for record in self.records
             ]
-            for res in typer.progressbar(pool.imap(self.process_record, tasks)):
-                results.append(res)
+            with typer.progressbar(pool.imap(self.process_record, tasks)) as progress:
+                for res in progress:
+                    results.append(res)
 
-            self.results = [x.get() for x in x in results]
+            # self.results = [x.get() for x in results]
+            self.results = results
 
-        return self.output_template.render(self.status)
+        return self.output_template.render(obj=self)
 
     def generate_output(self):
         """Generate report using template."""
@@ -97,7 +100,7 @@ class InputParser:
         match = query.run()
         if not match:
             return None
-        match = GallicaResource(match)
+        match = GallicaResource(args.record, match.candidate)
         match.download_pdf(args.outf, **args.download_args)
         if args.process:
             process.process_pdf(args.outf, **args.process_args)
@@ -132,60 +135,3 @@ class RisParser(InputParser):
         """
         self.records, self.raw = parse_ris(stream)
         self.len_records = len(self.records)
-
-
-class PipelineError(Exception):
-    pass
-
-
-class Item:
-    """Class to match an item in our bibliography through the pipeliine"""
-
-    def __init__(
-        self,
-        target: Union[Article],
-        outf: Path,
-        download_args: dict = {},
-        process_args: dict = None,
-    ) -> None:
-        """Setup item to try to retrieve target."""
-        self.target = target
-        self.query = Query(target)
-        self.match = None
-        self._status = None
-        self.download_args = {}
-        self.outf = outf
-        self.process_args = (
-            {"preserve_text": False} if not process_args else process_args
-        )
-
-    def _throw(self):
-        raise Exception(self._status[-1])
-
-    def run(self, process=True, process_args: dict = {}) -> Optional[Path]:
-        """
-        Run pipeline on item, returning a path if it succeeds or None if it fails.
-
-        Args:
-          process:  (Default value = True)
-          process_args: dict:  (Default value = {})
-
-        Returns:
-
-        """
-        self._status.append("Querying")
-        self.match = self.query.run()
-        if not self.match:
-            self._status.append("Failed to match")
-            return None
-        self.match = GallicaResource(self.match)
-
-        self._status.append("Matched")
-        self._status.append("Downloading")
-        self.match.download_pdf(self.outf, **self.download_args)
-        if process:
-            process.process_pdf(self.outf, **self.process_args)
-        return self.outf
-
-
-# convert to func
