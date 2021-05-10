@@ -195,7 +195,7 @@ def process_pdf(
     reader = PdfFileReader(str(pdf))
 
     if not outf:
-        outf = pdf.with_stem(f"cropped-{pdf.stem}")
+        outf = pdf.with_stem(f"processed-{pdf.stem}")
         i = 0
         while outf.exists():
             outf = outf.with_stem(f"{outf.stem-{i}}")
