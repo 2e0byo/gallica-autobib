@@ -36,9 +36,11 @@ def test_bib_article():
         language="french",
         volume=24,
     )
-    objs, raw = parse_bibtex(bib)
+    objs, raw = parse_bibtex("\n\n".join([bib * 3]))
+    assert objs[0] == objs[1]
     assert objs[0] == art
     assert len(objs) == len(raw)
+
     assert raw[0] == "\n".join([x for x in bib.split("\n") if x.strip()])
     assert parse_bibtex(StringIO(bib))[0][0] == art
 
@@ -123,8 +125,8 @@ T2  - Rivista di Filosofia Neo-Scolastica
 UR  - http://www.jstor.org/stable/43061043
 VL  - 74
 Y2  - 2021/05/07/
-ER  - 
-    """
+ER  -
+"""
     art = Article(
         journaltitle="Rivista di Filosofia Neo-Scolastica",
         volume=74,
@@ -135,7 +137,8 @@ ER  -
         publisher="Vita e Pensiero – Pubblicazioni dell’Università Cattolica del Sacro Cuore",
         number=4,
     )
-    objs, raw = parse_ris(ris)
+    objs, raw = parse_ris("\n\n\n".join([ris * 3]))
+    assert objs[0] == objs[1]
     assert objs[0] == art
     assert len(objs) == len(raw)
     assert raw[0] == "\n".join([x for x in ris.split("\n") if x.strip()])

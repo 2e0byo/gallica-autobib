@@ -52,11 +52,11 @@ def parse_bibtex(
     raw = []
     entry = []
     for line in rawlines:
-        if line.startswith("@"):
+        if line.strip().startswith("@"):
             if entry:
                 raw.append("\n".join(line for line in entry if line.strip()))
-                entry = []
-        else:
+            entry = [line]
+        elif line.strip():
             entry.append(line)
 
     raw.append("\n".join(line for line in entry if line.strip()))
@@ -91,12 +91,15 @@ def parse_ris(
         else:
             raise ParsingError("Unsupported type")
 
+    from devtools import debug
+
     raw = []
     entry = []
     for line in rawlines:
         if not line.strip():
             if entry:
                 raw.append("\n".join(entry))
+                debug(raw[0])
                 entry = []
         else:
             entry.append(line)
