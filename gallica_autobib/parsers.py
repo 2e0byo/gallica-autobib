@@ -78,12 +78,16 @@ def parse_ris(
         except Exception:
             raise ParsingError("Unable to parse")
     parsed = []
+
     for record in db:
         record["pages"] = list(
             range(int(record["start_page"]), int(record["end_page"]) + 1)
         )
         record["author"] = "and".join(record["authors"])
-        record["journaltitle"] = record["secondary_title"]
+        try:
+            record["journaltitle"] = record["journal_name"]
+        except KeyError:
+            record["journaltitle"] = record["secondary_title"]
         mapping = {"JOUR": Article, "BOOK": Book, "COLL": Collection}
         type_ = record["type_of_reference"]
         if type_ in mapping:
@@ -91,20 +95,16 @@ def parse_ris(
         else:
             raise ParsingError("Unsupported type")
 
-    from devtools import debug
-
     raw = []
     entry = []
     for line in rawlines:
         if not line.strip():
-            if entry:
-                raw.append("\n".join(entry))
-                debug(raw[0])
-                entry = []
+            continue
+        if line.strip().startswith("ER"):
+            entry.append(line)
+            raw.append("\n".join(entry))
+            entry = []
         else:
             entry.append(line)
-
-    if entry:
-        raw.append("\n".join(entry))
 
     return parsed, raw

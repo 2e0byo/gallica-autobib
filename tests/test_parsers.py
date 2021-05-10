@@ -137,7 +137,7 @@ ER  -
         publisher="Vita e Pensiero – Pubblicazioni dell’Università Cattolica del Sacro Cuore",
         number=4,
     )
-    objs, raw = parse_ris("\n\n\n".join([ris * 3]))
+    objs, raw = parse_ris("\n".join([ris * 3]))
     assert objs[0] == objs[1]
     assert objs[0] == art
     assert len(objs) == len(raw)
