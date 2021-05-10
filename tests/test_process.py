@@ -69,13 +69,13 @@ def test_detect_spine():
 def test_crop_bounds_lh():
     inf = "tests/test_process/lh.jpg"
     img = Image.open(inf)
-    assert get_crop_bounds(img) == (46, 149, 786, 1393)
+    assert get_crop_bounds(img) == (46, 151, 783, 1389)
 
 
 def test_crop_bounds_rh():
     inf = "tests/test_process/rh.jpg"
     img = Image.open(inf)
-    assert get_crop_bounds(img) == (161, 160, 898, 1394)
+    assert get_crop_bounds(img) == (162, 165, 896, 1391)
 
 
 filter_tests = [
@@ -84,6 +84,7 @@ filter_tests = [
     "tests/test_process/aug-000.jpg",
     "tests/test_process/aug-001.jpg",
     "tests/test_process/aug-002.jpg",
+    "tests/test_process/aug-020.jpg",
 ]
 
 
