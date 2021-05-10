@@ -24,6 +24,9 @@ Pillow = "^8.2.0"
 PyPDF4 = "^1.27.0"
 requests-downloader = "^0.1.6"
 scikit-image = "^0.18.1"
+typer = "^0.3.2"
+Jinja2 = "^2.11.3"
+slugify = "^0.0.1"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.782"
