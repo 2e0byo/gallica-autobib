@@ -1,14 +1,3 @@
-"""
-Extract image from pdf without resampling.
-
-Modified from
-
-https://github.com/mstamy2/PyPDF2/blob/master/Scripts/pdf-image-extractor.py
-
-itself modified from
-
-https://stackoverflow.com/questions/2693820/extract-images-from-pdf-without-resampling-in-python
-"""
 from PyPDF4.pdf import PageObject
 from PyPDF4 import PdfFileReader, PdfFileWriter
 from PIL import Image, ImageOps, ImageChops
@@ -26,6 +15,14 @@ class ExtractionError(Exception):
 
 
 def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
+    """
+    Extract image from pdf without resampling.
+
+    Modified from
+    https://github.com/mstamy2/PyPDF2/blob/master/Scripts/pdf-image-extractor.py
+    itself modified from
+    https://stackoverflow.com/questions/2693820/extract-images-from-pdf-without-resampling-in-python
+    """
     if "/XObject" in page["/Resources"]:
         xObject = page["/Resources"]["/XObject"].getObject()
 
