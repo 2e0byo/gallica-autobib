@@ -16,6 +16,53 @@ record_types = {
     # "Collection:", ["rec", "col", "ens"]
 }
 
+VALID_QUERIES = (
+    "anywhere",
+    "author",
+    "title",
+    "subject",
+    "doctype",
+    "recordtype",
+    "status",
+    "recordid",
+    "persistentid",
+    "ean",
+    "isbn",
+    "issn",
+    "ismn",
+    "isrc",
+    "comref",
+    "otherid",
+    "abstract",
+    "authorRole",
+    "cote",
+    "date",
+    "dewey",
+    "digitized",
+    "FrenchNationalBibliography",
+    "fuzzyIsbn",
+    "isni",
+    "language",
+    "LegalDepositType",
+    "LegalDepositDate",
+    "local",
+    "publicationdate",
+    "publicationplace",
+    "publisher",
+    "serialtitle",
+    "set",
+    "technicaldata",
+    "unimarc:doctype",
+    "col2bib",
+    "ens2bib",
+    "rec2bib",
+    "author2bib",
+    "subject2bib",
+    "work2bib",
+    "creationdate",
+    "lastmodificationdate",
+)
+
 
 class BibBase(BaseModel):
     """Properties shared with all kinds of bibliographic items."""
@@ -42,7 +89,7 @@ class BibBase(BaseModel):
         data = source.translate()
         data["recordtype"] = record_types[type(source).__name__]
 
-        data = {f"bib.{k}": v for k, v in data.items() if v}
+        data = {f"bib.{k}": v for k, v in data.items() if v and k in VALID_QUERIES}
 
         return self.assemble_query(**data)
 
