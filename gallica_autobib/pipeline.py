@@ -52,7 +52,7 @@ class InputParser:
     @property
     def progress(self):
         """Progress in matching or failing."""
-        return len(self._done) / self.len_records
+        return len(self.results) / self.len_records
 
     def read(self, stream: Union[TextIO, str]) -> None:
         """Read input data."""
