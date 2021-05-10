@@ -103,7 +103,7 @@ def test_crop_pdf_no_preserve(file_regression):
     with TemporaryDirectory() as tmpdir:
         crop_pdf(inf, Path("test1.pdf"))
         with Path("test1.pdf").open("rb") as f:
-            file_regression.check(f.read())
+            file_regression.check(f.read(), extension=".pdf", binary=True)
 
 
 def test_crop_pdf_preserve(file_regression):

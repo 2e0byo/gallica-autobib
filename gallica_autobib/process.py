@@ -217,7 +217,7 @@ def crop_pdf(
     else:
         imgs = []
         for i, page in enumerate(reader.pages):
-            img = extract_image(page)
+            img, _ = extract_image(page)
             bbox = get_crop_bounds(img)
             img = img.crop(bbox)
             imgs.append(filter_algorithm_brute_force(img))
