@@ -171,3 +171,58 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     #     return _results(res.lh_page, res.crop, (left + res.crop, lower, right, upper))
     # else:
     #     return _results(res.lh_page, res.crop, (left, lower, right - res.crop, upper))
+
+
+def crop_pdf(
+    pdf: Path, outf: Path = None, preserve_text: bool = False, equal_size: bool = False
+) -> Path:
+    """Crop a pdf.
+
+    Note that currently preserve_text implies not editing the image, and
+    equal_size is unimplemented.
+
+    Args:
+      pdf: Path: The pdf file to crop.
+      outf: Path: The output path. Default is to calculate.
+      preserve_text: bool: Preserve OCRd text.  (Default value = False)
+      equal_size: Make all pages equal sized.  (Default value = False)
+
+    Returns:
+      A Path() object pointing to the cropped pdf.
+
+    """
+    if equal_size:
+        raise NotImplementedError("Equal sizes not yet implemented.")
+
+    reader = PdfFileReader(str(pdf))
+
+    if not outf:
+        outf = pdf.with_stem(f"cropped-{pdf.stem}")
+        i = 0
+        while outf.exists():
+            outf = outf.with_stem(f"{outf.stem-{i}}")
+            i += 1
+
+    if preserve_text:
+        writer = PdfFileWriter()
+        for page in reader.pages:
+            img, _ = extract_image(page)
+            bbox = get_crop_bounds(img)
+            scale = page.mediaBox.getWidth() / img.width
+            page.cropBox.lowerLeft = (bbox[0] * scale, bbox[1] * scale)
+            page.cropBox.upperRight = (bbox[2] * scale, bbox[3] * scale)
+            writer.addPage(page)
+        with outf.open("wb") as f:
+            writer.write(f)
+    else:
+        imgs = []
+        for i, page in enumerate(reader.pages):
+            img = extract_image(page)
+            bbox = get_crop_bounds(img)
+            img = img.crop(bbox)
+            imgs.append(filter_algorithm_brute_force(img))
+        imgs[0].save(
+            str(outf), "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
+        )
+
+    return outf
