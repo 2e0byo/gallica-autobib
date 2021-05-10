@@ -1,6 +1,6 @@
 Status Report
 -------------
-{% for i, record in obj.records %}
+{% for record in obj.records %}
   =={{record.author}} {{ record.title }}==
 
   {{ obj.raw[loop.index0] }}
