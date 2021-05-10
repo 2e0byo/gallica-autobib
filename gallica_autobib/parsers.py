@@ -54,12 +54,12 @@ def parse_bibtex(
     for line in rawlines:
         if line.startswith("@"):
             if entry:
-                raw.append([line for line in entry if line.strip()])
+                raw.append("\n".join(line for line in entry if line.strip()))
                 entry = []
         else:
             entry.append(line)
 
-    raw.append([line for line in entry if line.strip()])
+    raw.append("\n".join(line for line in entry if line.strip()))
 
     return parsed, raw
 
@@ -96,12 +96,12 @@ def parse_ris(
     for line in rawlines:
         if not line.strip():
             if entry:
-                raw.append(entry)
+                raw.append("\n".join(entry))
                 entry = []
         else:
             entry.append(line)
 
     if entry:
-        raw.append(entry)
+        raw.append("\n".join(entry))
 
     return parsed, raw
