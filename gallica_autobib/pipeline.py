@@ -48,6 +48,7 @@ class InputParser:
         self._outfs = []
         self.outdir = outdir
         self.clean = clean
+        self.results = []
 
     @property
     def progress(self):
@@ -84,10 +85,7 @@ class InputParser:
             ]
             with typer.progressbar(pool.imap(self.process_record, tasks)) as progress:
                 for res in progress:
-                    results.append(res)
-
-            # self.results = [x.get() for x in results]
-            self.results = results
+                    self.results.append(res)
 
         return self.output_template.render(obj=self)
 
