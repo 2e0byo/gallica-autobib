@@ -36,8 +36,11 @@ def test_bib_article():
         language="french",
         volume=24,
     )
-    assert parse_bibtex(bib)[0] == art
-    assert parse_bibtex(StringIO(bib))[0] == art
+    objs, raw = parse_bibtex(bib)
+    assert objs[0] == art
+    assert len(objs) == len(raw)
+    assert raw[0] == [x for x in bib.split("\n") if x.strip()]
+    assert parse_bibtex(StringIO(bib))[0][0] == art
 
 
 def test_bib_article_one_page():
@@ -60,7 +63,7 @@ def test_bib_article_one_page():
         language="french",
         volume=24,
     )
-    assert parse_bibtex(bib)[0] == art
+    assert parse_bibtex(bib)[0][0] == art
 
 
 def test_bib_article_roman():
@@ -83,7 +86,7 @@ def test_bib_article_roman():
         language="french",
         volume=24,
     )
-    assert parse_bibtex(bib)[0] == art
+    assert parse_bibtex(bib)[0][0] == art
 
 
 def test_bib_inbook():
@@ -132,8 +135,11 @@ ER  -
         publisher="Vita e Pensiero – Pubblicazioni dell’Università Cattolica del Sacro Cuore",
         number=4,
     )
-    assert parse_ris(ris)[0] == art
-    assert parse_ris(StringIO(ris))[0] == art
+    objs, raw = parse_ris(ris)
+    assert objs[0] == art
+    assert len(objs) == len(raw)
+    assert raw[0] == [x for x in ris.split("\n") if x.strip()]
+    assert parse_ris(StringIO(ris))[0][0] == art
 
 
 def test_ris_other():

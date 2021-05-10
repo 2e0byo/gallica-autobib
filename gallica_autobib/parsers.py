@@ -2,7 +2,7 @@
 import bibtexparser
 import rispy
 from .models import Article, Book, Collection
-from typing import Union, List, TextIO
+from typing import Union, List, TextIO, Tuple
 from roman import fromRoman, toRoman
 
 
@@ -10,12 +10,17 @@ class ParsingError(Exception):
     pass
 
 
-def parse_bibtex(bibtex: Union[str, TextIO]) -> List[Union[Article, Book, Collection]]:
+def parse_bibtex(
+    bibtex: Union[str, TextIO]
+) -> Tuple[List[Union[Article, Book, Collection]], List[str]]:
     try:
         db = bibtexparser.load(bibtex)
+        bibtex.seek(0)
+        rawlines = (x.strip("\n") for x in bibtex.readlines())
     except Exception:
         try:
             db = bibtexparser.loads(bibtex)
+            rawlines = bibtex.split("\n")
         except Exception:
             raise ParsingError("Unable to parse")
     parsed = []
@@ -43,15 +48,33 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> List[Union[Article, Book, Collec
             parsed.append(mapping[type_].parse_obj(record))
         else:
             raise ParsingError("Unsupported type")
-    return parsed
+
+    raw = []
+    entry = []
+    for line in rawlines:
+        if line.startswith("@"):
+            if entry:
+                raw.append([line for line in entry if line.strip()])
+                entry = []
+        else:
+            entry.append(line)
+
+    raw.append([line for line in entry if line.strip()])
+
+    return parsed, raw
 
 
-def parse_ris(ris: Union[str, TextIO]) -> List[Union[Article, Book, Collection]]:
+def parse_ris(
+    ris: Union[str, TextIO]
+) -> Tuple[List[Union[Article, Book, Collection]], List]:
     try:
         db = rispy.load(ris)
+        ris.seek(0)
+        rawlines = [x.strip("\n") for x in ris.readlines()]
     except Exception:
         try:
             db = rispy.loads(ris)
+            rawlines = ris.split("\n")
         except Exception:
             raise ParsingError("Unable to parse")
     parsed = []
@@ -68,4 +91,17 @@ def parse_ris(ris: Union[str, TextIO]) -> List[Union[Article, Book, Collection]]
         else:
             raise ParsingError("Unsupported type")
 
-    return parsed
+    raw = []
+    entry = []
+    for line in rawlines:
+        if not line.strip():
+            if entry:
+                raw.append(entry)
+                entry = []
+        else:
+            entry.append(line)
+
+    if entry:
+        raw.append(entry)
+
+    return parsed, raw
