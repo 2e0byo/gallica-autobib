@@ -6,7 +6,7 @@ from gallica_autobib.process import (
     deanomalise,
     detect_spine,
     prepare_img,
-    crop_pdf,
+    process_pdf,
 )
 import pytest
 from PyPDF4 import PdfFileReader
@@ -98,17 +98,17 @@ def test_filter_brute_force(inf, image_regression):
             image_regression.check(f.read())
 
 
-def test_crop_pdf_no_preserve(file_regression):
+def test_process_pdf_no_preserve(file_regression):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     with TemporaryDirectory() as tmpdir:
-        crop_pdf(inf, Path("test1.pdf"))
+        process_pdf(inf, Path("test1.pdf"))
         with Path("test1.pdf").open("rb") as f:
             file_regression.check(f.read(), extension=".pdf", binary=True)
 
 
-def test_crop_pdf_preserve(file_regression):
+def test_process_pdf_preserve(file_regression):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     with TemporaryDirectory() as tmpdir:
-        crop_pdf(inf, Path("test1.pdf"), True)
+        process_pdf(inf, Path("test1.pdf"), True)
         with Path("test1.pdf").open("rb") as f:
             file_regression.check(f.read(), extension=".pdf", binary=True)

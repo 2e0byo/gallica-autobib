@@ -1,3 +1,4 @@
+"""Fns to process.  These are wrapped in a class in pipeline, which is probably what you want."""
 from PyPDF4.pdf import PageObject
 from PyPDF4 import PdfFileReader, PdfFileWriter
 from PIL import Image, ImageOps, ImageChops
@@ -170,10 +171,10 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     #     return _results(res.lh_page, res.crop, (left, lower, right - res.crop, upper))
 
 
-def crop_pdf(
+def process_pdf(
     pdf: Path, outf: Path = None, preserve_text: bool = False, equal_size: bool = False
 ) -> Path:
-    """Crop a pdf.
+    """Process a pdf.
 
     Note that currently preserve_text implies not editing the image, and
     equal_size is unimplemented.
