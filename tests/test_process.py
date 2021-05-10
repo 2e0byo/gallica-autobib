@@ -6,6 +6,7 @@ from gallica_autobib.process import (
     deanomalise,
     detect_spine,
     prepare_img,
+    crop_pdf,
 )
 import pytest
 from PyPDF4 import PdfFileReader
@@ -29,6 +30,7 @@ test_image_pdf = [
     ImgTest(Path("tests/test_process/test5.pdf"), "png"),
     ImgTest(Path("tests/test_process/test2.pdf"), "jpg"),
     ImgTest(Path("tests/test_process/test3.pdf"), "jp2"),
+    ImgTest(Path("tests/test_gallica_resource/test_download_pdf.pdf"), "jpg"),
     # ImgTest(Path("tests/test_process/test4.pdf"), "tiff"),
 ]
 
@@ -79,6 +81,9 @@ def test_crop_bounds_rh():
 filter_tests = [
     "tests/test_process/rh.jpg",
     "tests/test_process/lh.jpg",
+    "tests/test_process/aug-000.jpg",
+    "tests/test_process/aug-001.jpg",
+    "tests/test_process/aug-002.jpg",
 ]
 
 
@@ -91,3 +96,19 @@ def test_filter_brute_force(inf, image_regression):
         img.save(f"{tmpdir}/test.jpg")
         with Path(f"{tmpdir}/test.jpg").open("rb") as f:
             image_regression.check(f.read())
+
+
+def test_crop_pdf_no_preserve(file_regression):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+    with TemporaryDirectory() as tmpdir:
+        crop_pdf(inf, Path("test1.pdf"))
+        with Path("test1.pdf").open("rb") as f:
+            file_regression.check(f.read())
+
+
+def test_crop_pdf_preserve(file_regression):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+    with TemporaryDirectory() as tmpdir:
+        crop_pdf(inf, Path("test1.pdf"), True)
+        with Path("test1.pdf").open("rb") as f:
+            file_regression.check(f.read(), extension=".pdf", binary=True)
