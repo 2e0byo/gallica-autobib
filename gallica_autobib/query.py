@@ -56,12 +56,15 @@ class Match(Representation):
                     / 100
                 )
             if isinstance(v, int):
+                if not candidate_v:
+                    vals[k] = 0.5
+                    continue
                 if isinstance(candidate_v, int):
                     vals[k] = 1 if candidate_v == v else 0
                 elif isinstance(candidate_v, list):
                     vals[k] = 1 if v in candidate_v else 0
                 else:
-                    raise NotImplementedError
+                    raise NotImplementedError(v, candidate_v)
 
             if isinstance(v, list):
                 if isinstance(candidate_v, list):
