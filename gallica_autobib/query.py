@@ -328,9 +328,8 @@ class GallicaResource(Representation):
                 partials.append(fn)
             self._merge_partials(path, partials)
         finally:
-            print(partials)
-            # for fn in partials:
-            #     fn.unlink()
+            for fn in partials:
+                fn.unlink()
         assert partials
 
     @staticmethod
