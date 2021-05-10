@@ -1,0 +1,13 @@
+* Status
+ {% for record in obj.records %}
+** {{record.author}} {{record.title}}
+
+   #+BEGIN_SRC bibtex
+   {{ obj.raw[loop.index0] }}
+   #+END_SRC
+
+   {% if obj.results[loop.index0] %}
+     [[{{ obj.results[loop.index0] }}][Processed Pdf]] {% if not obj.clean %}[[{{ obj.outfs[loop.index0] }}][Original Pdf]]{% endif %}
+   {% endif %}
+
+ {% endfor %}
