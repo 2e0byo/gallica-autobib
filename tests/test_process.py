@@ -1,4 +1,5 @@
 from gallica_autobib.process import (
+    generate_filename,
     filter_algorithm_brute_force,
     extract_image,
     ExtractionError,
@@ -12,7 +13,6 @@ import pytest
 from PyPDF4 import PdfFileReader
 from pathlib import Path
 from collections import namedtuple
-from tempfile import TemporaryDirectory
 from devtools import debug
 from PIL import Image, ImageOps
 from diff_pdf_visually import pdfdiff
@@ -41,17 +41,16 @@ test_image_pdf = [
 
 
 @pytest.mark.parametrize("img_test", test_image_pdf)
-def test_extract_image(img_test, image_regression):
+def test_extract_image(img_test, image_regression, tmp_path):
     with img_test.testfile.open("rb") as f:
         reader = PdfFileReader(f)
         page1 = reader.getPage(0)
         img, type_ = extract_image(page1)
         assert type_ == img_test.type
-    with TemporaryDirectory() as tmpdir:
-        outf = Path(f"{tmpdir}/test.{type_}")
-        img.save(str(outf))
-        with outf.open("rb") as f:
-            image_regression.check(f.read())
+    outf = tmp_path / f"test.{type_}"
+    img.save(str(outf))
+    with outf.open("rb") as f:
+        image_regression.check(f.read())
 
 
 def test_deanomalise():
@@ -94,29 +93,42 @@ filter_tests = [
 
 
 @pytest.mark.parametrize("inf", filter_tests)
-def test_filter_brute_force(inf, image_regression):
+def test_filter_brute_force(inf, image_regression, tmp_path):
     img = Image.open(inf)
     img = img.crop(get_crop_bounds(img))
     img = filter_algorithm_brute_force(img)
-    with TemporaryDirectory() as tmpdir:
-        img.save(f"{tmpdir}/test.jpg")
-        with Path(f"{tmpdir}/test.jpg").open("rb") as f:
-            image_regression.check(f.read())
+
+    img.save(f"{tmp_path}/test.jpg")
+    with (tmp_path / f"test.jpg").open("rb") as f:
+        image_regression.check(f.read())
 
 
-def test_process_pdf_no_preserve(file_regression):
+def test_process_pdf_no_preserve(file_regression, tmp_path):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    with TemporaryDirectory() as tmpdir:
-        process_pdf(inf, Path("test1.pdf"))
-        with Path("test1.pdf").open("rb") as f:
-            file_regression.check(f.read(), extension=".pdf", binary=True)
+    process_pdf(inf, tmp_path / "test1.pdf")
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
 
 
-def test_process_pdf_preserve(file_regression):
+def test_process_pdf_preserve(file_regression, tmp_path):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    with TemporaryDirectory() as tmpdir:
-        process_pdf(inf, Path("test1.pdf"), True)
-        with Path("test1.pdf").open("rb") as f:
-            file_regression.check(
-                f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
-            )
+    process_pdf(inf, tmp_path / "test1.pdf", preserve_text=True)
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+
+
+def test_generate_filename(tmp_path):
+    start = tmp_path / "test-1.txt"
+    outf = generate_filename(start)
+    with outf.open("w") as f:
+        f.write("-")
+    outf = generate_filename(start)
+    assert outf == tmp_path / "test-1-0.txt"
+    with outf.open("w") as f:
+        f.write("!-")
+    outf = generate_filename(start)
+    assert outf == tmp_path / "test-1-1.txt"
