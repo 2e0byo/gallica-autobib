@@ -10,10 +10,10 @@ test_bibliographies_bibtex = [
       journaltitle = {La Vie spirituelle},
       year =      1930,
       language =  {french},
+      volume = 24,
       pages =     {135-57}}
 """
 ]
-# volume =    24,
 
 ids = ["pour-lire-augustin"]
 
