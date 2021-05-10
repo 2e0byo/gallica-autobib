@@ -192,6 +192,14 @@ python-versions = ">=3.6"
 pygments = ["Pygments (>=2.2.0)"]
 
 [[package]]
+name = "diff-pdf-visually"
+version = "1.6.2"
+description = ""
+category = "dev"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "distlib"
 version = "0.3.1"
 description = "Distribution utilities"
@@ -1220,7 +1228,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=1.2.3)", "pytest-flake8", "pyt
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7"
-content-hash = "5058ad9b315a6ff9b9cac88fde40d6708facac94ec81a6a49a91e01efbf124a4"
+content-hash = "9827eff127ed85b58be22b47fb93ee724bbc6035b5cd6d1e97f129de48cd5b26"
 
 [metadata.files]
 appdirs = [
@@ -1342,6 +1350,10 @@ defusedxml = [
 devtools = [
     {file = "devtools-0.6.1-py3-none-any.whl", hash = "sha256:7334183972a8d04e81d08b7f62126abca9b6f4de51d825c5fdcb9c88f252601a"},
     {file = "devtools-0.6.1.tar.gz", hash = "sha256:a054307594d35d28fae8df7629967363e851ae0ac7b2152640a8a401c39d42d7"},
+]
+diff-pdf-visually = [
+    {file = "diff-pdf-visually-1.6.2.tar.gz", hash = "sha256:0532b76177045160bae21832c6e91fe7de5cd4a297e8df5b78921bd80eca0493"},
+    {file = "diff_pdf_visually-1.6.2-py3-none-any.whl", hash = "sha256:9d6f1fba8cfc2e4dce9e7c933cad4fcc76cbe3cf4c08f087f12239609843ede5"},
 ]
 distlib = [
     {file = "distlib-0.3.1-py2.py3-none-any.whl", hash = "sha256:8c09de2c67b3e7deef7184574fc060ab8a793e7adbb183d942c389c8b13c52fb"},

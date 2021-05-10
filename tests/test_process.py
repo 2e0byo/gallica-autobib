@@ -15,6 +15,11 @@ from collections import namedtuple
 from tempfile import TemporaryDirectory
 from devtools import debug
 from PIL import Image, ImageOps
+from diff_pdf_visually import pdfdiff
+
+
+def check_pdfs(a, b):
+    assert pdfdiff(a, b), f"Pdf files {a} and {b} differ"
 
 
 def test_extract_no_image():
@@ -112,4 +117,6 @@ def test_process_pdf_preserve(file_regression):
     with TemporaryDirectory() as tmpdir:
         process_pdf(inf, Path("test1.pdf"), True)
         with Path("test1.pdf").open("rb") as f:
-            file_regression.check(f.read(), extension=".pdf", binary=True)
+            file_regression.check(
+                f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+            )
