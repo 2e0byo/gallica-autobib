@@ -72,9 +72,9 @@ def filter_point(point: int) -> int:
 
     """
     if point < 160:
-        return point / 1.2
+        return round(point / 1.2)
     else:
-        return point * 2
+        return round(point * 2)
 
 
 _results = namedtuple("results", ("lh_page", "crop", "bbox"))
