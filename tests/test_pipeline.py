@@ -23,12 +23,75 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path)
     parser.read(bibtex)
     status = parser.run()
-    print(status)
-    from devtools import debug
-
-    debug(parser.results)
     with parser.results[0].open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
         )
+
+
+report_types = ["output.txt", "output.org"]
+
+
+@pytest.mark.parametrize("template", report_types)
+def test_templates(template, file_regression, tmp_path):
+    parser = BibtexParser(tmp_path, output_template=template)
+    parser.read(test_bibliographies_bibtex[0])
+    report = parser.run()
+    file_regression.check(report)
+
+
+test_bibliographies_ris = [
+    [
+        """
+TY  - JOUR
+TI  - Une opinion inconnue de l'école de Gilbert de la Porrée
+AU  - Chenu, M-D
+JO  - Revue d'Histoire Ecclésiastique
+VL  - 26
+IS  - 2
+SP  - 347
+EP  - 353
+SN  - 0035-2381
+PY  - 1930
+PB  - Université catholique de Louvain.
+ER  -
+    """,
+        False,
+    ],
+    [
+        """
+TY  - JOUR
+TI  - La surnaturalisation des vertus
+AU  - Jean Daniélou
+T2  - Bulletin Thomiste
+PY  - 1932
+SP  - 93
+EP  - 96
+ER  -
+""",
+        False,
+    ],
+]
+
+ris_ids = ["inconnue", "surnaturalisation"]
+
+
+from devtools import debug
+
+
+@pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
+def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
+    parser = RisParser(tmp_path)
+    parser.read(ris)
+    debug(parser.records)
+    report = parser.run()
+    if status:
+        assert "Output:" in report
+        with parser.results[0].open("rb") as f:
+            file_regression.check(
+                f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+            )
+    else:
+        assert "Failed to match :(" in report
+
     # TODO: regression check more than one file
