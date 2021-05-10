@@ -10,6 +10,7 @@ import typer
 from jinja2 import Environment, PackageLoader, select_autoescape
 from collections import namedtuple
 from slugify import slugify
+from urllib.error import URLError
 
 env = Environment(
     loader=PackageLoader("gallica_autobib", "templates"),
@@ -103,7 +104,10 @@ class InputParser:
         if not match:
             return None
         match = GallicaResource(args.record, match.candidate)
-        match.download_pdf(args.outf, **args.download_args)
+        try:
+            match.download_pdf(args.outf, **args.download_args)
+        except URLError:
+            return None
         if args.process:
             outf = process.process_pdf(args.outf, **args.process_args)
         if args.clean:
