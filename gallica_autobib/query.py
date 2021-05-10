@@ -6,7 +6,7 @@ from functools import total_ordering
 from re import search
 from traceback import print_exception
 from typing import Any, List, Literal, Optional, Union
-from PyPDF2 import PdfFileReader, PdfFileMerger, PdfFileWriter, PageRange
+from PyPDF4 import PdfFileReader, PdfFileMerger, PdfFileWriter, PageRange
 
 import sruthi
 from fuzzywuzzy import fuzz
