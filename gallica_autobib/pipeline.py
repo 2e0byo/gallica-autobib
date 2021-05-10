@@ -16,13 +16,13 @@ env = Environment(
     autoescape=select_autoescape(["html", "xml"]),
 )
 
+_ProcessArgs = namedtuple(
+    "_ProcessArgs", ["record", "process_args", "download_args", "outf", "process"]
+)
+
 
 class InputParser:
     """Class to parse input.  This base class should be subclassed."""
-
-    _ProcessArgs = namedtuple(
-        "_ProcessArgs", ["record", "process_args", "download_args", "outf", "process"]
-    )
 
     def __init__(
         self,
