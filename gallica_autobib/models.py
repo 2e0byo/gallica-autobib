@@ -41,7 +41,6 @@ class BibBase(BaseModel):
         source = self._source()
         data = source.translate()
         data["recordtype"] = record_types[type(source).__name__]
-        print(data)
 
         data = {f"bib.{k}": v for k, v in data.items() if v}
 

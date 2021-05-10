@@ -9,6 +9,7 @@ from collections import namedtuple
 from pathlib import Path
 from tempfile import TemporaryDirectory
 from io import BytesIO
+from re import sub
 
 
 class ExtractionError(Exception):
@@ -171,6 +172,17 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     #     return _results(res.lh_page, res.crop, (left, lower, right - res.crop, upper))
 
 
+def generate_filename(candidate: Path) -> Path:
+    """Generate a filename which doesn't exist on the disk.  This is not atomic."""
+    orig = candidate
+    i = 0
+    while candidate.exists():
+        stem = orig.stem
+        candidate = orig.with_stem(f"{stem}-{i}")
+        i += 1
+    return candidate
+
+
 def process_pdf(
     pdf: Path, outf: Path = None, preserve_text: bool = False, equal_size: bool = False
 ) -> Path:
@@ -195,11 +207,7 @@ def process_pdf(
     reader = PdfFileReader(str(pdf))
 
     if not outf:
-        outf = pdf.with_stem(f"processed-{pdf.stem}")
-        i = 0
-        while outf.exists():
-            outf = outf.with_stem(f"{outf.stem}-{i}")
-            i += 1
+        outf = generate_filename(pdf.with_stem(f"processed-{pdf.stem}"))
 
     if preserve_text:
         writer = PdfFileWriter()

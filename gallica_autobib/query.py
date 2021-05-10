@@ -144,7 +144,6 @@ class Query(GallicaSRU, Representation):
 
         matches = []
         for i, resp in enumerate(resps[:give_up]):
-            print(resp)
             candidate = self.resp_to_obj(resp)
             match = Match(self.target, candidate)
             matches.append(match)
@@ -314,7 +313,6 @@ class GallicaResource(Representation):
     def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> None:
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
-        print("here")
         try:
             for i, (start, length) in enumerate(
                 self._generate_blocks(self.start_p, self.end_p, blocksize)

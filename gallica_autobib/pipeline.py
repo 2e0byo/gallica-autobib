@@ -17,7 +17,8 @@ env = Environment(
 )
 
 _ProcessArgs = namedtuple(
-    "_ProcessArgs", ["record", "process_args", "download_args", "outf", "process"]
+    "_ProcessArgs",
+    ["record", "process_args", "download_args", "outf", "process", "clean"],
 )
 
 
@@ -31,6 +32,7 @@ class InputParser:
         process_args: dict = None,
         download_args: dict = None,
         process: bool = True,
+        clean: bool = True,
     ):
         self.records = []
         self.raw = []
@@ -45,6 +47,7 @@ class InputParser:
         self.download_args = download_args if download_args else {}
         self._outfs = []
         self.outdir = outdir
+        self.clean = clean
 
     @property
     def progress(self):
@@ -75,6 +78,7 @@ class InputParser:
                     self.download_args,
                     self.generate_outf(record),
                     self.process,
+                    self.clean,
                 )
                 for record in self.records
             ]
@@ -103,8 +107,10 @@ class InputParser:
         match = GallicaResource(args.record, match.candidate)
         match.download_pdf(args.outf, **args.download_args)
         if args.process:
-            process.process_pdf(args.outf, **args.process_args)
-        return args.outf
+            outf = process.process_pdf(args.outf, **args.process_args)
+        if args.clean:
+            args.outf.unlink()
+        return outf
 
 
 class BibtexParser(InputParser):
