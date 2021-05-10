@@ -39,7 +39,7 @@ def test_bib_article():
     objs, raw = parse_bibtex(bib)
     assert objs[0] == art
     assert len(objs) == len(raw)
-    assert raw[0] == [x for x in bib.split("\n") if x.strip()]
+    assert raw[0] == "\n".join([x for x in bib.split("\n") if x.strip()])
     assert parse_bibtex(StringIO(bib))[0][0] == art
 
 
@@ -138,7 +138,7 @@ ER  -
     objs, raw = parse_ris(ris)
     assert objs[0] == art
     assert len(objs) == len(raw)
-    assert raw[0] == [x for x in ris.split("\n") if x.strip()]
+    assert raw[0] == "\n".join([x for x in ris.split("\n") if x.strip()])
     assert parse_ris(StringIO(ris))[0][0] == art
 
 
