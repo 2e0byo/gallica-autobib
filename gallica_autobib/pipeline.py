@@ -40,7 +40,7 @@ class InputParser:
         self.results = None
         self.process = process
         if output_template:
-            self.output_template = output_template
+            self.output_template = env.get_template(output_template)
         else:
             self.output_template = env.get_template("output.txt")
         self.process_args = process_args if process_args else {}
