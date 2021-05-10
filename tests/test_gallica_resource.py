@@ -4,7 +4,6 @@ from devtools import debug
 from gallica_autobib.gallipy import Resource
 from gallica_autobib.models import Article, Journal
 from gallica_autobib.query import GallicaResource
-from tempfile import TemporaryDirectory
 
 
 @pytest.fixture
@@ -80,16 +79,15 @@ def test_pnos(gallica_resource):
     assert 163 == gallica_resource.end_p
 
 
-def test_extract(gallica_resource, file_regression):
+def test_extract(gallica_resource, file_regression, tmp_path):
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
-    with TemporaryDirectory() as tmpdir:
-        outf = Path(f"{tmpdir}/test.pdf")
-        either = gallica_resource.extract()
-        assert not either.is_left
-        with outf.open("wb") as f:
-            f.write(either.value)
-        saved = Path("tests/test_gallica_resource/test_extract.pdf")
-        assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
+    outf = tmp_path / "test.pdf"
+    either = gallica_resource.extract()
+    assert not either.is_left
+    with outf.open("wb") as f:
+        f.write(either.value)
+    saved = Path("tests/test_gallica_resource/test_extract.pdf")
+    assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
 
 
 def test_generate_blocks(gallica_resource):
@@ -103,7 +101,7 @@ def test_generate_short_block(gallica_resource):
     assert res == expected
 
 
-def test_download_pdf(gallica_resource, file_regression):
+def test_download_pdf(gallica_resource, file_regression, tmp_path):
     """Test for rough size.
 
     We don't use a test against the file itself as it's binary and is generate
@@ -112,9 +110,7 @@ def test_download_pdf(gallica_resource, file_regression):
     """
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
 
-    # use a dir so we can operate on it later
-    with TemporaryDirectory() as tmpdir:
-        outf = Path(f"{tmpdir}/test.pdf")
-        gallica_resource.download_pdf(outf)
-        saved = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-        assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
+    outf = tmp_path / "test.pdf"
+    gallica_resource.download_pdf(outf)
+    saved = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+    assert abs(saved.stat().st_size - outf.stat().st_size) < 1024

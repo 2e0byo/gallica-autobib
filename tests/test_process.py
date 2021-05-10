@@ -15,11 +15,6 @@ from pathlib import Path
 from collections import namedtuple
 from devtools import debug
 from PIL import Image, ImageOps
-from diff_pdf_visually import pdfdiff
-
-
-def check_pdfs(a, b):
-    assert pdfdiff(a, b), f"Pdf files {a} and {b} differ"
 
 
 def test_extract_no_image():
@@ -103,7 +98,7 @@ def test_filter_brute_force(inf, image_regression, tmp_path):
         image_regression.check(f.read())
 
 
-def test_process_pdf_no_preserve(file_regression, tmp_path):
+def test_process_pdf_no_preserve(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     process_pdf(inf, tmp_path / "test1.pdf")
     with (tmp_path / "test1.pdf").open("rb") as f:
@@ -112,7 +107,7 @@ def test_process_pdf_no_preserve(file_regression, tmp_path):
         )
 
 
-def test_process_pdf_preserve(file_regression, tmp_path):
+def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     process_pdf(inf, tmp_path / "test1.pdf", preserve_text=True)
     with (tmp_path / "test1.pdf").open("rb") as f:
