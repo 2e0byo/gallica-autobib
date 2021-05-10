@@ -1,5 +1,5 @@
-Status Report
--------------
+                                 Status Report
+                                 -------------
 {% for record in obj.records %}
   =={{record.author}} {{ record.title }}==
 
