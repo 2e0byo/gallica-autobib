@@ -311,9 +311,13 @@ class GallicaResource(Representation):
             self._end_p = int(self.get_physical_pno(self.target.pages[-1]))
         return self._end_p
 
-    def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> None:
+    def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> bool:
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
+
+        debug(path, path.exists())
+        if path.exists():
+            return True
         try:
             for i, (start, length) in enumerate(
                 self._generate_blocks(self.start_p, self.end_p, blocksize)

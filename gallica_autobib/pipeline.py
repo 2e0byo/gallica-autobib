@@ -7,7 +7,13 @@ from typing import TextIO, Union, Optional
 from . import process
 from multiprocessing import Pool, Queue
 import typer
-from jinja2 import Environment, PackageLoader, select_autoescape
+from jinja2 import (
+    Environment,
+    PackageLoader,
+    select_autoescape,
+    Template,
+    FileSystemLoader,
+)
 from collections import namedtuple
 from slugify import slugify
 from urllib.error import URLError
@@ -29,7 +35,7 @@ class InputParser:
     def __init__(
         self,
         outdir: Path,
-        output_template=None,
+        output_template: Union[str, Path] = None,
         process_args: dict = None,
         download_args: dict = None,
         process: bool = True,
@@ -40,16 +46,26 @@ class InputParser:
         self.len_records = 0
         self.results = None
         self.process = process
-        if output_template:
-            self.output_template = env.get_template(output_template)
-        else:
-            self.output_template = env.get_template("output.txt")
         self.process_args = process_args if process_args else {}
         self.download_args = download_args if download_args else {}
         self._outfs = []
         self.outdir = outdir
         self.clean = clean
         self.results = []
+        self.output_template = output_template
+
+    @property
+    def output_template(self):
+        return self._output_template
+
+    @output_template.setter
+    def output_template(self, output_template: Union[str, Path] = None):
+        if isinstance(output_template, str):
+            self._output_template = env.get_template(output_template)
+        elif isinstance(output_template, Path):
+            self._output_template = Template(output_template.open().read())
+        else:
+            self._output_template = env.get_template("output.txt")
 
     @property
     def progress(self):
@@ -108,8 +124,12 @@ class InputParser:
         match = GallicaResource(args.record, match.candidate)
         try:
             match.download_pdf(args.outf, **args.download_args)
-        except URLError:
-            return None
+        except URLError as e:
+
+            from traceback import print_exc
+            from devtools import debug
+
+            return False
         if args.process:
             outf = process.process_pdf(args.outf, **args.process_args)
             if args.clean:

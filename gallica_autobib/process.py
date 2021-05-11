@@ -184,7 +184,11 @@ def generate_filename(candidate: Path) -> Path:
 
 
 def process_pdf(
-    pdf: Path, outf: Path = None, preserve_text: bool = False, equal_size: bool = False
+    pdf: Path,
+    outf: Path = None,
+    preserve_text: bool = False,
+    equal_size: bool = False,
+    skip_existing=False,
 ) -> Path:
     """Process a pdf.
 
@@ -196,6 +200,7 @@ def process_pdf(
       outf: Path: The output path. Default is to calculate.
       preserve_text: bool: Preserve OCRd text.  (Default value = False)
       equal_size: Make all pages equal sized.  (Default value = False)
+      skip_existing: Whether to skip existing files.  (Default value = False)
 
     Returns:
       A Path() object pointing to the cropped pdf.
@@ -204,10 +209,16 @@ def process_pdf(
     if equal_size:
         raise NotImplementedError("Equal sizes not yet implemented.")
 
-    reader = PdfFileReader(str(pdf))
-
     if not outf:
-        outf = generate_filename(pdf.with_stem(f"processed-{pdf.stem}"))
+        if skip_existing:
+            outf = pdf.with_stem(f"processed-{pdf.stem}")
+        else:
+            outf = generate_filename(
+                pdf.with_stem(f"processed-{pdf.stem}"), skip_existing
+            )
+    if outf.exists():
+        return outf
+    reader = PdfFileReader(str(pdf))
 
     if preserve_text:
         writer = PdfFileWriter()
