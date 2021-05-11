@@ -112,9 +112,11 @@ class InputParser:
             return None
         if args.process:
             outf = process.process_pdf(args.outf, **args.process_args)
-        if args.clean:
-            args.outf.unlink()
-        return outf
+            if args.clean:
+                args.outf.unlink()
+            return outf
+        else:
+            return args.outf
 
 
 class BibtexParser(InputParser):
