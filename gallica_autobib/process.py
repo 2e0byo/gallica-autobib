@@ -212,9 +212,7 @@ def process_pdf(
         if skip_existing:
             outf = pdf.with_stem(f"processed-{pdf.stem}")
         else:
-            outf = generate_filename(
-                pdf.with_stem(f"processed-{pdf.stem}"), skip_existing
-            )
+            outf = generate_filename(pdf.with_stem(f"processed-{pdf.stem}"))
     if outf.exists():
         return outf
     reader = PdfFileReader(str(pdf))
