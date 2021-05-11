@@ -79,17 +79,6 @@ def test_pnos(gallica_resource):
     assert 163 == gallica_resource.end_p
 
 
-def test_extract(gallica_resource, file_regression, tmp_path):
-    gallica_resource.target.pages = gallica_resource.target.pages[:3]
-    outf = tmp_path / "test.pdf"
-    either = gallica_resource.extract()
-    assert not either.is_left
-    with outf.open("wb") as f:
-        f.write(either.value)
-    saved = Path("tests/test_gallica_resource/test_extract.pdf")
-    assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
-
-
 def test_generate_blocks(gallica_resource):
     expected = [(0, 5), (5, 5), (10, 5), (15, 5), (20, 1)]
     res = list(gallica_resource._generate_blocks(0, 20, 5))
