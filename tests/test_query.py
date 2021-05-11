@@ -1,6 +1,6 @@
 import pytest
 from gallica_autobib.models import Article, Book, Journal
-from gallica_autobib.query import Match, Query, make_string_boring
+from gallica_autobib.query import Match, Query, make_string_boring, GallicaSRU
 
 strings = [["asciitest", "asciitest"], [None, None]]
 
@@ -105,3 +105,10 @@ def test_get_at_str(query):
         "ISSN 09882480",
     ]
     assert query.get_at_str(l) == "http://catalogue.bnf.fr/ark:/12148/cb34406663m"
+
+
+def test_gallica_sru():
+    g = GallicaSRU()
+    from devtools import debug
+
+    assert [k for k, v in g.__repr_args__()] == ["client"]
