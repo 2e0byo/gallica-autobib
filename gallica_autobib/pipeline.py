@@ -65,7 +65,9 @@ class InputParser:
         i = 0
         while outf in self._outfs:
             i += 1
-            outf = self.outdir / slugify(f"{result.author} {result.title} {i}.pdf")
+            outf = self.outdir / (
+                slugify(f"{result.author} {result.title} {i}") + ".pdf"
+            )
         self._outfs.append(outf)
         return outf
 
