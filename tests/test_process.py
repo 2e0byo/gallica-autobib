@@ -141,3 +141,9 @@ def test_generate_filename(tmp_path):
         f.write("!-")
     outf = generate_filename(start)
     assert outf == tmp_path / "test-1-1.txt"
+    start = tmp_path / "augustin.pdf"
+    outf = generate_filename(start)
+    with outf.open("w") as f:
+        f.write("=")
+    outf = generate_filename(start)
+    assert outf == tmp_path / "augustin-0.pdf"
