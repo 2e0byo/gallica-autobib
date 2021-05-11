@@ -3,7 +3,7 @@
 ** {{record.author}} /{{record.title}}/
 
    #+BEGIN_SRC bibtex
-   {{ obj.raw[loop.index0] }}
+{{ obj.raw[loop.index0] }}
    #+END_SRC
 
    {% if obj.results[loop.index0] %}
