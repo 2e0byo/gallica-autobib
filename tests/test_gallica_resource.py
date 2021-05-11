@@ -90,16 +90,12 @@ def test_generate_short_block(gallica_resource):
     assert res == expected
 
 
-def test_download_pdf(gallica_resource, file_regression, tmp_path):
-    """Test for rough size.
-
-    We don't use a test against the file itself as it's binary and is generate
-    every time = changes.
-
-    """
+def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
 
     outf = tmp_path / "test.pdf"
     gallica_resource.download_pdf(outf)
-    saved = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    assert abs(saved.stat().st_size - outf.stat().st_size) < 1024
+    with outf.open("rb") as f:
+        file_regression.check(
+            f.read(), binary=True, extension=".pdf", check_fn=check_pdfs
+        )
