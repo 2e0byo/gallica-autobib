@@ -29,6 +29,7 @@ def parse_bibtex(
         roman = "i" in pages.lower()
         lower = "i" in pages
         try:
+            pages = pages.replace("--", "-")
             start, end = pages.split("-")
             startno = fromRoman(start.upper()) if roman else int(start)
             endno = fromRoman(end.upper()) if roman else int(end)

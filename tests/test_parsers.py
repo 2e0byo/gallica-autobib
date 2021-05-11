@@ -25,7 +25,7 @@ def test_bib_article():
       year =      1930,
       language =  {french},
       volume =    24,
-      pages =     {135-57}}
+      pages =     {135--57}}
     """
     art = Article(
         journaltitle="La Vie spirituelle",
