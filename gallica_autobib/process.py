@@ -132,8 +132,9 @@ def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
         return _results(False, crop, (0, 0, img.width - crop, img.height))
 
 
-def prepare_img(img: Image.Image, threshold=80) -> Image.Image:
+def prepare_img(img: Image.Image, threshold=60) -> Image.Image:
     img = ImageOps.grayscale(img)
+    img = ImageOps.autocontrast(img)
     return img.point(lambda p: p > threshold and 255)
 
 
