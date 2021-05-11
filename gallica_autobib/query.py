@@ -192,7 +192,9 @@ class GallicaResource(Representation):
         self.series_ark = a.value
         self._ark = None
         self._resource = None  # so we can pass resource around
-        self.logger = logging.getLogger(type(self).__name__)  # maybe more precise.
+        self.logger = logging.getLogger(
+            f"Resource {target.title[:6]}({target.author[:6]})"
+        )
         self._start_p = None
         self._end_p = None
         self._pages = None
@@ -202,6 +204,9 @@ class GallicaResource(Representation):
         """Ark for the final target."""
         if not self._ark:
             if isinstance(self.source, Journal):
+                import devtools
+
+                devtools.debug("Getting right issue")
                 self.get_issue()
             else:
                 self._ark = self.series_ark
@@ -242,6 +247,7 @@ class GallicaResource(Representation):
 
     def get_issue(self):
         """Get the right issue."""
+        self.logger.debug("Getting right issue.")
         issues = Resource(self.series_ark).issues_sync(
             self.target._source().publicationdate
         )
