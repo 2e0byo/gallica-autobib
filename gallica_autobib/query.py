@@ -1,4 +1,5 @@
 import io
+
 import logging
 import unicodedata
 from functools import total_ordering
@@ -7,12 +8,14 @@ from re import search
 from time import sleep
 from traceback import print_exception
 from typing import Any, List, Literal, Optional, Union
+import imghdr
 
 import sruthi
 from fuzzywuzzy import fuzz
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger, PdfFileReader, PdfFileWriter
 from sruthi.response import SearchRetrieveResponse
+from requests_downloader import downloader
 
 from .gallipy import Ark, Resource
 from .gallipy.monadic import Either
@@ -315,12 +318,14 @@ class GallicaResource(Representation):
             for i, (start, length) in enumerate(
                 self._generate_blocks(self.start_p, self.end_p, blocksize)
             ):
-                either = self._fetch_block(start, length, trials)
-                if either.is_left:
-                    raise Exception("Failed to download.")
-                reader = PdfFileReader(io.BytesIO(either.value))
+
                 fn = path.with_suffix(f".pdf.{i}")
-                self._save_partial(reader, fn)
+                status = self._fetch_block(start, length, trials, fn)
+                if not status:
+                    raise Exception("Failed to download.")
+                with fn.open("rb") as f:
+                    with Path("/tmp/test.pdf").open("wb") as o:
+                        o.write(f.read())
                 partials.append(fn)
             self._merge_partials(path, partials)
         finally:
@@ -342,28 +347,29 @@ class GallicaResource(Representation):
         merger = PdfFileMerger()
         for i, fn in enumerate(partials):
             args = {"pages": PageRange("2:")}  # if i else {}
-            # with partial.open("rb") as f:
             merger.append(str(fn.resolve()), **args)
         with path.open("wb") as f:
             merger.write(f)
 
-    # TODO add downloader using requests_downloder here.  Requires getting the url
-
-    @staticmethod
-    def _save_partial(reader: PdfFileReader, path: Path) -> None:
-        with path.open("wb+") as f:
-            writer = PdfFileWriter()
-            writer.appendPagesFromReader(reader)
-            writer.write(f)
-
-    def _fetch_block(self, startview: int, nviews: int, trials: int) -> Either:
-        """Fetch block.  This fn is recursive."""
-        either = self.resource.content_sync(startview=startview, nviews=nviews)
-        if either.is_left:
-            if trials > 1:
-                sleep(1)
-                return self._fetch_block(startview, nviews, trials - 1)
-        return either
+    def _fetch_block(self, startview: int, nviews: int, trials: int, fn: Path) -> bool:
+        """Fetch block."""
+        url = self.resource.content_sync(
+            startview=startview, nviews=nviews, url_only=True
+        )
+        for i in range(trials):
+            status = downloader.download(
+                url,
+                download_file=str(fn.resolve()),
+                timeout=120,
+            )
+            if status:
+                if imghdr.what(fn):
+                    print("We got ratelimited, sleeping for 5 minutes.")
+                    sleep(60 * 5)
+                else:
+                    return True
+            sleep(2 ** (i + 1))
+        return status
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()
