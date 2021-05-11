@@ -23,19 +23,34 @@ ids = ["pour-lire-augustin"]
 def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path)
     parser.read(bibtex)
+    assert parser.progress == 0
     status = parser.run()
+    assert parser.progress == 1
     with parser.results[0].open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
         )
+    assert str(parser.generate_outf(parser.records[0])) == str(
+        parser._outfs[0]
+    ).replace(".pdf", "-1.pdf")
 
 
 report_types = ["output.txt", "output.org"]
 
 
+@pytest.fixture
+def fixed_tmp_path():
+    path = Path("/tmp/pytest-template-tmpdir/")
+    if path.exists():
+        raise Exception("tmpdir exists")
+    path.mkdir()
+    yield path
+    shutil.rmtree(path)
+
+
 @pytest.mark.parametrize("template", report_types)
-def test_templates(template, file_regression, tmp_path):
-    parser = BibtexParser(tmp_path, output_template=template)
+def test_templates(template, file_regression, fixed_tmp_path):
+    parser = BibtexParser(fixed_tmp_path, output_template=template)
     parser.read(test_bibliographies_bibtex[0])
     report = parser.run()
     file_regression.check(report)
