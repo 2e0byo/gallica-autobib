@@ -308,12 +308,6 @@ class GallicaResource(Representation):
             self._end_p = int(self.get_physical_pno(self.target.pages[-1]))
         return self._end_p
 
-    def extract(self):
-        self.pdf = self.resource.content_sync(
-            startview=self.start_p, nviews=self.end_p - self.start_p + 1
-        )
-        return self.pdf
-
     def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> None:
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
