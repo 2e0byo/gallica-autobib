@@ -84,6 +84,8 @@ filter_tests = [
     "tests/test_process/aug-001.jpg",
     "tests/test_process/aug-002.jpg",
     "tests/test_process/aug-020.jpg",
+    "tests/test_process/ascese-000.jpg",
+    "tests/test_process/ascese-001.jpg",
 ]
 
 

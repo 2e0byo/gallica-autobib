@@ -103,7 +103,8 @@ def deanomalise(data: list) -> int:
 
 
 def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
-    threshold = 50
+    logger.debug("Detecting spine")
+    threshold = 40
     midpoint = round(img.height / 2)
     lower = midpoint - 20
     upper = midpoint + 20
@@ -131,7 +132,7 @@ def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
         return _results(False, crop, (0, 0, img.width - crop, img.height))
 
 
-def prepare_img(img: Image.Image, threshold=60) -> Image.Image:
+def prepare_img(img: Image.Image, threshold=80) -> Image.Image:
     img = ImageOps.grayscale(img)
     return img.point(lambda p: p > threshold and 255)
 
@@ -156,16 +157,28 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     """
 
     img = prepare_img(img)
+    # res = detect_spine(img)
+    # logger.debug(res.lh_page)
+    # crop out corner errors
+    x = 40
+    img = img.crop((x, x, img.width - x, img.height - x))
+    # ImageShow.show(img)
+    # input("continue? ")
 
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
     diff = ImageChops.difference(img, bg)
-    left, lower, right, upper = diff.getbbox()
-    left -= 10
-    lower -= 10
-    right += 10
-    upper += 10
-    return (left, lower, right, upper)
+
+    tst = img.crop(diff.getbbox())
+    # ImageShow.show(tst)
+    # input("continue?")
+
+    left, upper, right, lower = diff.getbbox()
+    left += x - 10
+    upper += x - 10
+    right += x + 10
+    lower += x + 10
+    return (left, upper, right, lower)
 
 
 def generate_filename(candidate: Path) -> Path:
