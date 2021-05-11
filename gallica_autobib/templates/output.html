@@ -1,0 +1,15 @@
+<h1>Gallica autobib</h1>
+{% for record in obj.records %}
+  <h2> {{ record.author }} {{record.title }} </h2>
+  <pre>
+    <code>
+      {{ obj.raw[loop.index0] }}
+    </code>
+  </pre>
+
+  {% if obj.results[loop.index0] %}
+    <a href="pdfs/{{obj.results[loop.index0].name}}">Processed Pdf</a>
+  {% else %}
+    Unable to download pdf :(
+  {% endif %}
+{% endfor %}
