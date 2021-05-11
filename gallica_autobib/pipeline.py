@@ -17,6 +17,9 @@ from jinja2 import (
 from collections import namedtuple
 from slugify import slugify
 from urllib.error import URLError
+import logging
+
+logger = logging.getLogger(__name__)
 
 env = Environment(
     loader=PackageLoader("gallica_autobib", "templates"),
@@ -89,6 +92,7 @@ class InputParser:
 
     def run(self, processes=6) -> str:
 
+        logger.debug("Generating tasks.")
         with Pool(processes=processes) as pool:
             results = []
             tasks = [
@@ -120,15 +124,20 @@ class InputParser:
         query = Query(args.record)
         match = query.run()
         if not match:
+            logger.info(f"No match found for {args.record.author} {args.record.title}")
             return None
         match = GallicaResource(args.record, match.candidate)
         try:
+            logger.debug("Starting download.")
             match.download_pdf(args.outf, **args.download_args)
         except URLError as e:
+            logger.info("Failed to download.")
             return False
         if args.process:
+            logger.debug("Processing...")
             outf = process.process_pdf(args.outf, **args.process_args)
             if args.clean:
+                logger.debug("Deleting original file.")
                 args.outf.unlink()
             return outf
         else:

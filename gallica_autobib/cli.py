@@ -1,12 +1,16 @@
 import typer
 from .pipeline import BibtexParser, RisParser
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class AutoBibError(Exception):
     pass
 
 
+log_level = [logging.NOTSET, logging.ERROR, logging.DEBUG]
 app = typer.Typer()
 
 
@@ -19,6 +23,7 @@ def process_bibliograpy(
     processes: int = 6,
     clean: bool = True,
     template: Path = None,
+    verbosity: int = 1,
 ):
     """
     Process a bibliography file.
@@ -37,6 +42,7 @@ def process_bibliograpy(
     """
     process_args = {"preserve_text": preserve_text}
     download_args = {}
+    logging.basicConfig(level=log_level[verbosity])
 
     args = dict(
         outdir=outdir,
@@ -47,8 +53,10 @@ def process_bibliograpy(
         output_template=template,
     )
     if bibfile.suffix == ".bib":
+        logger.debug("Detected bibtex.")
         parser = BibtexParser(**args)
     elif bibfile.suffix == ".ris":
+        logger.debug("Detected ris.")
         parser = RisParser(**args)
     else:
         raise AutoBibError("Input is not bibtex or ris.")
