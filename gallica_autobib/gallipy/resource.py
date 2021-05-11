@@ -290,7 +290,7 @@ class Resource:
         url = h.build_service_url(urlparts, service_name="Toc")
         return h.fetch_xml_html(url, "html.parser", self.timeout)
 
-    def content_sync(self, startview=1, nviews=None, mode="pdf"):
+    def content_sync(self, startview=1, nviews=None, mode="pdf", url_only=False):
         """Retrieves the content of a document.
 
         Wraps Document API method 'Texte Brut' and 'PDF'.
@@ -322,12 +322,14 @@ class Resource:
         arkstr = pattern.format(self.ark.root, startview, _nviews, mode)
         urlparts = {"path": arkstr}
         url = h.build_base_url(urlparts)
-        print(url)
-        return (
-            h.fetch(url, self.timeout)
-            if mode == "pdf"
-            else h.fetch_xml_html(url, "html.parser", self.timeout)
-        )
+        if url_only:
+            return url
+        else:
+            return (
+                h.fetch(url, self.timeout)
+                if mode == "pdf"
+                else h.fetch_xml_html(url, "html.parser", self.timeout)
+            )
 
     def ocr_data_sync(self, view):
         """Retrieves the OCR data from a ocrized document.
