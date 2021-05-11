@@ -1,5 +1,8 @@
 import pytest
+import logging
 from diff_pdf_visually import pdfdiff
+
+logging.basicConfig(level=logging.DEBUG)
 
 
 @pytest.fixture
