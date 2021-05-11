@@ -4,7 +4,6 @@ from PyPDF4 import PdfFileReader, PdfFileWriter
 from PIL import Image, ImageOps, ImageChops
 from typing import Tuple, Any
 import numpy as np
-from devtools import debug
 from collections import namedtuple
 from pathlib import Path
 from tempfile import TemporaryDirectory

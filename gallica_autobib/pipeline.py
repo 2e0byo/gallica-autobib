@@ -125,10 +125,6 @@ class InputParser:
         try:
             match.download_pdf(args.outf, **args.download_args)
         except URLError as e:
-
-            from traceback import print_exc
-            from devtools import debug
-
             return False
         if args.process:
             outf = process.process_pdf(args.outf, **args.process_args)

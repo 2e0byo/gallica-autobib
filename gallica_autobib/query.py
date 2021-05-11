@@ -315,7 +315,6 @@ class GallicaResource(Representation):
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
 
-        debug(path, path.exists())
         if path.exists():
             return True
         try:
