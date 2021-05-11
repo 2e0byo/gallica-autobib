@@ -1,9 +1,14 @@
 """Parsers for input data in various formats."""
-import bibtexparser
 import rispy
 from .models import Article, Book, Collection
 from typing import Union, List, TextIO, Tuple
 from roman import fromRoman, toRoman
+import bibtexparser
+from bibtexparser.bparser import BibTexParser
+from bibtexparser.customization import convert_to_unicode
+
+parser = BibTexParser()
+parser.customization = convert_to_unicode
 
 
 class ParsingError(Exception):
@@ -14,18 +19,21 @@ def parse_bibtex(
     bibtex: Union[str, TextIO]
 ) -> Tuple[List[Union[Article, Book, Collection]], List[str]]:
     try:
-        db = bibtexparser.load(bibtex)
+        db = bibtexparser.load(bibtex, parser=parser)
         bibtex.seek(0)
         rawlines = (x.strip("\n") for x in bibtex.readlines())
     except Exception:
         try:
-            db = bibtexparser.loads(bibtex)
+            db = bibtexparser.loads(bibtex, parser=parser)
             rawlines = bibtex.split("\n")
         except Exception:
             raise ParsingError("Unable to parse")
     parsed = []
     for record in db.entries:
         pages = record["pages"]
+        if isinstance(pages, list):
+            continue
+
         roman = "i" in pages.lower()
         lower = "i" in pages
         try:
