@@ -35,7 +35,7 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     ).replace(".pdf", "-1.pdf")
 
 
-def test_bibtex_parser_single_thread(file_regression, tmp_path, check_pdfs):
+def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path)
     parser.read(test_bibliographies_bibtex[0])
     args = _ProcessArgs(
@@ -47,6 +47,48 @@ def test_bibtex_parser_single_thread(file_regression, tmp_path, check_pdfs):
         parser.clean,
     )
     outf = parser.process_record(args)
+    assert not args.outf.exists()
+    with outf.open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+
+
+def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_pdfs):
+    parser = BibtexParser(tmp_path)
+    parser.read(test_bibliographies_bibtex[0])
+    parser.clean = False
+    args = _ProcessArgs(
+        parser.records[0],
+        parser.process_args,
+        parser.download_args,
+        parser.generate_outf(parser.records[0]),
+        parser.process,
+        parser.clean,
+    )
+    outf = parser.process_record(args)
+    assert outf != args.outf
+    assert args.outf.exists()
+    with outf.open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+
+
+def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check_pdfs):
+    parser = BibtexParser(tmp_path)
+    parser.read(test_bibliographies_bibtex[0])
+    parser.process = False
+    args = _ProcessArgs(
+        parser.records[0],
+        parser.process_args,
+        parser.download_args,
+        parser.generate_outf(parser.records[0]),
+        parser.process,
+        parser.clean,
+    )
+    outf = parser.process_record(args)
+    assert outf == args.outf
     with outf.open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
