@@ -18,6 +18,7 @@ def process_bibliograpy(
     preserve_text: bool = False,
     processes: int = 6,
     clean: bool = True,
+        template: Path, = None
 ):
     """
     Process a bibliography file.
@@ -29,6 +30,7 @@ def process_bibliograpy(
       preserve_text: bool: Whether to preserve text in pdfs (implies only cropping them.)  (Default value = False)
       processes: int: Number of processes to run in parallel
       clean: bool: Remove original file if successful.
+      template: Path: Template to render output.
 
     Returns:
 
@@ -41,6 +43,7 @@ def process_bibliograpy(
         download_args=download_args,
         process=post_process,
         clean=clean,
+        template = template
     )
     if bibfile.suffix == ".bib":
         parser = BibtexParser(**args)
