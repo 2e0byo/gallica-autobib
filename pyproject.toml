@@ -27,7 +27,6 @@ scikit-image = "^0.18.1"
 typer = "^0.3.2"
 Jinja2 = "^2.11.3"
 python-slugify = "^5.0.2"
-pylatexenc = "^2.10"
 
 [tool.poetry.dev-dependencies]
 mypy = "^0.782"

@@ -17,9 +17,9 @@ def test_invalid_ris():
 
 
 def test_bib_article():
-    bib = """
+    bib = r"""
     @Article{danielou30:_pour_augus,
-      author =       {Jean Daniélou},
+      author =       {Jean Dani{\'e}lou},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
       year =      1930,
