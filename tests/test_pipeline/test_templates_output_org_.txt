@@ -1,6 +1,6 @@
 * Status
  
-** Jean Daniélou Pour lire saint Augustin
+** Jean Daniélou /Pour lire saint Augustin/
 
    #+BEGIN_SRC bibtex
        @Article{danielou30:_pour_augus,
