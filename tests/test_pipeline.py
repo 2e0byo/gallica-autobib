@@ -1,4 +1,4 @@
-from gallica_autobib.pipeline import BibtexParser, RisParser
+from gallica_autobib.pipeline import BibtexParser, RisParser, InputParser
 import pytest
 from pathlib import Path
 import shutil
@@ -110,4 +110,8 @@ def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
     else:
         assert "Failed to match :(" in report
 
-    # TODO: regression check more than one file
+
+def test_base_parser():
+    parser = InputParser(Path("."))
+    with pytest.raises(NotImplementedError):
+        parser.read("Inputstr")
