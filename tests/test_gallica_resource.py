@@ -4,6 +4,7 @@ from devtools import debug
 from gallica_autobib.gallipy import Resource
 from gallica_autobib.models import Article, Journal, Book, Collection
 from gallica_autobib.query import GallicaResource
+from gallica_autobib.gallipy.ark import ArkParsingError
 
 
 @pytest.fixture
@@ -117,3 +118,20 @@ def test_journal():
 def test_collection():
     coll = Collection(title="t", author="a")
     res = GallicaResource(coll, coll)
+
+
+def test_invalid_ark():
+    source = Journal(journaltitle="j", year="1930", ark="notavalidark")
+    target = Article(
+        journaltitle="La vie spirituelle",
+        pages=list(range(135, 158)),
+        title="Pour lire saint Augustin",
+        author="Daniélou",
+        year=1930,
+    )
+    with pytest.raises(ArkParsingError):
+        GallicaResource(target, source)
+
+
+def test_repr(gallica_resource, data_regression):
+    data_regression.check(str(gallica_resource))

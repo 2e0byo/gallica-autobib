@@ -223,9 +223,10 @@ class GallicaResource(Representation):
         no = int(no.group(1)) if no else None
         if self.target.volume and self.target.volume == vol:
             return True
-        if self.target.number and self.target.volume == no:
+        elif self.target.number and self.target.volume == no:
             return True
-        return False
+        else:
+            return False
 
     def check_page_range(self, issue):
         """Check to see if page range in given issue."""
@@ -376,7 +377,7 @@ class GallicaResource(Representation):
                 else:
                     return True
             sleep(2 ** (i + 1))
-        return status
+        return False
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()
