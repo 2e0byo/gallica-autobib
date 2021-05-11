@@ -18,7 +18,7 @@ def process_bibliograpy(
     preserve_text: bool = False,
     processes: int = 6,
     clean: bool = True,
-        template: Path, = None
+    template: Path = None,
 ):
     """
     Process a bibliography file.
@@ -37,17 +37,18 @@ def process_bibliograpy(
     """
     process_args = {"preserve_text": preserve_text}
     download_args = {}
+
     args = dict(
         outdir=outdir,
         process_args=process_args,
         download_args=download_args,
         process=post_process,
         clean=clean,
-        template = template
+        output_template=template,
     )
     if bibfile.suffix == ".bib":
         parser = BibtexParser(**args)
-    elif bibfile.suffix == ". w bbris":
+    elif bibfile.suffix == ".ris":
         parser = RisParser(**args)
     else:
         raise AutoBibError("Input is not bibtex or ris.")
