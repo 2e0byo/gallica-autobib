@@ -1,6 +1,6 @@
 <h1>Gallica autobib</h1>
 {% for record in obj.records %}
-  <h2> {{ record.author }} {{record.title }} </h2>
+<h2> {{ record.author }} <i>{{record.title }}</i> </h2>
   <pre>
     <code>
       {{ obj.raw[loop.index0] }}

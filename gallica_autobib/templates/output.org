@@ -1,6 +1,6 @@
 * Status
  {% for record in obj.records %}
-** {{record.author}} {{record.title}}
+** {{record.author}} /{{record.title}}/
 
    #+BEGIN_SRC bibtex
    {{ obj.raw[loop.index0] }}
