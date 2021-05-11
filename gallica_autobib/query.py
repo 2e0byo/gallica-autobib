@@ -175,10 +175,14 @@ class GallicaResource(Representation):
     BASE_TIMEOUT = 60
 
     def __init__(
-        self, target: Union[Article, Book, Collection, Journal], source: Journal
+        self,
+        target: Union[Article, Book, Collection, Journal],
+        source: Union[Journal, Book, Collection],
     ):
         if any(isinstance(target, x) for x in (Book, Collection, Journal)):
             raise NotImplementedError("We only handle article for now")
+        if any(isinstance(source, x) for x in (Book, Collection)):
+            raise NotImplementedError("We only handle fetching from journals")
 
         self.target = target
         self.source = source

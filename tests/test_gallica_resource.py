@@ -2,7 +2,7 @@ import pytest
 from pathlib import Path
 from devtools import debug
 from gallica_autobib.gallipy import Resource
-from gallica_autobib.models import Article, Journal
+from gallica_autobib.models import Article, Journal, Book, Collection
 from gallica_autobib.query import GallicaResource
 
 
@@ -99,3 +99,21 @@ def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
         file_regression.check(
             f.read(), binary=True, extension=".pdf", check_fn=check_pdfs
         )
+
+
+@pytest.mark.xfail
+def test_book():
+    book = Book(title="t", author="s", editor="e")
+    res = GallicaResource(book, book)
+
+
+@pytest.mark.xfail
+def test_journal():
+    journal = Journal(journaltitle="j", year="1930")
+    res = GallicaResource(journal, journal)
+
+
+@pytest.mark.xfail
+def test_collection():
+    coll = Collection(title="t", author="a")
+    res = GallicaResource(coll, coll)
