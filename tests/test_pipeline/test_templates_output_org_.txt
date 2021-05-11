@@ -14,7 +14,7 @@
    #+END_SRC
 
    
-     [[/tmp/pytest-of-john/pytest-220/test_templates_output_org_0/processed-jean-danielou-pour-lire-saint-augustin.pdf][Processed Pdf]] 
+     [[/tmp/pytest-template-tmpdir/processed-jean-danielou-pour-lire-saint-augustin.pdf][Processed Pdf]] 
    
 
  

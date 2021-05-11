@@ -13,7 +13,7 @@
       pages =     {135-57}}
 
   
-    Output:  /tmp/pytest-of-john/pytest-220/test_templates_output_txt_0/processed-jean-danielou-pour-lire-saint-augustin.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-jean-danielou-pour-lire-saint-augustin.pdf
     
   
 

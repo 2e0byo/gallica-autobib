@@ -1,6 +1,7 @@
 from gallica_autobib.pipeline import BibtexParser, RisParser
 import pytest
 from pathlib import Path
+import shutil
 
 test_bibliographies_bibtex = [
     """
