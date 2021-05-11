@@ -361,6 +361,7 @@ class GallicaResource(Representation):
         either = self.resource.content_sync(startview=startview, nviews=nviews)
         if either.is_left:
             if trials > 1:
+                sleep(1)
                 return self._fetch_block(startview, nviews, trials - 1)
         return either
 
