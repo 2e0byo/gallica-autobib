@@ -1,4 +1,4 @@
-from gallica_autobib.pipeline import BibtexParser, RisParser, InputParser
+from gallica_autobib.pipeline import BibtexParser, RisParser, InputParser, _ProcessArgs
 import pytest
 from pathlib import Path
 import shutil
@@ -33,6 +33,24 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     assert str(parser.generate_outf(parser.records[0])) == str(
         parser._outfs[0]
     ).replace(".pdf", "-1.pdf")
+
+
+def test_bibtex_parser_single_thread(file_regression, tmp_path, check_pdfs):
+    parser = BibtexParser(tmp_path)
+    parser.read(test_bibliographies_bibtex[0])
+    args = _ProcessArgs(
+        parser.records[0],
+        parser.process_args,
+        parser.download_args,
+        parser.generate_outf(parser.records[0]),
+        parser.process,
+        parser.clean,
+    )
+    outf = parser.process_record(args)
+    with outf.open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
 
 
 report_types = ["output.txt", "output.org"]
