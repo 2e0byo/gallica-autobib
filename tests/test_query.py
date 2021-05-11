@@ -55,6 +55,7 @@ def test_sort_match():
     m2 = Match(a, c)
     assert m1 == deepcopy(m1)
     assert m1 > m2
+    assert m2 < m1
 
 
 def test_missing_editor():
