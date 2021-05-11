@@ -152,9 +152,6 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     """
 
     img = prepare_img(img)
-    res = detect_spine(img)
-    res = _results(res[0], 0, res[2])
-    # img = img.crop(res.bbox)
 
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
@@ -165,10 +162,6 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     right += 10
     upper += 10
     return (left, lower, right, upper)
-    # if res.lh_page:
-    #     return _results(res.lh_page, res.crop, (left + res.crop, lower, right, upper))
-    # else:
-    #     return _results(res.lh_page, res.crop, (left, lower, right - res.crop, upper))
 
 
 def generate_filename(candidate: Path) -> Path:
