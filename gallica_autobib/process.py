@@ -9,6 +9,9 @@ from pathlib import Path
 from tempfile import TemporaryDirectory
 from io import BytesIO
 from re import sub
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class ExtractionError(Exception):
@@ -59,6 +62,7 @@ def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
                     data = Image.open(BytesIO(data))
         assert data
         assert type_
+        logger.debug(f"Extracted image of kind {type_}.")
         return data, type_
     else:
         raise ExtractionError("No image found.")
@@ -207,10 +211,12 @@ def process_pdf(
         else:
             outf = generate_filename(pdf.with_stem(f"processed-{pdf.stem}"))
     if outf.exists():
+        logger.info("Skipping already processed file.")
         return outf
     reader = PdfFileReader(str(pdf))
 
     if preserve_text:
+        logger.debug("Preserving text.")
         writer = PdfFileWriter()
         for page in reader.pages:
             img, _ = extract_image(page)
@@ -222,6 +228,7 @@ def process_pdf(
         with outf.open("wb") as f:
             writer.write(f)
     else:
+        logger.debug("Not preserving text.")
         imgs = []
         for i, page in enumerate(reader.pages):
             img, _ = extract_image(page)
@@ -232,4 +239,5 @@ def process_pdf(
             str(outf), "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
         )
 
+    logger.info(f"Finished processing {str(outf)}")
     return outf
