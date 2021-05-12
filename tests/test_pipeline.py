@@ -1,7 +1,6 @@
 from gallica_autobib.pipeline import BibtexParser, RisParser, InputParser, _ProcessArgs
 import pytest
 from pathlib import Path
-import shutil
 
 test_bibliographies_bibtex = [
     """
@@ -96,16 +95,6 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
 
 
 report_types = ["output.txt", "output.org", "output.html"]
-
-
-@pytest.fixture()
-def fixed_tmp_path():
-    path = Path("/tmp/pytest-template-tmpdir/")
-    if path.exists():
-        raise Exception("tmpdir exists")
-    path.mkdir()
-    yield path
-    shutil.rmtree(path)
 
 
 @pytest.fixture()

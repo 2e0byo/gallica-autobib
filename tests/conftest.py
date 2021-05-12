@@ -1,8 +1,10 @@
 import pytest
 import logging
 from diff_pdf_visually import pdfdiff
+from pathlib import Path
+import shutil
 
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.ERROR)
 
 
 @pytest.fixture
@@ -11,3 +13,13 @@ def check_pdfs():
         assert pdfdiff(a, b), f"Pdf files {a} and {b} differ"
 
     yield check
+
+
+@pytest.fixture()
+def fixed_tmp_path():
+    path = Path("/tmp/pytest-template-tmpdir/")
+    if path.exists():
+        raise Exception("tmpdir exists")
+    path.mkdir()
+    yield path
+    shutil.rmtree(path)
