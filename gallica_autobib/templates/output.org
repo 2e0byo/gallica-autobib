@@ -1,13 +1,13 @@
-* Status
+* [{{ obj.successful }}/{{ obj.total }}] Status
  {% for record in obj.records %}
-** {{record.author}} /{{record.title}}/
+** {% if obj.results[loop.index0] %} TODO {% else %} DONE {%endif %}{{record.author}}  /{{record.title}}/
 
    #+BEGIN_SRC bibtex
 {{ obj.raw[loop.index0] }}
    #+END_SRC
 
    {% if obj.results[loop.index0] %}
-     [[{{ obj.results[loop.index0] }}][Processed Pdf]] {% if not obj.clean %}[[{{ obj._outfs[loop.index0] }}][Original Pdf]]{% endif %}
+     [[{{ obj.results[loop.index0] }}][Processed Pdf]] {% if not obj.clean %}[[{{ obj._outfs[loop.index0] }}][Original Pdf]]{% endif %}  Confidence: {{ obj.scores[loop.index0] }}
    {% endif %}
 
  {% endfor %}
