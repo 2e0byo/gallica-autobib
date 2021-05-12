@@ -444,7 +444,7 @@ class GallicaResource(Representation):
                 matches += [Match(self.target, a) for a in articles]
 
             matches.sort(reverse=True)
-            if matches[0].score > 0.7:
+            if matches and matches[0].score > 0.7:
                 break
 
         return matches[:5]
