@@ -104,6 +104,7 @@ class Article(BibBase):
     editor: str = None
     number: int = None
     volume: int = None
+    physical_pages: List[int] = None
 
     def _source(self):
         return Journal.parse_obj(self.dict(by_alias=True))
