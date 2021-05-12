@@ -65,10 +65,6 @@ def gallica_resource():
     yield GallicaResource(target, source)
 
 
-def test_get_issue(gallica_resource):
-    assert gallica_resource.get_issue()
-
-
 def test_ark(gallica_resource):
     ark = gallica_resource.ark
     assert str(ark) == "ark:/12148/bpt6k9735634r"
