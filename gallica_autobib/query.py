@@ -217,15 +217,18 @@ class GallicaResource(Representation):
         self._start_p = None
         self._end_p = None
         self._pages = None
-        self.consider_volume_number = True
+        self.consider_toc = False
+        self.source_match = None
+        self.minimum_confidence = 0.5
 
     @property
     def ark(self):
         """Ark for the final target."""
         if not self._ark:
             if isinstance(self.source, Journal):
-                debug("Getting right issue")
-                self.get_issue()
+                self.logger.debug("No ark, Finding best match.")
+                self.source_match = self.get_best_article_match()
+                self._ark = self.source_match.candidate.ark
             else:
                 self._ark = self.series_ark
 
@@ -263,44 +266,34 @@ class GallicaResource(Representation):
         else:
             return False
 
-    def get_issue(self):
-        """Get the right issue."""
-        self.logger.debug("Getting right issue.")
+    def get_possible_issues(self) -> List[OrderedDict]:
+        """Get possible issues.
+
+        We go a year in each direction since sometimes collections of issues
+        are made for two years.
+        """
+        self.logger.debug("Getting possible issues.")
         source = self.target._source()
         issues = []
         start = source.publicationdate
         for year in range(start - 1, start + 2):
-            debug(year)
             issue = Resource(self.series_ark).issues_sync(year)
             if not issue.is_left:
                 issues.append(issue.value)
-                debug(len(issues))
             else:
                 debug(f"unable to fetch year {year}")
         if not issues:
             raise MatchingError("Failed to find any matching issues")
-        arks = []
-        debug(issues)
-        for issue in issues:
-            details = issue["issues"]["issue"]
-            if not isinstance(details, list):
-                details = [details]
-            for detail in details:
-                try:
-                    arks.append(Ark(naan=self.series_ark.naan, name=detail["@ark"]))
-                except Exception as e:
-                    debug(e, detail)
-        debug(set(str(a) for a in arks))
-        if self.consider_volume_number and (source.volume or source.number):
-            self.logger.debug("Trying to match by volume")
-            for ark in arks:
-                issue = Resource(ark)
-                if self.check_vol_num(issue):
-                    self._ark = ark
-                    return ark
-        self.logger.debug("Trying to match by page range.")
 
-        for ark in arks:
+        details = []
+        for year in issues:
+            detail = year["issues"]["issue"]
+            if isinstance(detail, list):
+                details += detail
+            else:
+                details.append(detail)
+        return details
+
     @classmethod
     def parse_description(cls, desc: str) -> dict:
         """Parse a dublincore description as retrieved from galllica."""
@@ -309,7 +302,7 @@ class GallicaResource(Representation):
             start, end = [cls.parse_description(x) for x in desc.split("-")]
             for k, v in start.items():
                 end_v = end[k]
-                if v == end_v:
+                if not end_v or v == end_v:
                     continue
                 else:
                     start[k] = list(range(v, end_v + 1))
@@ -340,10 +333,12 @@ class GallicaResource(Representation):
         """
         start_p = self.get_physical_pno(self.target.pages[0], pages)
         start_page = make_string_boring(self.fetch_text(journal, start_p))
+        if not start_page:
+            return False
 
         title = make_string_boring(self.target.title)
         author = make_string_boring(self.target.author)
-        debug(title, author)
+        debug(title, author, start_page)
         if not find_near_matches(title, start_page, max_l_dist=5):
             self.logger.debug("Failed to find title on page")
             return False
@@ -361,11 +356,118 @@ class GallicaResource(Representation):
             raise either.value
         soup = BeautifulSoup(either.value, "xml")
         return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
+
+    def toc_find_article_in_journal(
+        self, journal: Resource, toc: str, pages, data: dict
+    ) -> bool:
+        """Find article in journal using journal's toc.
+
+        This is preferable to relying on fuzzy matching ocr, but not all
+        journals have tocs.
+
+        Currently we build _all possible articles_ and return them all. This is
+        probably redundant, and we could adopt the strategy of
+        `ocr_find_article_in_journal` i.e. predict and see if the prediction
+        holds.
+
+        """
+        soup = BeautifulSoup(toc, "xml")
+        entries = [(x.xref.text, x.seg.text) for x in soup.find_all("item")]
+        entries.sort(key=lambda x: int(x[0]))
+        articles = []
+        debug(entries)
+        for i, x in enumerate(entries):
+            args = data.copy()
+            start_p, title = x
+            try:
+                author, title = search(r"(.+?)\.* - (.+)", title).groups()
+            except:
+                try:
+                    author, title = search(r"(.+?)\. (.+)", title).groups()
+                except:
+                    self.logger.debug(f"Unable to parse toc entry {x[1]}")
+                    author = ""
+
+            args["author"] = author.strip()
+            args["title"] = title.strip()
+            try:
+                end_p = int(entries[i + 1][0]) - 1
+            except IndexError:
+                end_p = self.get_last_pno(pages)
+            args["pages"] = list(range(int(start_p), int(end_p) + 1))
+            start_p = self.get_physical_pno(start_p, pages)
+            end_p = self.get_physical_pno((end_p), pages)
+            args["physical_pages"] = list(range(int(start_p), int(end_p) + 1))
+            articles.append(Article.parse_obj(args))
+
+        return articles
+
+    def get_article_candidates(self):
+        """Generate match objs for each article in the corresponding issues.
+
+        Returns:
+          A list of Match() objects in order of decreasing score.
+        """
+        self.logger.debug("Generating article candidates")
+        details = self.get_possible_issues()
+        matches = []
+        for detail in details:
+            data = {}
+            ark = Ark(naan=self.series_ark.naan, name=detail["@ark"])
             issue = Resource(ark)
-            if self.check_page_range(issue):
-                self._ark = ark
-                return ark
-        raise MatchingError("Failed to find matching issue")
+
+            either = issue.oairecord_sync()
+            if either.is_left:
+                raise either.value
+            oai = either.value
+            dublin = oai["results"]["notice"]["record"]["metadata"]["oai_dc:dc"]
+            description = dublin["dc:description"][1]
+            data.update(self.parse_description(description))
+            data["journaltitle"] = dublin["dc:title"]
+            data["publisher"] = dublin["dc:publisher"]
+            data["ark"] = dublin["dc:identifier"]
+
+            either = issue.pagination_sync()
+            if either.is_left:
+                raise either.value
+            pages = either.value
+
+            if not self.consider_toc or (either := issue.toc_sync()).is_left:
+                if self.ocr_find_article_in_journal(issue, pages):
+                    args = dict(self.target)
+                    args.update(data)
+                    matches.append(Match(self.target, Article.parse_obj(args)))
+            else:
+                articles = self.toc_find_article_in_journal(
+                    issue, either.value, pages, data
+                )
+                matches += [Match(self.target, a) for a in articles]
+
+            matches.sort(reverse=True)
+            if matches[0].score > 0.7:
+                break
+
+        return matches[:5]
+
+    def get_best_article_match(self) -> Optional[Match]:
+        """Get best available article match."""
+        matches = self.get_article_candidates()
+        for match in matches:
+            if match.score < self.minimum_confidence:
+                self.logger.debug(
+                    f"Match score {match.score} below"
+                    "minimum threshold {self.minimum_confidence}"
+                )
+                return None
+            res = Resource(match.candidate.ark)
+            either = res.content_sync(1, 1, "texteBrut")
+            if not either.is_left:
+                self._resource = res
+                return match
+            else:
+                self.logger.debug(f"Skipping unavailable match {match.candidate}")
+
+        return None
 
     @property
     def resource(self):
