@@ -30,6 +30,14 @@ from .gallipy.monadic import Either
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
 
+class MatchingError(Exception):
+    pass
+
+
+class DownloadError(Exception):
+    pass
+
+
 def make_string_boring(unicodestr: str) -> str:
     """Return unicode str as ascii for fuzzy matching."""
     if not unicodestr:
@@ -267,7 +275,7 @@ class GallicaResource(Representation):
             else:
                 debug(f"unable to fetch year {year}")
         if not issues:
-            raise Exception("Failed to find any matching issues")
+            raise MatchingError("Failed to find any matching issues")
         arks = []
         debug(issues)
         for issue in issues:
@@ -294,7 +302,7 @@ class GallicaResource(Representation):
             if self.check_page_range(issue):
                 self._ark = ark
                 return ark
-        raise Exception("Failed to find matching issue")
+        raise MatchingError("Failed to find matching issue")
 
     @property
     def resource(self):
@@ -361,7 +369,7 @@ class GallicaResource(Representation):
                 fn = path.with_suffix(f".pdf.{i}")
                 status = self._fetch_block(start, length, trials, fn)
                 if not status:
-                    raise Exception("Failed to download.")
+                    raise DownloadError("Failed to download.")
                 with fn.open("rb") as f:
                     with Path("/tmp/test.pdf").open("wb") as o:
                         o.write(f.read())
