@@ -23,7 +23,7 @@ def gallica_resource():
         journaltitle="La vie spirituelle",
         pages=list(range(135, 158)),
         title="Pour lire saint Augustin",
-        author="Daniélou",
+        author="M.-D. Chenu",
         year=1930,
     )
     source = Journal(
@@ -98,6 +98,7 @@ def test_generate_short_block(gallica_resource):
 
 
 def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
+    gallica_resource.ark  # trigger search before we edit pages
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
 
     outf = tmp_path / "test.pdf"
@@ -132,7 +133,7 @@ def test_invalid_ark():
         journaltitle="La vie spirituelle",
         pages=list(range(135, 158)),
         title="Pour lire saint Augustin",
-        author="Daniélou",
+        author="M.-D. Chenu",
         year=1930,
     )
     with pytest.raises(ArkParsingError):
@@ -147,7 +148,7 @@ candidates = [
     [
         Article(
             journaltitle="La Vie spirituelle",
-            author="Jean Daniélou",
+            author="M.-D. Chenu",
             pages=list(range(547, 552)),
             volume=7,
             year=1923,
