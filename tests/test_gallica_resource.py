@@ -3,7 +3,7 @@ from pathlib import Path
 from devtools import debug
 from gallica_autobib.gallipy import Resource
 from gallica_autobib.models import Article, Journal, Book, Collection
-from gallica_autobib.query import GallicaResource
+from gallica_autobib.query import GallicaResource, Query
 from gallica_autobib.gallipy.ark import ArkParsingError
 
 
@@ -135,3 +135,33 @@ def test_invalid_ark():
 
 def test_repr(gallica_resource, data_regression):
     data_regression.check(str(gallica_resource))
+
+
+candidates = [
+    [
+        Article(
+            journaltitle="La Vie spirituelle",
+            author="Jean Daniélou",
+            pages=list(range(547, 552)),
+            volume=7,
+            year=1923,
+            title="Ascèse et péché originel",
+        ),
+        dict(ark="ark:/12148/bpt6k97356214"),
+    ]
+]
+
+
+@pytest.mark.parametrize("candidate, params", candidates)
+def test_real_queries_volume_number(candidate, params):
+    source = Query(candidate).run().candidate
+    gallica_resource = GallicaResource(candidate, source)
+    assert str(gallica_resource.ark) == params["ark"]
+
+
+@pytest.mark.parametrize("candidate, params", candidates)
+def test_real_queries_no_volume_number(candidate, params):
+    source = Query(candidate).run().candidate
+    gallica_resource = GallicaResource(candidate, source)
+    gallica_resource.consider_volume_number = False
+    assert str(gallica_resource.ark) == params["ark"]
