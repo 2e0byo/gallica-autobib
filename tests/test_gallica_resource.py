@@ -165,3 +165,41 @@ def test_real_queries_no_volume_number(candidate, params):
     gallica_resource = GallicaResource(candidate, source)
     gallica_resource.consider_volume_number = False
     assert str(gallica_resource.ark) == params["ark"]
+
+
+def test_parse_description_range(gallica_resource):
+    desc = "1922/10 (A4,T7,N37)-1923/03 (A4,T7,N42)."
+    resp = gallica_resource.parse_description(desc)
+    assert resp["year"] == [1922, 1923]
+    assert resp["volume"] == 7
+    assert resp["number"] == list(range(37, 43))
+
+
+def test_parse_description_range_everywhere(gallica_resource):
+    desc = "1922/10 (A4,T7,N37)-1923/03 (A4,T8,N42)."
+    resp = gallica_resource.parse_description(desc)
+    assert resp["year"] == [1922, 1923]
+    assert resp["volume"] == [7, 8]
+    assert resp["number"] == list(range(37, 43))
+
+
+def test_parse_description(gallica_resource):
+    desc = "1922/10 (A4,T7,N37)."
+    resp = gallica_resource.parse_description(desc)
+    assert resp["year"] == 1922
+    assert resp["volume"] == 7
+    assert resp["number"] == 37
+
+
+def test_parse_no_description(gallica_resource):
+    desc = ""
+    resp = gallica_resource.parse_description(desc)
+    assert all(v is None for k, v in resp.items())
+
+
+def test_parse_partial_description(gallica_resource):
+    desc = "1922/10 (T7)."
+    resp = gallica_resource.parse_description(desc)
+    assert resp["year"] == 1922
+    assert resp["volume"] == 7
+    assert resp["number"] is None

@@ -298,6 +298,26 @@ class GallicaResource(Representation):
         self.logger.debug("Trying to match by page range.")
 
         for ark in arks:
+    @classmethod
+    def parse_description(cls, desc: str) -> dict:
+        """Parse a dublincore description as retrieved from galllica."""
+        resp = dict(year=None, volume=None, number=None)
+        if "-" in desc:
+            start, end = [cls.parse_description(x) for x in desc.split("-")]
+            for k, v in start.items():
+                end_v = end[k]
+                if v == end_v:
+                    continue
+                else:
+                    start[k] = list(range(v, end_v + 1))
+            return start
+        else:
+            resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)
+            resp["volume"] = search(r"T([0-9]+)", desc)
+            resp["number"] = search(r"N([0-9]+)", desc)
+            resp.update({k: int(v.group(1)) for k, v in resp.items() if v})
+            return resp
+
             issue = Resource(ark)
             if self.check_page_range(issue):
                 self._ark = ark
