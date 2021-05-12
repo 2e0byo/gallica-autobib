@@ -1,8 +1,10 @@
+from re import search
 import pickle
 import pytest
 from pathlib import Path
+from typing import Union
 from devtools import debug
-from gallica_autobib.gallipy import Resource
+from gallica_autobib.gallipy import Resource, Ark
 from gallica_autobib.models import Article, Journal, Book, Collection
 from gallica_autobib.query import GallicaResource, Query
 from gallica_autobib.gallipy.ark import ArkParsingError
@@ -160,19 +162,24 @@ candidates = [
 ]
 
 
-@pytest.mark.parametrize("candidate, params", candidates)
-def test_real_queries_volume_number(candidate, params):
-    source = Query(candidate).run().candidate
-    gallica_resource = GallicaResource(candidate, source)
-    assert str(gallica_resource.ark) == params["ark"]
+def get_ark(arkstr: Union[str, Ark]):
+    """Reliable way of matching arks."""
+    return search(r".*(ark:/.*)", str(arkstr)).group(1)
 
 
 @pytest.mark.parametrize("candidate, params", candidates)
-def test_real_queries_no_volume_number(candidate, params):
+def test_real_queries_no_toc(candidate, params):
     source = Query(candidate).run().candidate
     gallica_resource = GallicaResource(candidate, source)
-    gallica_resource.consider_volume_number = False
-    assert str(gallica_resource.ark) == params["ark"]
+    gallica_resource.consider_toc = False
+    assert get_ark(gallica_resource.ark) == get_ark(params["ark"])
+
+
+@pytest.mark.parametrize("candidate, params", candidates)
+def test_real_queries_toc(candidate, params):
+    source = Query(candidate).run().candidate
+    gallica_resource = GallicaResource(candidate, source)
+    assert get_ark(gallica_resource.ark) == get_ark(params["ark"])
 
 
 def test_parse_description_range(gallica_resource):
@@ -181,6 +188,14 @@ def test_parse_description_range(gallica_resource):
     assert resp["year"] == [1922, 1923]
     assert resp["volume"] == 7
     assert resp["number"] == list(range(37, 43))
+
+
+def test_parse_description_shorthand(gallica_resource):
+    desc = "1924/04 (A5,T10)-1924/09."
+    resp = gallica_resource.parse_description(desc)
+    assert resp["year"] == 1924
+    assert resp["volume"] == 10
+    assert resp["number"] is None
 
 
 def test_parse_description_range_everywhere(gallica_resource):
@@ -221,3 +236,19 @@ def test_physical_pno(gallica_resource, pages):
 def test_last_pno(gallica_resource, pages):
     resp = gallica_resource.get_last_pno(pages)
     assert resp == "676"
+
+
+def test_ocr_find_article_in_journal(gallica_resource):
+    ark = "ark:/12148/bpt6k9737289z"
+    target = Article(
+        title="La contemplation mystique requiert-elle des idées infuses ?",
+        journaltitle="La Vie spirituelle, ascétique et mystique (Supplément)",
+        year=1922,
+        pages=list(range(1, 22)),
+        author="Réginald Garrigou-Lagrange",
+    )
+    journal = Resource(ark)
+    pages = journal.pagination_sync().value
+    assert not gallica_resource.ocr_find_article_in_journal(journal, pages)
+    gallica_resource.target = target
+    assert gallica_resource.ocr_find_article_in_journal(journal, pages)
