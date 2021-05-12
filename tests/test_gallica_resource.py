@@ -1,3 +1,4 @@
+import pickle
 import pytest
 from pathlib import Path
 from devtools import debug
@@ -5,6 +6,13 @@ from gallica_autobib.gallipy import Resource
 from gallica_autobib.models import Article, Journal, Book, Collection
 from gallica_autobib.query import GallicaResource, Query
 from gallica_autobib.gallipy.ark import ArkParsingError
+
+
+@pytest.fixture(scope="session")
+def pages():
+    inf = Path("tests/test_gallica_resource/pages.pickle")
+    with inf.open("rb") as f:
+        yield pickle.load(f)
 
 
 @pytest.fixture
@@ -203,3 +211,13 @@ def test_parse_partial_description(gallica_resource):
     assert resp["year"] == 1922
     assert resp["volume"] == 7
     assert resp["number"] is None
+
+
+def test_physical_pno(gallica_resource, pages):
+    resp = gallica_resource.get_physical_pno("10", pages=pages)
+    assert resp == "16"
+
+
+def test_last_pno(gallica_resource, pages):
+    resp = gallica_resource.get_last_pno(pages)
+    assert resp == "676"

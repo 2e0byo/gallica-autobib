@@ -351,13 +351,23 @@ class GallicaResource(Representation):
             self._pages = either.value
         return self._pages
 
-    def get_physical_pno(self, logical_pno: str) -> int:
+    def get_physical_pno(self, logical_pno: str, pages=None) -> int:
         """Get the physical pno for a logical pno."""
-        pages = self.pages
+        if not pages:
+            pages = self.pages
         pnos = pages["livre"]["pages"]["page"]
         # sadly we have to do it ourselves
         for p in pnos:
             if p["numero"] == logical_pno:
+                break
+        return p["ordre"]
+
+    @staticmethod
+    def get_last_pno(pages) -> str:
+        """Get last page number of internal volume."""
+        pnos = pages["livre"]["pages"]["page"]
+        for p in reversed(pnos):
+            if p["pagination_type"] == "A":
                 break
         return p["ordre"]
 
