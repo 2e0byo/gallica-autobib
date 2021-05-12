@@ -1,0 +1,37 @@
+                                 Status Report
+                                 -------------
+
+  ==Jean Daniélou Ascèse et péché==
+
+@Article{danielou23:_asces,
+  author =       {Jean Daniélou},
+  title =        {Ascèse et péché},
+  journaltitle = {La Vie spirituelle},
+  year =      1923,
+  language =  {french},
+  volume =    7,
+  pages =     {547--51}}
+
+  
+    Output:  /tmp/pytest-of-john/pytest-1/test_app0/processed-jean-danielou-ascese-et-peche.pdf
+    
+  
+
+
+  ==Jean Daniélou Aux incroyants==
+
+@Article{danielou23:_aux,
+  author =       {Jean Daniélou},
+  title =        {Aux incroyants},
+  journaltitle = {La Vie spirituelle},
+  year =      1923,
+  language =  {french},
+  volume =    9,
+  pages =     {93--5}}
+
+  
+    Output:  /tmp/pytest-of-john/pytest-1/test_app0/processed-jean-danielou-aux-incroyants.pdf
+    
+  
+
+
