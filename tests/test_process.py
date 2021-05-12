@@ -31,6 +31,7 @@ test_image_pdf = [
     ImgTest(Path("tests/test_process/test2.pdf"), "jpg"),
     ImgTest(Path("tests/test_process/test3.pdf"), "jp2"),
     ImgTest(Path("tests/test_gallica_resource/test_download_pdf.pdf"), "jpg"),
+    ImgTest(Path("tests/test_process/tiff.pdf"), "tiff"),
     # ImgTest(Path("tests/test_process/test4.pdf"), "tiff"),
 ]
 
@@ -86,6 +87,8 @@ filter_tests = [
     "tests/test_process/aug-020.jpg",
     "tests/test_process/ascese-000.jpg",
     "tests/test_process/ascese-001.jpg",
+    "tests/test_process/rais-003.jpg",
+    "tests/test_process/rais-004.jpg",
 ]
 
 
