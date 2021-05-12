@@ -14,7 +14,7 @@ from functools import total_ordering
 from pathlib import Path
 from re import search
 from time import sleep
-from traceback import print_exception
+from traceback import print_exc
 from typing import Any, List, Literal, Optional, Union
 import imghdr
 
@@ -154,7 +154,7 @@ class Query(GallicaSRU, Representation):
         try:
             resps = self.fetcher.fetch_query(query)
         except Exception as e:
-            print_exception(e)
+            print_exc(e)
             return None
 
         matches = []
