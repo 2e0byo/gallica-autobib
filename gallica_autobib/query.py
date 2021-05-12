@@ -1,5 +1,13 @@
 import io
 
+try:
+    from devtools import debug
+except ImportError:
+
+    def debug(*args):
+        pass
+
+
 import logging
 import unicodedata
 from functools import total_ordering
@@ -198,15 +206,14 @@ class GallicaResource(Representation):
         self._start_p = None
         self._end_p = None
         self._pages = None
+        self.consider_volume_number = True
 
     @property
     def ark(self):
         """Ark for the final target."""
         if not self._ark:
             if isinstance(self.source, Journal):
-                import devtools
-
-                devtools.debug("Getting right issue")
+                debug("Getting right issue")
                 self.get_issue()
             else:
                 self._ark = self.series_ark
@@ -248,15 +255,32 @@ class GallicaResource(Representation):
     def get_issue(self):
         """Get the right issue."""
         self.logger.debug("Getting right issue.")
-        issues = Resource(self.series_ark).issues_sync(
-            self.target._source().publicationdate
-        )
+        source = self.target._source()
+        issues = []
+        start = source.publicationdate
+        for year in range(start - 1, start + 2):
+            debug(year)
+            issue = Resource(self.series_ark).issues_sync(year)
+            if not issue.is_left:
+                issues.append(issue.value)
+                debug(len(issues))
+            else:
+                debug(f"unable to fetch year {year}")
+        if not issues:
+            raise Exception("Failed to find any matching issues")
         arks = []
-        if issues.is_left:
-            raise issues.value
-        for detail in issues.value["issues"]["issue"]:
-            arks.append(Ark(naan=self.series_ark.naan, name=detail["@ark"]))
-        if self.target._source().volume or self.target._source().number:
+        debug(issues)
+        for issue in issues:
+            details = issue["issues"]["issue"]
+            if not isinstance(details, list):
+                details = [details]
+            for detail in details:
+                try:
+                    arks.append(Ark(naan=self.series_ark.naan, name=detail["@ark"]))
+                except Exception as e:
+                    debug(e, detail)
+        debug(set(str(a) for a in arks))
+        if self.consider_volume_number and (source.volume or source.number):
             self.logger.debug("Trying to match by volume")
             for ark in arks:
                 issue = Resource(ark)
@@ -264,6 +288,7 @@ class GallicaResource(Representation):
                     self._ark = ark
                     return ark
         self.logger.debug("Trying to match by page range.")
+
         for ark in arks:
             issue = Resource(ark)
             if self.check_page_range(issue):
