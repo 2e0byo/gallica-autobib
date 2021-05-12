@@ -67,7 +67,7 @@ VALID_QUERIES = (
 class BibBase(BaseModel):
     """Properties shared with all kinds of bibliographic items."""
 
-    publicationdate: int = Field(None, alias="year")
+    publicationdate: Union[int, List[int]] = Field(None, alias="year")
     publisher: str = None
     ark: str = None
 
@@ -102,8 +102,8 @@ class Article(BibBase):
     pages: List[str]
     author: str
     editor: str = None
-    number: int = None
-    volume: int = None
+    number: Union[int, List[int]] = None
+    volume: Union[int, List[int]] = None
     physical_pages: List[int] = None
 
     def _source(self):
