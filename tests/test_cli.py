@@ -6,8 +6,8 @@ from gallica_autobib.cli import app
 runner = CliRunner()
 
 
-def test_app(tmp_path, file_regression):
-    result = runner.invoke(app, ["tests/test_cli/test.bib", str(tmp_path)])
+def test_app(fixed_tmp_path, file_regression):
+    result = runner.invoke(app, ["tests/test_cli/test.bib", str(fixed_tmp_path)])
     debug(result.stdout)
     try:
         debug(result.stderr)
