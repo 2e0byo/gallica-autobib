@@ -17,7 +17,9 @@ from re import search
 from time import sleep
 from traceback import print_exc
 from typing import Any, List, Literal, Optional, Union
+from collections import OrderedDict
 import imghdr
+from fuzzysearch import find_near_matches
 
 import sruthi
 from fuzzywuzzy import fuzz
@@ -319,6 +321,46 @@ class GallicaResource(Representation):
             resp.update({k: int(v.group(1)) for k, v in resp.items() if v})
             return resp
 
+    def ocr_find_article_in_journal(
+        self, journal: Resource, pages: OrderedDict
+    ) -> bool:
+        """Use ocr to find an article in a journal.
+
+        The algorithm:
+
+         1. determines the physical page number of the first page of the article
+         2. fetches this page as text (the physical page number = the view number)
+         3. does a fuzzy search on this page for the title
+         4. if it matches, looks for the author's name on the page
+         5. if not found, gets the view number of the last page of the article and fetches that
+         6. looks for the author's name on this page
+
+        This is a good deal simpler than trying to parse an ocrd text back into
+        individual articles, which is probably a non-starter.
+        """
+        start_p = self.get_physical_pno(self.target.pages[0], pages)
+        start_page = make_string_boring(self.fetch_text(journal, start_p))
+
+        title = make_string_boring(self.target.title)
+        author = make_string_boring(self.target.author)
+        debug(title, author)
+        if not find_near_matches(title, start_page, max_l_dist=5):
+            self.logger.debug("Failed to find title on page")
+            return False
+        if find_near_matches(author, start_page, max_l_dist=10):
+            return True
+        end_p = self.get_physical_pno(self.target.pages[-1], pages)
+        end_page = make_string_boring(self.fetch_text(journal, end_p))
+        return find_near_matches(author, end_page, max_l_dist=10) != []
+
+    @classmethod
+    def fetch_text(cls, resource: Resource, pno: str) -> str:
+        """Fetch text from resource as str."""
+        either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
+        if either.is_left:
+            raise either.value
+        soup = BeautifulSoup(either.value, "xml")
+        return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
             issue = Resource(ark)
             if self.check_page_range(issue):
                 self._ark = ark
