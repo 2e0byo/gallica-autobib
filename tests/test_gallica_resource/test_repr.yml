@@ -2,12 +2,13 @@
   saint Augustin'', journaltitle=''La vie spirituelle'', pages=[''135'', ''136'',
   ''137'', ''138'', ''139'', ''140'', ''141'', ''142'', ''143'', ''144'', ''145'',
   ''146'', ''147'', ''148'', ''149'', ''150'', ''151'', ''152'', ''153'', ''154'',
-  ''155'', ''156'', ''157''], author=''Daniélou'', editor=None, number=None, volume=None)
-  source=Journal(publicationdate=[1919, 1920, 1921, 1922, 1923, 1924, 1925, 1926,
-  1927, 1928, 1929, 1930, 1931, 1932, 1933, 1934, 1935, 1936, 1937, 1938, 1939, 1940,
-  1941, 1942, 1943, 1944, 1945], publisher=''Le Cerf (Paris)'', ark=''http://catalogue.bnf.fr/ark:/12148/cb34406663m'',
-  journaltitle=''La Vie spirituelle, ascétique et mystique'', number=None, volume=None)
-  series_ark={''scheme'': ''http'', ''authority'': ''catalogue.bnf.fr'', ''naan'':
-  ''12148'', ''name'': ''cb34406663m'', ''qualifier'': None} _ark=None _resource=None
-  logger=<Logger Resource Pour l(Daniél) (ERROR)> _start_p=None _end_p=None _pages=None
-  consider_volume_number=True'
+  ''155'', ''156'', ''157''], author=''Daniélou'', editor=None, number=None, volume=None,
+  physical_pages=None) source=Journal(publicationdate=[1919, 1920, 1921, 1922, 1923,
+  1924, 1925, 1926, 1927, 1928, 1929, 1930, 1931, 1932, 1933, 1934, 1935, 1936, 1937,
+  1938, 1939, 1940, 1941, 1942, 1943, 1944, 1945], publisher=''Le Cerf (Paris)'',
+  ark=''http://catalogue.bnf.fr/ark:/12148/cb34406663m'', journaltitle=''La Vie spirituelle,
+  ascétique et mystique'', number=None, volume=None) series_ark={''scheme'': ''http'',
+  ''authority'': ''catalogue.bnf.fr'', ''naan'': ''12148'', ''name'': ''cb34406663m'',
+  ''qualifier'': None} _ark=None _resource=None logger=<Logger Resource Pour l(Daniél)
+  (DEBUG)> _start_p=None _end_p=None _pages=None consider_toc=False source_match=None
+  minimum_confidence=0.5'

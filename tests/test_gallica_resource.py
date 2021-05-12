@@ -67,13 +67,13 @@ def gallica_resource():
 
 def test_ark(gallica_resource):
     ark = gallica_resource.ark
-    assert str(ark) == "ark:/12148/bpt6k9735634r"
+    assert get_ark(ark) == get_ark("ark:/12148/bpt6k9735634r")
 
 
 def test_by_vol(gallica_resource):
     gallica_resource.target.volume = 24
     ark = gallica_resource.ark
-    assert str(ark) == "ark:/12148/bpt6k9735634r"
+    assert get_ark(ark) == get_ark("ark:/12148/bpt6k9735634r")
 
 
 def test_resource(gallica_resource):
