@@ -1,7 +1,7 @@
 """Pipeline to match and convert."""
 from .parsers import parse_bibtex, parse_ris
 from .models import Article
-from .query import Query, GallicaResource
+from .query import Query, GallicaResource, MatchingError, DownloadError
 from pathlib import Path
 from typing import TextIO, Union, Optional
 from . import process
@@ -130,8 +130,11 @@ class InputParser:
         try:
             logger.debug("Starting download.")
             match.download_pdf(args.outf, **args.download_args)
-        except URLError as e:
-            logger.info("Failed to download.")
+        except MatchingError as e:
+            logger.info(f"Failed to find match. ({e})")
+            return False
+        except (URLError, DownloadError) as e:
+            logger.info(f"Failed to download. {e}")
             return False
         if args.process:
             logger.debug("Processing...")
