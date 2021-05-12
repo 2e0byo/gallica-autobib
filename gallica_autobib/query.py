@@ -1,4 +1,5 @@
 import io
+from bs4 import BeautifulSoup
 
 try:
     from devtools import debug
