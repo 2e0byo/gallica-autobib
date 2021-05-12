@@ -1,7 +1,7 @@
 """Fns to process.  These are wrapped in a class in pipeline, which is probably what you want."""
 from PyPDF4.pdf import PageObject
 from PyPDF4 import PdfFileReader, PdfFileWriter
-from PIL import Image, ImageOps, ImageChops
+from PIL import Image, ImageOps, ImageChops, ImageShow
 from typing import Tuple, Any
 import numpy as np
 from collections import namedtuple
@@ -156,15 +156,14 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
       A tuple of the rectangle to crop to.
 
     """
-
-    img = prepare_img(img)
+    if img.mode != "1":
+        img = prepare_img(img)
+    # ImageShow.show(img)
     # res = detect_spine(img)
     # logger.debug(res.lh_page)
     # crop out corner errors
     x = 40
     img = img.crop((x, x, img.width - x, img.height - x))
-    # ImageShow.show(img)
-    # input("continue? ")
 
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
@@ -245,10 +244,13 @@ def process_pdf(
         logger.debug("Not preserving text.")
         imgs = []
         for i, page in enumerate(reader.pages):
+            logger.debug(f"Processing page {i}")
             img, _ = extract_image(page)
             bbox = get_crop_bounds(img)
             img = img.crop(bbox)
-            imgs.append(filter_algorithm_brute_force(img))
+            if img.mode != "1":
+                img = filter_algorithm_brute_force(img)
+            imgs.append(img)
         imgs[0].save(
             str(outf), "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
         )

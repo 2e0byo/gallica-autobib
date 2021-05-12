@@ -89,6 +89,7 @@ filter_tests = [
     "tests/test_process/ascese-001.jpg",
     "tests/test_process/rais-003.jpg",
     "tests/test_process/rais-004.jpg",
+    "tests/test_process/tiff-000.tif",
 ]
 
 
@@ -96,7 +97,8 @@ filter_tests = [
 def test_filter_brute_force(inf, image_regression, tmp_path):
     img = Image.open(inf)
     img = img.crop(get_crop_bounds(img))
-    img = filter_algorithm_brute_force(img)
+    if img.mode != "1":
+        img = filter_algorithm_brute_force(img)
 
     img.save(f"{tmp_path}/test.jpg")
     with (tmp_path / f"test.jpg").open("rb") as f:
