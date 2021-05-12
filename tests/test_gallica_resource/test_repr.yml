@@ -9,4 +9,5 @@
   journaltitle=''La Vie spirituelle, ascétique et mystique'', number=None, volume=None)
   series_ark={''scheme'': ''http'', ''authority'': ''catalogue.bnf.fr'', ''naan'':
   ''12148'', ''name'': ''cb34406663m'', ''qualifier'': None} _ark=None _resource=None
-  logger=<Logger GallicaResource (WARNING)> _start_p=None _end_p=None _pages=None'
+  logger=<Logger Resource Pour l(Daniél) (ERROR)> _start_p=None _end_p=None _pages=None
+  consider_volume_number=True'
