@@ -228,11 +228,24 @@ class GallicaResource(Representation):
             if isinstance(self.source, Journal):
                 self.logger.debug("No ark, Finding best match.")
                 self.source_match = self.get_best_article_match()
-                self._ark = self.source_match.candidate.ark
+                if self.source_match:
+                    self._ark = self.source_match.candidate.ark
+                else:
+                    raise MatchingError("Unable to match.")
             else:
                 self._ark = self.series_ark
 
         return self._ark
+
+    @property
+    def confidence(self):
+        """Confidence of the match, if any.  This will trigger a match."""
+        if not self.source_match:
+            self.ark
+        if not self.source_match:
+            return None
+        else:
+            return f"{self.source_match.score * 100:2.5}%"
 
     def check_vol_num(self, res):
         either = res.oairecord_sync()
@@ -281,7 +294,7 @@ class GallicaResource(Representation):
             if not issue.is_left:
                 issues.append(issue.value)
             else:
-                debug(f"unable to fetch year {year}")
+                self.logger.debug(f"unable to fetch year {year}")
         if not issues:
             raise MatchingError("Failed to find any matching issues")
 
@@ -338,15 +351,22 @@ class GallicaResource(Representation):
 
         title = make_string_boring(self.target.title)
         author = make_string_boring(self.target.author)
-        debug(title, author, start_page)
-        if not find_near_matches(title, start_page, max_l_dist=5):
+        matches = find_near_matches(title, start_page, max_l_dist=2)
+        if not matches:
             self.logger.debug("Failed to find title on page")
             return False
-        if find_near_matches(author, start_page, max_l_dist=10):
-            return True
+        if matches := find_near_matches(author, start_page, max_l_dist=5):
+            if fuzz.ratio(matches[0].matched, author) > 80:
+                return True
+        else:
+            self.logger.debug("Failed to find author on first page.")
         end_p = self.get_physical_pno(self.target.pages[-1], pages)
         end_page = make_string_boring(self.fetch_text(journal, end_p))
-        return find_near_matches(author, end_page, max_l_dist=10) != []
+        if matches := find_near_matches(author, end_page, max_l_dist=5):
+            if fuzz.ratio(matches[0].matched, author) > 80:
+                return True
+        self.logger.debug("Failed to find author on last page.")
+        return False
 
     @classmethod
     def fetch_text(cls, resource: Resource, pno: str) -> str:

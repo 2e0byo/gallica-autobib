@@ -24,6 +24,7 @@ def process_bibliograpy(
     clean: bool = True,
     template: Path = None,
     verbosity: int = 1,
+    out: Path = None,
 ):
     """
     Process a bibliography file.
@@ -36,8 +37,8 @@ def process_bibliograpy(
       processes: int: Number of processes to run in parallel
       clean: bool: Remove original file if successful.
       template: Path: Template to render output.
-
-    Returns:
+      verbosity: int: Verbosity between 0 and 3, (Default value = 3)
+      out: Path: Path to save report to.  Default to stdout.
 
     """
     process_args = {"preserve_text": preserve_text}
@@ -64,7 +65,11 @@ def process_bibliograpy(
     with bibfile.open() as f:
         parser.read(f)
     report = parser.run()
-    print(report)
+    if out:
+        with out.open("w") as f:
+            f.write(report)
+    else:
+        print(report)
 
 
 if __name__ == "__main__":

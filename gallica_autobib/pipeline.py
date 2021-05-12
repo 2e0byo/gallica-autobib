@@ -3,7 +3,7 @@ from .parsers import parse_bibtex, parse_ris
 from .models import Article
 from .query import Query, GallicaResource, MatchingError, DownloadError
 from pathlib import Path
-from typing import TextIO, Union, Optional
+from typing import TextIO, Union, Optional, Tuple
 from . import process
 from multiprocessing import Pool, Queue
 import typer
@@ -55,7 +55,17 @@ class InputParser:
         self.outdir = outdir
         self.clean = clean
         self.results = []
+        self.scores = []
         self.output_template = output_template
+        self.match = None
+
+    @property
+    def successful(self):
+        return len([x for x in self.results if x])
+
+    @property
+    def total(self):
+        return len(self.results)
 
     @property
     def output_template(self):
@@ -108,7 +118,8 @@ class InputParser:
             ]
             with typer.progressbar(pool.imap(self.process_record, tasks)) as progress:
                 for res in progress:
-                    self.results.append(res)
+                    self.results.append(res[0])
+                    self.scores.append(res[1])
 
         return self.output_template.render(obj=self)
 
@@ -116,7 +127,7 @@ class InputParser:
         """Generate report using template."""
 
     @staticmethod
-    def process_record(args: namedtuple) -> Optional[Path]:
+    def process_record(args: namedtuple) -> Tuple[Optional[Path], Optional[float]]:
         """
         Run pipeline on item, returning a path if it succeeds or None if it fails.
 
@@ -125,26 +136,27 @@ class InputParser:
         match = query.run()
         if not match:
             logger.info(f"No match found for {args.record.author} {args.record.title}")
-            return None
+            return None, None
         match = GallicaResource(args.record, match.candidate)
         try:
             logger.debug("Starting download.")
             match.download_pdf(args.outf, **args.download_args)
+            score = match.confidence
         except MatchingError as e:
             logger.info(f"Failed to find match. ({e})")
-            return False
+            return False, None
         except (URLError, DownloadError) as e:
             logger.info(f"Failed to download. {e}")
-            return False
+            return False, score
         if args.process:
             logger.debug("Processing...")
             outf = process.process_pdf(args.outf, **args.process_args)
             if args.clean:
                 logger.debug("Deleting original file.")
                 args.outf.unlink()
-            return outf
+            return outf, score
         else:
-            return args.outf
+            return args.outf, score
 
 
 class BibtexParser(InputParser):
