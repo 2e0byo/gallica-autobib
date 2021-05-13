@@ -6,7 +6,7 @@ from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, Generator, List, Optional, Union, TYPE_CHECKING, OrderedDict
+from typing import TYPE_CHECKING, Any, Generator, List, Optional, OrderedDict, Union
 
 import sruthi
 from bs4 import BeautifulSoup
