@@ -1,6 +1,6 @@
 * [{{ obj.successful }}/{{ obj.total }}] Status
  {% for record in obj.records %}
-** {% if obj.results[loop.index0] %} TODO {% else %} DONE {%endif %}{{record.author}}  /{{record.title}}/
+** {% if obj.results[loop.index0] %} DONE {% else %} TODO {%endif %}{{record.author}}  /{{record.title}}/
 
    #+BEGIN_SRC bibtex
 {{ obj.raw[loop.index0] }}
