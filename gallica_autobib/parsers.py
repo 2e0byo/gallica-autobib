@@ -1,5 +1,5 @@
 """Parsers for input data in various formats."""
-from typing import List, TextIO, Tuple, Union
+from typing import List, TextIO, Tuple, Union, Sequence
 
 import bibtexparser
 import rispy
@@ -7,7 +7,7 @@ from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import convert_to_unicode
 from roman import fromRoman, toRoman
 
-from .models import Article, Book, Collection
+from .models import Article, Book, Collection, RecordTypes
 
 parser = BibTexParser()
 parser.customization = convert_to_unicode
@@ -17,19 +17,17 @@ class ParsingError(Exception):
     pass
 
 
-def parse_bibtex(
-    bibtex: Union[str, TextIO]
-) -> Tuple[List[Union[Article, Book, Collection]], List[str]]:
+def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[str]]:
     try:
-        db = bibtexparser.load(bibtex, parser=parser)
-        bibtex.seek(0)
-        rawlines = (x.strip("\n") for x in bibtex.readlines())
-    except Exception:
-        try:
+        if isinstance(bibtex, str):
             db = bibtexparser.loads(bibtex, parser=parser)
             rawlines = bibtex.split("\n")
-        except Exception:
-            raise ParsingError("Unable to parse")
+        else:
+            db = bibtexparser.load(bibtex, parser=parser)
+            bibtex.seek(0)  # type: ignore
+            rawlines = (x.strip("\n") for x in bibtex.readlines())  # type: ignore
+    except Exception:
+        raise ParsingError("Unable to parse")
     parsed = []
     for record in db.entries:
         pages = record["pages"]
@@ -61,7 +59,7 @@ def parse_bibtex(
             raise ParsingError("Unsupported type")
 
     raw = []
-    entry = []
+    entry: List[str] = []
     for line in rawlines:
         if line.strip().startswith("@"):
             if entry:
@@ -72,22 +70,20 @@ def parse_bibtex(
 
     raw.append("\n".join(line for line in entry if line.strip()))
 
-    return parsed, raw
+    return parsed, raw  # type: ignore
 
 
-def parse_ris(
-    ris: Union[str, TextIO]
-) -> Tuple[List[Union[Article, Book, Collection]], List]:
+def parse_ris(ris: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[str]]:
     try:
-        db = rispy.load(ris)
-        ris.seek(0)
-        rawlines = [x.strip("\n") for x in ris.readlines()]
-    except Exception:
-        try:
+        if isinstance(ris, str):
             db = rispy.loads(ris)
             rawlines = ris.split("\n")
-        except Exception:
-            raise ParsingError("Unable to parse")
+        else:
+            db = rispy.load(ris)
+            bibtex.seek(0)  # type: ignore
+            rawlines = (x.strip("\n") for x in bibtex.readlines())  # type: ignore
+    except Exception:
+        raise ParsingError("Unable to parse")
     parsed = []
 
     for record in db:
@@ -118,4 +114,4 @@ def parse_ris(
         else:
             entry.append(line)
 
-    return parsed, raw
+    return parsed, raw  # type: ignore
