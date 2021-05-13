@@ -1,13 +1,3 @@
-from bs4 import BeautifulSoup
-
-try:
-    from devtools import debug
-except ImportError:
-
-    def debug(*args):
-        pass
-
-
 import imghdr
 import logging
 import unicodedata
@@ -20,8 +10,11 @@ from traceback import print_exc
 from typing import Any, List, Optional, Union
 
 import sruthi
+from bs4 import BeautifulSoup
+from devtools import debug
 from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
+from pydantic.typing import ReprArgs
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
