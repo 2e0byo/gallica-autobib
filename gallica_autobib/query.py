@@ -36,11 +36,6 @@ class DownloadError(Exception):
     pass
 
 
-class ReprArgsMixin:
-    def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()  # type: ignore
-
-
 def make_string_boring(unicodestr: str) -> Optional[str]:
     """Return unicode str as ascii for fuzzy matching."""
     if not unicodestr:
@@ -50,7 +45,9 @@ def make_string_boring(unicodestr: str) -> Optional[str]:
 
 
 @total_ordering
-class Match(Representation, ReprArgsMixin):
+class Match(
+    Representation,
+):
     """Object representing a match."""
 
     def __init__(self, target: Any, candidate: Any):
@@ -112,8 +109,13 @@ class Match(Representation, ReprArgsMixin):
             return NotImplemented
         return self.score == other.score
 
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()  # type: ignore
 
-class GallicaSRU(Representation, ReprArgsMixin):
+
+class GallicaSRU(
+    Representation,
+):
     """Class to interact wtih Gallica"""
 
     URL = "http://catalogue.bnf.fr/api/SRU"
@@ -125,7 +127,10 @@ class GallicaSRU(Representation, ReprArgsMixin):
         return self.client.searchretrieve(query)
 
 
-class Query(GallicaSRU, Representation, ReprArgsMixin):
+class Query(
+    GallicaSRU,
+    Representation,
+):
     """Class to represent a query"""
 
     def __init__(self, target: Union[Article, Journal, Book, Collection]) -> None:
@@ -180,8 +185,13 @@ class Query(GallicaSRU, Representation, ReprArgsMixin):
 
         return max(matches)
 
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()  # type: ignore
 
-class GallicaResource(Representation, ReprArgsMixin):
+
+class GallicaResource(
+    Representation,
+):
     """A resource on Gallica."""
 
     BASE_TIMEOUT = 60
@@ -585,3 +595,6 @@ class GallicaResource(Representation, ReprArgsMixin):
                     return True
             sleep(2 ** (i + 1))
         return False
+
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()  # type: ignore
