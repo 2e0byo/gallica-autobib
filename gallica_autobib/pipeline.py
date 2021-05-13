@@ -3,7 +3,7 @@ import logging
 from collections import namedtuple
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Optional, TextIO, Tuple, Union
+from typing import Optional, TextIO, Tuple, Union, List
 from urllib.error import URLError
 
 import typer
@@ -13,6 +13,7 @@ from slugify import slugify
 from . import process
 from .parsers import parse_bibtex, parse_ris
 from .query import DownloadError, GallicaResource, MatchingError, Query
+from .models import RecordTypes, Article
 
 logger = logging.getLogger(__name__)
 
@@ -39,19 +40,18 @@ class InputParser:
         process: bool = True,
         clean: bool = True,
     ):
-        self.records = []
-        self.raw = []
-        self.len_records = 0
-        self.results = None
+        self.records: List[RecordTypes] = []
+        self.raw: List[str] = []
+        self.len_records: int = 0
         self.process = process
         self.process_args = process_args if process_args else {}
         self.download_args = download_args if download_args else {}
-        self._outfs = []
+        self._outfs: List[Path] = []
         self.outdir = outdir
         self.clean = clean
-        self.results = []
-        self.scores = []
-        self.output_template = output_template
+        self.results: List[Union[Path, None, bool]] = []
+        self.scores: List[Optional[float]] = []
+        self.output_template: Template = output_template  # type: ignore
         self.match = None
 
     @property
@@ -84,14 +84,13 @@ class InputParser:
         """Read input data."""
         raise NotImplementedError
 
-    def generate_outf(self, result: Union[Article]) -> Path:
-        outf = self.outdir / (slugify(f"{result.author} {result.title}") + ".pdf")
+    def generate_outf(self, result: RecordTypes) -> Path:
+
+        outf = self.outdir / (slugify(f"{result.name()}") + ".pdf")
         i = 0
         while outf in self._outfs:
             i += 1
-            outf = self.outdir / (
-                slugify(f"{result.author} {result.title} {i}") + ".pdf"
-            )
+            outf = self.outdir / (slugify(f"{result.name()} {i}") + ".pdf")
         self._outfs.append(outf)
         return outf
 
@@ -117,11 +116,10 @@ class InputParser:
 
         return self.output_template.render(obj=self)
 
-    def generate_output(self):
-        """Generate report using template."""
-
     @staticmethod
-    def process_record(args: namedtuple) -> Tuple[Optional[Path], Optional[float]]:
+    def process_record(
+        args: _ProcessArgs,
+    ) -> Tuple[Union[Path, None, bool], Optional[float]]:
         """
         Run pipeline on item, returning a path if it succeeds or None if it fails.
 
