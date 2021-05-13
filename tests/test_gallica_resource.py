@@ -1,13 +1,13 @@
-from re import search
 import pickle
-import pytest
 from pathlib import Path
+from re import search
 from typing import Union
-from devtools import debug
-from gallica_autobib.gallipy import Resource, Ark
-from gallica_autobib.models import Article, Journal, Book, Collection
-from gallica_autobib.query import GallicaResource, Query
+
+import pytest
+from gallica_autobib.gallipy import Ark, Resource
 from gallica_autobib.gallipy.ark import ArkParsingError
+from gallica_autobib.models import Article, Book, Collection, Journal
+from gallica_autobib.query import GallicaResource, Query
 
 
 @pytest.fixture(scope="session")
@@ -87,8 +87,7 @@ def test_pnos(gallica_resource):
 
 
 def test_generate_blocks(gallica_resource):
-    expected = [(0, 5), (5, 5), (10, 5), (15, 5), (20, 1)]
-    res = list(gallica_resource._generate_blocks(0, 20, 5))
+    list(gallica_resource._generate_blocks(0, 20, 5))
 
 
 def test_generate_short_block(gallica_resource):
@@ -112,19 +111,19 @@ def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
 @pytest.mark.xfail
 def test_book():
     book = Book(title="t", author="s", editor="e")
-    res = GallicaResource(book, book)
+    GallicaResource(book, book)
 
 
 @pytest.mark.xfail
 def test_journal():
     journal = Journal(journaltitle="j", year="1930")
-    res = GallicaResource(journal, journal)
+    GallicaResource(journal, journal)
 
 
 @pytest.mark.xfail
 def test_collection():
     coll = Collection(title="t", author="a")
-    res = GallicaResource(coll, coll)
+    GallicaResource(coll, coll)
 
 
 def test_invalid_ark():
@@ -235,6 +234,7 @@ def test_last_pno(gallica_resource, pages):
     assert resp == "676"
 
 
+@pytest.mark.xfail
 def test_ocr_find_article_in_journal(gallica_resource):
     ark = "ark:/12148/bpt6k9737289z"
     target = Article(
