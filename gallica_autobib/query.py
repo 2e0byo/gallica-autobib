@@ -126,6 +126,9 @@ class GallicaSRU(
     def fetch_query(self, query: str) -> SearchRetrieveResponse:
         return self.client.searchretrieve(query)
 
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()  # type: ignore
+
 
 class Query(
     GallicaSRU,
@@ -596,5 +599,5 @@ class GallicaResource(
             sleep(2 ** (i + 1))
         return False
 
-    def __repr_args__(self) -> "ReprArgs":
+    def __repr_args__(self) -> "reprargs":
         return self.__dict__.items()  # type: ignore
