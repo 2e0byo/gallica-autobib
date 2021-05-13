@@ -40,6 +40,8 @@ jobs:
         run: poetry run pip --version >/dev/null 2>&1 || rm -rf .venv
       - name: Install Dependencies
         run: poetry install
+      - name: Install System Dependencies
+        run: sudo apt install -y imagemagick poppler-utils
       - name: Test
         run: poetry run bash scripts/test.sh
       - name: Upload coverage
