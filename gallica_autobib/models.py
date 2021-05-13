@@ -91,7 +91,16 @@ class BibBase(BaseModel):
         return self.assemble_query(**data)
 
 
-class Article(BibBase):
+class AuthorTitleMixin:
+    def name(self, short: Optional[int] = None) -> str:
+        if short is not None:
+            n = f"{self.title} ({self.author})"
+        else:
+            n = f"{self.title[:short]} ({self.author[:short]})"
+        return n
+
+
+class Article(BibBase, AuthorTitleMixin):
     """An article."""
 
     title: str
@@ -103,17 +112,17 @@ class Article(BibBase):
     volume: Union[int, List[int]] = None
     physical_pages: List[int] = None
 
-    def _source(self):
+    def _source(self) -> Journal:
         return Journal.parse_obj(self.dict(by_alias=True))
 
 
-class Book(BibBase):
+class Book(BibBase, AuthorTitleMixin):
     title: str
     author: str
     editor: str = None
 
 
-class Collection(BibBase):
+class Collection(BibBase, AuthorTitleMixin):
     title: str
     author: str
     editor: str = None
@@ -138,6 +147,15 @@ class Journal(BibBase):
         data = self.dict(exclude={"journaltitle"})
         data["title"] = self.journaltitle
         return data
+
+    def name(self, short: Optional[int] = None) -> str:
+        if short is not None:
+            n = f"{self.journaltitle[:short]} {self.year[:short]}"
+        else:
+            n = f"{self.journaltitle} {self.year}"
+        n += f" vol. {self.volume}" if self.volume else ""
+        n += f" n. {self.number}" if self.number else ""
+        return n
 
 
 class GallicaBibObj(BaseModel):
