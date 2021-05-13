@@ -1,20 +1,20 @@
+from collections import namedtuple
+from pathlib import Path
+
+import pytest
 from gallica_autobib.process import (
-    generate_filename,
-    filter_algorithm_brute_force,
-    extract_image,
     ExtractionError,
-    get_crop_bounds,
     deanomalise,
     detect_spine,
+    extract_image,
+    filter_algorithm_brute_force,
+    generate_filename,
+    get_crop_bounds,
     prepare_img,
     process_pdf,
 )
-import pytest
+from PIL import Image
 from PyPDF4 import PdfFileReader
-from pathlib import Path
-from collections import namedtuple
-from devtools import debug
-from PIL import Image, ImageOps
 
 
 def test_extract_no_image():

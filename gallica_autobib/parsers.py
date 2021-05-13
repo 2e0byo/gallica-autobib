@@ -1,11 +1,13 @@
 """Parsers for input data in various formats."""
-import rispy
-from .models import Article, Book, Collection
-from typing import Union, List, TextIO, Tuple
-from roman import fromRoman, toRoman
+from typing import List, TextIO, Tuple, Union
+
 import bibtexparser
+import rispy
 from bibtexparser.bparser import BibTexParser
 from bibtexparser.customization import convert_to_unicode
+from roman import fromRoman, toRoman
+
+from .models import Article, Book, Collection
 
 parser = BibTexParser()
 parser.customization = convert_to_unicode

@@ -1,7 +1,8 @@
+from io import StringIO
+
 import pytest
 from gallica_autobib.models import Article
 from gallica_autobib.parsers import ParsingError, parse_bibtex, parse_ris
-from io import StringIO
 
 
 def test_invalid_bibtex():

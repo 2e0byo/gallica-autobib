@@ -1,23 +1,18 @@
 """Pipeline to match and convert."""
-from .parsers import parse_bibtex, parse_ris
-from .models import Article
-from .query import Query, GallicaResource, MatchingError, DownloadError
-from pathlib import Path
-from typing import TextIO, Union, Optional, Tuple
-from . import process
-from multiprocessing import Pool, Queue
-import typer
-from jinja2 import (
-    Environment,
-    PackageLoader,
-    select_autoescape,
-    Template,
-    FileSystemLoader,
-)
-from collections import namedtuple
-from slugify import slugify
-from urllib.error import URLError
 import logging
+from collections import namedtuple
+from multiprocessing import Pool
+from pathlib import Path
+from typing import Optional, TextIO, Tuple, Union
+from urllib.error import URLError
+
+import typer
+from jinja2 import Environment, PackageLoader, Template, select_autoescape
+from slugify import slugify
+
+from . import process
+from .parsers import parse_bibtex, parse_ris
+from .query import DownloadError, GallicaResource, MatchingError, Query
 
 logger = logging.getLogger(__name__)
 
@@ -104,7 +99,6 @@ class InputParser:
 
         logger.debug("Generating tasks.")
         with Pool(processes=processes) as pool:
-            results = []
             tasks = [
                 _ProcessArgs(
                     record,

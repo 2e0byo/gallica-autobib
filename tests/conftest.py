@@ -1,8 +1,9 @@
-import pytest
 import logging
-from diff_pdf_visually import pdfdiff
-from pathlib import Path
 import shutil
+from pathlib import Path
+
+import pytest
+from diff_pdf_visually import pdfdiff
 
 logging.basicConfig(level=logging.DEBUG)
 

@@ -1,7 +1,8 @@
+from copy import deepcopy
+
 import pytest
 from gallica_autobib.models import Article, Book, Journal
-from gallica_autobib.query import Match, Query, make_string_boring, GallicaSRU
-from copy import deepcopy
+from gallica_autobib.query import GallicaSRU, Match, Query, make_string_boring
 
 strings = [["asciitest", "asciitest"], [None, None]]
 
@@ -134,6 +135,5 @@ def test_get_at_str(query):
 
 def test_gallica_sru():
     g = GallicaSRU()
-    from devtools import debug
 
     assert [k for k, v in g.__repr_args__()] == ["client"]

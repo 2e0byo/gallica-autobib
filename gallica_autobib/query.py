@@ -1,4 +1,3 @@
-import io
 from bs4 import BeautifulSoup
 
 try:
@@ -9,27 +8,26 @@ except ImportError:
         pass
 
 
+import imghdr
 import logging
 import unicodedata
+from collections import OrderedDict
 from functools import total_ordering
 from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, List, Literal, Optional, Union
-from collections import OrderedDict
-import imghdr
-from fuzzysearch import find_near_matches
+from typing import Any, List, Optional, Union
 
 import sruthi
+from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
 from pydantic.utils import Representation
-from PyPDF4 import PageRange, PdfFileMerger, PdfFileReader, PdfFileWriter
-from sruthi.response import SearchRetrieveResponse
+from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
+from sruthi.response import SearchRetrieveResponse
 
 from .gallipy import Ark, Resource
-from .gallipy.monadic import Either
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
 

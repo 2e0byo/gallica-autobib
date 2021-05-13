@@ -1,11 +1,12 @@
-from gallica_autobib.pipeline import BibtexParser, RisParser, InputParser, _ProcessArgs
-import pytest
 from pathlib import Path
+
+import pytest
+from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser, _ProcessArgs
 
 test_bibliographies_bibtex = [
     """
     @Article{danielou30:_pour_augus,
-      author =       {Jean Daniélou},
+      author =       {M.-D. Chenu},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
       year =      1930,
@@ -23,7 +24,7 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path)
     parser.read(bibtex)
     assert parser.progress == 0
-    status = parser.run()
+    parser.run()
     assert parser.progress == 1
     with parser.results[0].open("rb") as f:
         file_regression.check(
@@ -45,7 +46,7 @@ def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs
         parser.process,
         parser.clean,
     )
-    outf = parser.process_record(args)
+    outf, _ = parser.process_record(args)
     assert not args.outf.exists()
     with outf.open("rb") as f:
         file_regression.check(
@@ -65,7 +66,7 @@ def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_p
         parser.process,
         parser.clean,
     )
-    outf = parser.process_record(args)
+    outf, _ = parser.process_record(args)
     assert outf != args.outf
     assert args.outf.exists()
     with outf.open("rb") as f:
@@ -86,7 +87,7 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
         parser.process,
         parser.clean,
     )
-    outf = parser.process_record(args)
+    outf, _ = parser.process_record(args)
     assert outf == args.outf
     with outf.open("rb") as f:
         file_regression.check(
@@ -100,8 +101,8 @@ report_types = ["output.txt", "output.org", "output.html"]
 @pytest.fixture()
 def parser(fixed_tmp_path):
     """A parser which has loaded something but won't actually download it."""
-    tmpf = fixed_tmp_path / "jean-danielou-pour-lire-saint-augustin.pdf"
-    outf = fixed_tmp_path / "processed-jean-danielou-pour-lire-saint-augustin.pdf"
+    tmpf = fixed_tmp_path / "m-d-chenu-pour-lire-saint-augustin.pdf"
+    outf = fixed_tmp_path / "processed-m-d-chenu-pour-lire-saint-augustin.pdf"
     with outf.open("w") as f:
         f.write("-")
     with tmpf.open("w") as f:
@@ -125,7 +126,7 @@ test_bibliographies_ris = [
         """
 TY  - JOUR
 TI  - Une opinion inconnue de l'école de Gilbert de la Porrée
-AU  - Chenu, M-D
+AU  - M.-D. Chenu
 JO  - Revue d'Histoire Ecclésiastique
 VL  - 26
 IS  - 2
@@ -142,7 +143,7 @@ ER  -
         """
 TY  - JOUR
 TI  - La surnaturalisation des vertus
-AU  - Jean Daniélou
+AU  - M.-D. Chenu
 T2  - Bulletin Thomiste
 PY  - 1932
 SP  - 93

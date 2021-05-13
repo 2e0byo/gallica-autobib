@@ -1,13 +1,5 @@
 import pytest
-from devtools import debug
-from gallica_autobib.models import (
-    Article,
-    BibBase,
-    Book,
-    Collection,
-    GallicaBibObj,
-    Journal,
-)
+from gallica_autobib.models import Article, BibBase, Book, Collection, Journal
 
 
 def test_article():

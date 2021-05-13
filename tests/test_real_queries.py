@@ -1,5 +1,4 @@
 import pytest
-from devtools import debug
 from gallica_autobib.models import Article
 from gallica_autobib.query import Query
 

@@ -1,7 +1,6 @@
-from typer.testing import CliRunner
 from devtools import debug
-
 from gallica_autobib.cli import app
+from typer.testing import CliRunner
 
 runner = CliRunner()
 

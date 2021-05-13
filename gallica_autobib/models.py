@@ -1,12 +1,7 @@
 # package imports
-from functools import total_ordering
-from traceback import print_exception
-from typing import Any, List, Literal, Optional, Union
+from typing import List, Union
 
 from pydantic import BaseModel, Field
-from pydantic.utils import Representation
-
-from .gallipy import Ark, Resource
 
 record_types = {
     "Article": None,
@@ -84,7 +79,6 @@ class BibBase(BaseModel):
 
     def generate_query(self) -> str:
         """Get query str"""
-        exclude = {"editor"}
         source = self._source()
         data = source.translate()
         data["recordtype"] = record_types[type(source).__name__]

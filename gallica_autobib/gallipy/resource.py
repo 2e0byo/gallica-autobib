@@ -106,31 +106,31 @@ class Resource:
         return Future.asyn(self.pagination_sync)
 
     def image_preview(self, resolution="thumbnail", view=1):
-        """"""
+        """ """
         l = lambda: self.image_preview_sync(resolution, view)
         return Future.asyn(l)
 
     def fulltext_search(self, query="", view=1, results_per_set=10):
-        """"""
+        """ """
         l = lambda: self.fulltext_search_sync(query, view, results_per_set)
         return Future.asyn(l)
 
     def toc(self):
-        """"""
+        """ """
         return Future.asyn(self.toc_sync)
 
     def content(self, startview=None, nviews=None, mode="pdf"):
-        """"""
+        """ """
         l = lambda: self.content_sync(startview, nviews, mode)
         return Future.asyn(l)
 
     def ocr_data(self, view):
-        """"""
+        """ """
         l = lambda: self.ocr_data_sync(view)
         return Future.asyn(l)
 
     def iiif_info(self, view=""):
-        """"""
+        """ """
         l = lambda: self.iiif_info_sync(image)
         return Future.asyn(l)
 
@@ -143,7 +143,7 @@ class Resource:
         quality="native",
         imformat="png",
     ):
-        """"""
+        """ """
         l = lambda: self.iiif_data_sync(
             image, region, size, rotation, quality, imformat
         )

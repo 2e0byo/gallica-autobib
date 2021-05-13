@@ -1,15 +1,14 @@
 """Fns to process.  These are wrapped in a class in pipeline, which is probably what you want."""
-from PyPDF4.pdf import PageObject
-from PyPDF4 import PdfFileReader, PdfFileWriter
-from PIL import Image, ImageOps, ImageChops, ImageShow
-from typing import Tuple, Any
-import numpy as np
-from collections import namedtuple
-from pathlib import Path
-from tempfile import TemporaryDirectory
-from io import BytesIO
-from re import sub
 import logging
+from collections import namedtuple
+from io import BytesIO
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
+from PIL import Image, ImageChops, ImageOps
+from PyPDF4 import PdfFileReader, PdfFileWriter
+from PyPDF4.pdf import PageObject
 
 logger = logging.getLogger(__name__)
 
@@ -168,10 +167,6 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
     diff = ImageChops.difference(img, bg)
-
-    tst = img.crop(diff.getbbox())
-    # ImageShow.show(tst)
-    # input("continue?")
 
     left, upper, right, lower = diff.getbbox()
     left += x - 10
