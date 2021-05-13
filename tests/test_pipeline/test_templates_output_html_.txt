@@ -1,10 +1,10 @@
 <h1>Gallica autobib</h1>
 
-<h2> Jean Daniélou <i>Pour lire saint Augustin</i> </h2>
+<h2> M.-D. Chenu <i>Pour lire saint Augustin</i> </h2>
   <pre>
     <code>
     @Article{danielou30:_pour_augus,
-      author =       {Jean Daniélou},
+      author =       {M.-D. Chenu},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
       year =      1930,
@@ -15,5 +15,5 @@
   </pre>
 
   
-    <a href="pdfs/processed-jean-danielou-pour-lire-saint-augustin.pdf">Processed Pdf</a>
+    <a href="pdfs/processed-m-d-chenu-pour-lire-saint-augustin.pdf">Processed Pdf</a>
   

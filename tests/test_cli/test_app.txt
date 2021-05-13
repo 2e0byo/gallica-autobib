@@ -1,10 +1,10 @@
                                  Status Report
                                  -------------
 
-  ==Jean Daniélou Ascèse et péché==
+  ==M.-D. Chenu Ascèse et péché==
 
-@Article{danielou23:_asces,
-  author =       {Jean Daniélou},
+@Article{chenu23:_asces,
+  author =       {M.-D. Chenu},
   title =        {Ascèse et péché},
   journaltitle = {La Vie spirituelle},
   year =      1923,
@@ -13,24 +13,24 @@
   pages =     {547--51}}
 
   
-    Output:  /tmp/pytest-of-john/pytest-1/test_app0/processed-jean-danielou-ascese-et-peche.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-m-d-chenu-ascese-et-peche.pdf
     
   
 
 
-  ==Jean Daniélou Aux incroyants==
+  ==M.-D. Chenu Aux incroyants==
 
-@Article{danielou23:_aux,
-  author =       {Jean Daniélou},
+@Article{chenu23:_aux,
+  author =       {M.-D. Chenu},
   title =        {Aux incroyants},
   journaltitle = {La Vie spirituelle},
   year =      1923,
   language =  {french},
-  volume =    9,
+  number =    9,
   pages =     {93--5}}
 
   
-    Output:  /tmp/pytest-of-john/pytest-1/test_app0/processed-jean-danielou-aux-incroyants.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-m-d-chenu-aux-incroyants.pdf
     
   
 

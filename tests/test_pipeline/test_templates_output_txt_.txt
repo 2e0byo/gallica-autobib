@@ -1,10 +1,10 @@
                                  Status Report
                                  -------------
 
-  ==Jean Daniélou Pour lire saint Augustin==
+  ==M.-D. Chenu Pour lire saint Augustin==
 
     @Article{danielou30:_pour_augus,
-      author =       {Jean Daniélou},
+      author =       {M.-D. Chenu},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
       year =      1930,
@@ -13,7 +13,7 @@
       pages =     {135-57}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-jean-danielou-pour-lire-saint-augustin.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-m-d-chenu-pour-lire-saint-augustin.pdf
     
   
 
