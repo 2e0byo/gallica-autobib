@@ -81,10 +81,10 @@ def filter_point(point: int) -> int:
         return round(point * 2)
 
 
-_results = namedtuple("results", ("lh_page", "crop", "bbox"))
+_results = namedtuple("_results", ("lh_page", "crop", "bbox"))
 
 
-def filter_algorithm_brute_force(img):
+def filter_algorithm_brute_force(img: Image.Image) -> Image.Image:
     img = ImageOps.autocontrast(img)
     img = ImageOps.posterize(img, 5)
     img = ImageOps.grayscale(img).point(filter_point)
@@ -101,28 +101,28 @@ def deanomalise(data: list) -> int:
     return round(np.mean(data))
 
 
-def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
+def detect_spine(img: Image.Image) -> _results:
     logger.debug("Detecting spine")
     threshold = 40
     midpoint = round(img.height / 2)
     lower = midpoint - 20
     upper = midpoint + 20
-    first_left = []
-    first_right = []
+    first_lefts = []
+    first_rights = []
     for height in (midpoint, lower, upper):
         for i in range(img.width):
             if img.getpixel((i, height)) < threshold:
-                first_left.append(i)
+                first_lefts.append(i)
                 break
         for i in range(img.width - 1, 0, -1):
             if img.getpixel((i, height)) < threshold:
-                first_right.append(img.width - i)
+                first_rights.append(img.width - i)
                 break
 
-    assert first_left
-    assert first_right
-    first_left = deanomalise(first_left)
-    first_right = deanomalise(first_right)
+    assert first_lefts
+    assert first_rights
+    first_left = deanomalise(first_lefts)
+    first_right = deanomalise(first_rights)
     if first_left < first_right:
         crop = first_left + 10
         return _results(True, crop, (crop, 0, img.width, img.height))
@@ -131,7 +131,7 @@ def detect_spine(img: Image.Image) -> Tuple[bool, Tuple]:
         return _results(False, crop, (0, 0, img.width - crop, img.height))
 
 
-def prepare_img(img: Image.Image, threshold=60) -> Image.Image:
+def prepare_img(img: Image.Image, threshold: int = 60) -> Image.Image:
     img = ImageOps.grayscale(img)
     img = ImageOps.autocontrast(img)
     return img.point(lambda p: p > threshold and 255)
@@ -192,7 +192,7 @@ def process_pdf(
     outf: Path = None,
     preserve_text: bool = False,
     equal_size: bool = False,
-    skip_existing=False,
+    skip_existing: bool = False,
 ) -> Path:
     """Process a pdf.
 
