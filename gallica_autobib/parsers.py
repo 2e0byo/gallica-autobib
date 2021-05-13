@@ -80,7 +80,7 @@ def parse_ris(ris: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[str]]:
             rawlines = ris.split("\n")
         else:
             db = rispy.load(ris)
-            bibtex.seek(0)  # type: ignore
+            ris.seek(0)  # type: ignore
             rawlines = (x.strip("\n") for x in bibtex.readlines())  # type: ignore
     except Exception:
         raise ParsingError("Unable to parse")
