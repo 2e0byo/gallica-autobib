@@ -9,6 +9,6 @@
   ark=''http://catalogue.bnf.fr/ark:/12148/cb34406663m'', journaltitle=''La Vie spirituelle,
   ascétique et mystique'', number=None, volume=None) series_ark={''scheme'': ''http'',
   ''authority'': ''catalogue.bnf.fr'', ''naan'': ''12148'', ''name'': ''cb34406663m'',
-  ''qualifier'': None} _ark=None _resource=None logger=<Logger Resource Pour l(M.-D.
-  ) (DEBUG)> _start_p=None _end_p=None _pages=None consider_toc=False source_match=None
-  minimum_confidence=0.5'
+  ''qualifier'': None} _ark=None _resource=None logger=<Logger Pour lire saint Augustin
+  (M.-D. Chenu) (DEBUG)> _start_p=None _end_p=None _pages=None consider_toc=False
+  source_match=None minimum_confidence=0.5'

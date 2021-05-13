@@ -13,7 +13,7 @@
   pages =     {547--51}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-m-d-chenu-ascese-et-peche.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-ascese-et-peche-m-d-chenu.pdf
     
   
 
@@ -30,7 +30,7 @@
   pages =     {93--5}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-m-d-chenu-aux-incroyants.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-aux-incroyants-m-d-chenu.pdf
     
   
 
@@ -47,7 +47,7 @@
   language = {french}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-j-de-vathaire-bulletin-de-liturgie.pdf
+    Output:  /tmp/pytest-template-tmpdir/processed-bulletin-de-liturgie-j-de-vathaire.pdf
     
   
 
