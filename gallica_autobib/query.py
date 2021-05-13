@@ -1,13 +1,12 @@
 import imghdr
 import logging
 import unicodedata
-from collections import OrderedDict
 from functools import total_ordering
 from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, Generator, List, Optional, Union, TYPE_CHECKING
+from typing import Any, Generator, List, Optional, Union, TYPE_CHECKING, OrderedDict
 
 import sruthi
 from bs4 import BeautifulSoup
