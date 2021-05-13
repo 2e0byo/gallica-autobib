@@ -1,5 +1,5 @@
 # package imports
-from typing import List, Union
+from typing import List, Union, Optional
 
 from pydantic import BaseModel, Field
 
@@ -66,18 +66,18 @@ class BibBase(BaseModel):
     """Properties shared with all kinds of bibliographic items."""
 
     publicationdate: Union[int, List[int]] = Field(None, alias="year")
-    publisher: str = None
-    ark: str = None
+    publisher: Optional[str] = None
+    ark: Optional[str] = None
 
     @staticmethod
-    def assemble_query(**kwargs) -> str:
+    def assemble_query(**kwargs: dict) -> str:
         """Put together an sru query from a dict."""
         return " and ".join(f'{k} all "{v}"' for k, v in kwargs.items())
 
-    def _source(self):
-        return self
+    def _source(self) -> RecordTypes:
+        return self  # type: ignore
 
-    def translate(self):
+    def translate(self) -> dict:
         return self.dict(exclude={"editor"})
 
     def generate_query(self) -> str:
@@ -94,9 +94,9 @@ class BibBase(BaseModel):
 class AuthorTitleMixin:
     def name(self, short: Optional[int] = None) -> str:
         if short is not None:
-            n = f"{self.title} ({self.author})"
+            n = f"{self.title} ({self.author})"  # type: ignore
         else:
-            n = f"{self.title[:short]} ({self.author[:short]})"
+            n = f"{self.title[:short]} ({self.author[:short]})"  # type: ignore
         return n
 
 
@@ -107,10 +107,10 @@ class Article(BibBase, AuthorTitleMixin):
     journaltitle: str
     pages: List[str]
     author: str
-    editor: str = None
-    number: Union[int, List[int]] = None
-    volume: Union[int, List[int]] = None
-    physical_pages: List[int] = None
+    editor: Optional[str] = None
+    number: Union[None, int, List[int]] = None
+    volume: Union[None, int, List[int]] = None
+    physical_pages: Optional[List[int]] = None
 
     def _source(self) -> Journal:
         return Journal.parse_obj(self.dict(by_alias=True))
@@ -119,13 +119,13 @@ class Article(BibBase, AuthorTitleMixin):
 class Book(BibBase, AuthorTitleMixin):
     title: str
     author: str
-    editor: str = None
+    editor: Optional[str] = None
 
 
 class Collection(BibBase, AuthorTitleMixin):
     title: str
     author: str
-    editor: str = None
+    editor: Optional[str] = None
 
 
 class Journal(BibBase):
@@ -140,19 +140,19 @@ class Journal(BibBase):
 
     journaltitle: str
     publicationdate: Union[list, int] = Field(alias="year")
-    number: int = None
-    volume: int = None
+    number: Optional[int] = None
+    volume: Optional[int] = None
 
-    def translate(self):
+    def translate(self) -> dict:
         data = self.dict(exclude={"journaltitle"})
         data["title"] = self.journaltitle
         return data
 
     def name(self, short: Optional[int] = None) -> str:
         if short is not None:
-            n = f"{self.journaltitle[:short]} {self.year[:short]}"
+            n = f"{self.journaltitle[:short]} {self.publicationdate}"
         else:
-            n = f"{self.journaltitle} {self.year}"
+            n = f"{self.journaltitle} {self.publicationdate}"
         n += f" vol. {self.volume}" if self.volume else ""
         n += f" n. {self.number}" if self.number else ""
         return n
@@ -168,7 +168,7 @@ class GallicaBibObj(BaseModel):
     type: str
     date: str
 
-    def convert(self):
+    def convert(self) -> RecordTypes:
         """Return the right kind of model."""
         data = {
             "ark": self.ark,
@@ -180,9 +180,9 @@ class GallicaBibObj(BaseModel):
         for r in self.date.split(","):
             try:
                 start, end = r.split("-")
-                data["year"] += list(range(int(start), int(end) + 1))
+                data["year"] += list(range(int(start), int(end) + 1))  # type: ignore
             except ValueError:
-                data["year"].append(int(r))
+                data["year"].append(int(r))  # type: ignore
         return type_to_class[self.type].parse_obj(data)
 
 
