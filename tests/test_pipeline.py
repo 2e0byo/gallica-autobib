@@ -66,6 +66,7 @@ def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_p
         parser.generate_outf(parser.records[0]),
         parser.process,
         parser.clean,
+        parser.fetch_only,
     )
     outf, _ = parser.process_record(args)
     assert outf != args.outf
@@ -87,6 +88,7 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
         parser.generate_outf(parser.records[0]),
         parser.process,
         parser.clean,
+        parser.fetch_only,
     )
     outf, _ = parser.process_record(args)
     assert outf == args.outf
