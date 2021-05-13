@@ -45,6 +45,7 @@ def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs
         parser.generate_outf(parser.records[0]),
         parser.process,
         parser.clean,
+        parser.fetch_only,
     )
     outf, _ = parser.process_record(args)
     assert not args.outf.exists()
