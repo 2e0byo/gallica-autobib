@@ -35,3 +35,20 @@
   
 
 
+  ==J. de Vathaire Bulletin de Liturgie==
+
+@Article{vathaire21:_bullet_litur,
+  author =       {J. de Vathaire},
+  title =        {Bulletin de Liturgie},
+  journaltitle =      {La Vie spirituelle},
+  year =         1921,
+  volume =    2,
+  pages =     {223--34},
+  language = {french}}
+
+  
+    Output:  /tmp/pytest-template-tmpdir/processed-j-de-vathaire-bulletin-de-liturgie.pdf
+    
+  
+
+
