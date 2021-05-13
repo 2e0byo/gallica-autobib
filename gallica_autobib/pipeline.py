@@ -55,19 +55,19 @@ class InputParser:
         self.match = None
 
     @property
-    def successful(self):
+    def successful(self) -> int:
         return len([x for x in self.results if x])
 
     @property
-    def total(self):
+    def total(self) -> int:
         return len(self.results)
 
     @property
-    def output_template(self):
+    def output_template(self) -> Template:
         return self._output_template
 
     @output_template.setter
-    def output_template(self, output_template: Union[str, Path] = None):
+    def output_template(self, output_template: Union[str, Path] = None) -> None:
         if isinstance(output_template, str):
             self._output_template = env.get_template(output_template)
         elif isinstance(output_template, Path):
@@ -76,7 +76,7 @@ class InputParser:
             self._output_template = env.get_template("output.txt")
 
     @property
-    def progress(self):
+    def progress(self) -> float:
         """Progress in matching or failing."""
         return len(self.results) / self.len_records
 
@@ -84,7 +84,7 @@ class InputParser:
         """Read input data."""
         raise NotImplementedError
 
-    def generate_outf(self, result):
+    def generate_outf(self, result: Union[Article]) -> Path:
         outf = self.outdir / (slugify(f"{result.author} {result.title}") + ".pdf")
         i = 0
         while outf in self._outfs:
@@ -95,7 +95,7 @@ class InputParser:
         self._outfs.append(outf)
         return outf
 
-    def run(self, processes=6) -> str:
+    def run(self, processes: int = 6) -> str:
 
         logger.debug("Generating tasks.")
         with Pool(processes=processes) as pool:

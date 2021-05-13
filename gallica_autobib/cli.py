@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from typing import Dict
 
 import typer
 
@@ -27,7 +28,7 @@ def process_bibliograpy(
     template: Path = None,
     verbosity: int = 1,
     out: Path = None,
-):
+) -> None:
     """
     Process a bibliography file.
 
@@ -44,7 +45,7 @@ def process_bibliograpy(
 
     """
     process_args = {"preserve_text": preserve_text}
-    download_args = {}
+    download_args: Dict[str, bool] = {}
     logging.basicConfig(level=log_level[verbosity])
 
     args = dict(
@@ -57,10 +58,10 @@ def process_bibliograpy(
     )
     if bibfile.suffix == ".bib":
         logger.debug("Detected bibtex.")
-        parser = BibtexParser(**args)
+        parser = BibtexParser(**args)  # type: ignore
     elif bibfile.suffix == ".ris":
         logger.debug("Detected ris.")
-        parser = RisParser(**args)
+        parser = RisParser(**args)  # type: ignore
     else:
         raise AutoBibError("Input is not bibtex or ris.")
 
