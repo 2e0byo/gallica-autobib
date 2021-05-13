@@ -7,7 +7,7 @@ from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, List, Optional, Union
+from typing import Any, List, Optional, Union, Tuple, Generator
 
 import sruthi
 from bs4 import BeautifulSoup
@@ -23,6 +23,8 @@ from sruthi.response import SearchRetrieveResponse
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
+Pages = OrderedDict[OrderedDict[OrderdDict]]
+
 
 class MatchingError(Exception):
     pass
@@ -30,6 +32,11 @@ class MatchingError(Exception):
 
 class DownloadError(Exception):
     pass
+
+
+class ReprArgsMixin:
+    def __repr_args__(self) -> ReprArgs:
+        return self.__dict__.items()  # type: ignore
 
 
 def make_string_boring(unicodestr: str) -> Optional[str]:
@@ -41,7 +48,7 @@ def make_string_boring(unicodestr: str) -> Optional[str]:
 
 
 @total_ordering
-class Match(Representation):
+class Match(Representation, ReprArgsMixin):
     """Object representing a match."""
 
     def __init__(self, target: Any, candidate: Any):
@@ -103,11 +110,8 @@ class Match(Representation):
             return NotImplemented
         return self.score == other.score
 
-    def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()
 
-
-class GallicaSRU(Representation):
+class GallicaSRU(Representation, ReprArgsMixin):
     """Class to interact wtih Gallica"""
 
     URL = "http://catalogue.bnf.fr/api/SRU"
@@ -118,11 +122,8 @@ class GallicaSRU(Representation):
     def fetch_query(self, query: str) -> SearchRetrieveResponse:
         return self.client.searchretrieve(query)
 
-    def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()
 
-
-class Query(GallicaSRU, Representation):
+class Query(GallicaSRU, Representation, ReprArgsMixin):
     """Class to represent a query"""
 
     def __init__(self, target: Union[Article, Journal, Book, Collection]) -> None:
@@ -177,11 +178,8 @@ class Query(GallicaSRU, Representation):
 
         return max(matches)
 
-    def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()
 
-
-class GallicaResource(Representation):
+class GallicaResource(Representation, ReprArgsMixin):
     """A resource on Gallica."""
 
     BASE_TIMEOUT = 60
@@ -204,17 +202,12 @@ class GallicaResource(Representation):
         self.series_ark = a.value
         self._ark = None
         self._resource = None  # so we can pass resource around
-        name = f"Resource {target.title[:6]}"
-        try:
-            name += f"({target.author[:6]})"
-        except AttributeError:
-            name += f"({target.publisher[:6]})"
-        self.logger = logging.getLogger(name)
+        self.logger = logging.getLogger(target.name(short=6))
         self._start_p = None
         self._end_p = None
-        self._pages = None
+        self._pages: Optional[Pages] = None
         self.consider_toc = False
-        self.source_match = None
+        self.source_match: Optional[Match] = None
         self.minimum_confidence = 0.5
 
     @property
@@ -234,7 +227,7 @@ class GallicaResource(Representation):
         return self._ark
 
     @property
-    def confidence(self) -> float:
+    def confidence(self) -> Optional[str]:
         """Confidence of the match, if any.  This will trigger a match."""
         if not self.source_match:
             self.ark
@@ -252,9 +245,14 @@ class GallicaResource(Representation):
         self.logger.debug("Getting possible issues.")
         source = self.target._source()
         issues = []
-        start = source.publicationdate
-        for year in range(start - 1, start + 2):
-            issue = Resource(self.series_ark).issues_sync(year)
+        years = []
+        if isinstance(source.publicationdate, list):
+            for year in source.publicationdate:
+                years += list(range(year - 1, year + 2))
+        else:
+            years = list(range(source.publicationdate - 1, source.publicationdate + 2))
+        for year in set(years):
+            issue = Resource(self.series_ark).issues_sync(str(year))
             if not issue.is_left:
                 issues.append(issue.value)
             else:
@@ -472,7 +470,7 @@ class GallicaResource(Representation):
         return self.resource
 
     @property
-    def pages(self):
+    def pages(self) -> Pages:
         if not self._pages:
             either = self.resource.pagination_sync()
             if either.is_left:
@@ -480,7 +478,7 @@ class GallicaResource(Representation):
             self._pages = either.value
         return self._pages
 
-    def get_physical_pno(self, logical_pno: str, pages=None) -> int:
+    def get_physical_pno(self, logical_pno: str, pages: Pages = None) -> int:
         """Get the physical pno for a logical pno."""
         if not pages:
             pages = self.pages
@@ -492,7 +490,7 @@ class GallicaResource(Representation):
         return p["ordre"]
 
     @staticmethod
-    def get_last_pno(pages) -> str:
+    def get_last_pno(pages: Pages) -> str:
         """Get last page number of internal volume."""
         pnos = pages["livre"]["pages"]["page"]
         for p in reversed(pnos):
@@ -501,17 +499,23 @@ class GallicaResource(Representation):
         return p["ordre"]
 
     @property
-    def start_p(self):
+    def start_p(self) -> Optional[int]:
         """Physical page we start on."""
         if not self._start_p:
-            self._start_p = int(self.get_physical_pno(self.target.pages[0]))
+            try:
+                self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
+            except AttributeError:
+                pass
         return self._start_p
 
     @property
-    def end_p(self):
+    def end_p(self) -> Optional[int]:
         """Physical page we end on."""
         if not self._end_p:
-            self._end_p = int(self.get_physical_pno(self.target.pages[-1]))
+            try:
+                self._end_p = int(self.get_physical_pno(self.target.pages[-1]))  # type: ignore
+            except AttributeError:
+                pass
         return self._end_p
 
     def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> bool:
@@ -538,9 +542,10 @@ class GallicaResource(Representation):
             for fn in partials:
                 fn.unlink()
         assert partials
+        return False
 
     @staticmethod
-    def _generate_blocks(start, end, size):
+    def _generate_blocks(start: int, end: int, size: int) -> Generator:
         """Generate Blocks"""
         beginnings = range(start, end + 1, size)
         for i in beginnings:
@@ -576,6 +581,3 @@ class GallicaResource(Representation):
                     return True
             sleep(2 ** (i + 1))
         return False
-
-    def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()
