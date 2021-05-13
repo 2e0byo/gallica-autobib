@@ -604,5 +604,5 @@ class GallicaResource(
             sleep(2 ** (i + 1))
         return False
 
-    def __repr_args__(self) -> "reprargs":
+    def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
