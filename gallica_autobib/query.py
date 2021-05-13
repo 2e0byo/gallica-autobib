@@ -32,7 +32,7 @@ class DownloadError(Exception):
     pass
 
 
-def make_string_boring(unicodestr: str) -> str:
+def make_string_boring(unicodestr: str) -> Optional[str]:
     """Return unicode str as ascii for fuzzy matching."""
     if not unicodestr:
         return None
@@ -50,12 +50,12 @@ class Match(Representation):
         self._score = None
 
     @property
-    def score(self):
+    def score(self) -> float:
         if not self._score:
             self._score = self._calculate_score()
         return self._score
 
-    def _calculate_score(self):
+    def _calculate_score(self) -> float:
         """Calculate the score for a given match."""
         vals = {}
         candidate = self.candidate
@@ -92,13 +92,15 @@ class Match(Representation):
         self._vals = vals
         return sum(v for _, v in vals.items()) / len(vals)
 
-    def __lt__(self, other):
+    def __lt__(self, other: Match) -> bool:
         return self.score < other.score
 
-    def __gt__(self, other):
+    def __gt__(self, other: Match) -> bool:
         return self.score > other.score
 
-    def __eq__(self, other):
+    def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Match):
+            return NotImplemented
         return self.score == other.score
 
     def __repr_args__(self) -> "ReprArgs":
@@ -110,7 +112,7 @@ class GallicaSRU(Representation):
 
     URL = "http://catalogue.bnf.fr/api/SRU"
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.client = sruthi.Client(url=self.URL, record_schema="dublincore")
 
     def fetch_query(self, query: str) -> SearchRetrieveResponse:
@@ -123,15 +125,15 @@ class GallicaSRU(Representation):
 class Query(GallicaSRU, Representation):
     """Class to represent a query"""
 
-    def __init__(self, target):
+    def __init__(self, target: Union[Article, Journal, Book, Collection]) -> None:
         super().__init__()
         self.target = target._source()
         self.fetcher = GallicaSRU()
 
     @staticmethod
-    def get_at_str(obj: Union[str, list]):
+    def get_at_str(obj: Union[str, List[str]]) -> Optional[str]:
         if not obj:
-            return obj
+            return None
         if isinstance(obj, str):
             return obj
         else:
@@ -150,13 +152,13 @@ class Query(GallicaSRU, Representation):
         obj = GallicaBibObj.parse_obj(resp).convert()
         return obj
 
-    def run(self, give_up=50) -> Any:
+    def run(self, give_up: int = 50) -> Any:
         """Try to get best match."""
         query = self.target.generate_query()
         try:
             resps = self.fetcher.fetch_query(query)
         except Exception as e:
-            print_exc(e)
+            print_exc()
             return None
 
         matches = []
@@ -202,9 +204,12 @@ class GallicaResource(Representation):
         self.series_ark = a.value
         self._ark = None
         self._resource = None  # so we can pass resource around
-        self.logger = logging.getLogger(
-            f"Resource {target.title[:6]}({target.author[:6]})"
-        )
+        name = f"Resource {target.title[:6]}"
+        try:
+            name += f"({target.author[:6]})"
+        except AttributeError:
+            name += f"({target.publisher[:6]})"
+        self.logger = logging.getLogger(name)
         self._start_p = None
         self._end_p = None
         self._pages = None
@@ -213,7 +218,7 @@ class GallicaResource(Representation):
         self.minimum_confidence = 0.5
 
     @property
-    def ark(self):
+    def ark(self) -> Optional[Union[str, Ark]]:
         """Ark for the final target."""
         if not self._ark:
             if isinstance(self.source, Journal):
@@ -229,7 +234,7 @@ class GallicaResource(Representation):
         return self._ark
 
     @property
-    def confidence(self):
+    def confidence(self) -> float:
         """Confidence of the match, if any.  This will trigger a match."""
         if not self.source_match:
             self.ark
