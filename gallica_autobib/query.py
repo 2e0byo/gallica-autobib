@@ -23,7 +23,7 @@ from sruthi.response import SearchRetrieveResponse
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
-Pages = OrderedDict[OrderedDict[OrderdDict]]
+Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 
 
 class MatchingError(Exception):
@@ -54,7 +54,7 @@ class Match(Representation, ReprArgsMixin):
     def __init__(self, target: Any, candidate: Any):
         self.target = target
         self.candidate = candidate
-        self._score = None
+        self._score: Optional[float] = None
 
     @property
     def score(self) -> float:
@@ -91,7 +91,7 @@ class Match(Representation, ReprArgsMixin):
                 if isinstance(candidate_v, list):
                     matches = [1 if i in candidate_v else 0 for i in v]
                 elif candidate_v in v:
-                    matches.append(1 / len(v))
+                    matches.append(1 / len(v))  # type: ignore
                 else:
                     matches.append(0)
                 vals[k] = sum(matches) / len(matches)
@@ -151,7 +151,7 @@ class Query(GallicaSRU, Representation, ReprArgsMixin):
         # resp["publisher"] = resp["publisher"][0]
         # resp["title"] = resp["title"][0]
         obj = GallicaBibObj.parse_obj(resp).convert()
-        return obj
+        return obj  # type: ignore
 
     def run(self, give_up: int = 50) -> Any:
         """Try to get best match."""
@@ -201,7 +201,7 @@ class GallicaResource(Representation, ReprArgsMixin):
             raise a.value
         self.series_ark = a.value
         self._ark = None
-        self._resource = None  # so we can pass resource around
+        self._resource: Optional[Resource] = None  # so we can pass resource around
         self.logger = logging.getLogger(target.name(short=6))
         self._start_p = None
         self._end_p = None
@@ -283,10 +283,10 @@ class GallicaResource(Representation, ReprArgsMixin):
                     start[k] = list(range(v, end_v + 1))
             return start
         else:
-            resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)
-            resp["volume"] = search(r"T([0-9]+)", desc)
-            resp["number"] = search(r"N([0-9]+)", desc)
-            resp.update({k: int(v.group(1)) for k, v in resp.items() if v})
+            resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
+            resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
+            resp["number"] = search(r"N([0-9]+)", desc)  # type: ignore
+            resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
             return resp
 
     def ocr_find_article_in_journal(
@@ -306,13 +306,14 @@ class GallicaResource(Representation, ReprArgsMixin):
         This is a good deal simpler than trying to parse an ocrd text back into
         individual articles, which is probably a non-starter.
         """
-        start_p = self.get_physical_pno(self.target.pages[0], pages)
+        target: Article = self.target  # type: ignore
+        start_p = self.get_physical_pno(target.pages[0], pages)
         start_page = make_string_boring(self.fetch_text(journal, start_p))
         if not start_page:
             return False
 
-        title = make_string_boring(self.target.title)
-        author = make_string_boring(self.target.author)
+        title = make_string_boring(target.title)
+        author = make_string_boring(target.author)
         matches = find_near_matches(title, start_page, max_l_dist=2)
         if not matches:
             self.logger.debug("Failed to find title on page")
@@ -322,7 +323,7 @@ class GallicaResource(Representation, ReprArgsMixin):
                 return True
         else:
             self.logger.debug("Failed to find author on first page.")
-        end_p = self.get_physical_pno(self.target.pages[-1], pages)
+        end_p = self.get_physical_pno(target.pages[-1], pages)
         end_page = make_string_boring(self.fetch_text(journal, end_p))
         if matches := find_near_matches(author, end_page, max_l_dist=5):
             if fuzz.ratio(matches[0].matched, author) > 80:
@@ -331,7 +332,7 @@ class GallicaResource(Representation, ReprArgsMixin):
         return False
 
     @classmethod
-    def fetch_text(cls, resource: Resource, pno: str) -> str:
+    def fetch_text(cls, resource: Resource, pno: int) -> str:
         """Fetch text from resource as str."""
         either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
         if either.is_left:
@@ -340,8 +341,8 @@ class GallicaResource(Representation, ReprArgsMixin):
         return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
 
     def toc_find_article_in_journal(
-        self, journal: Resource, toc: str, pages, data: dict
-    ) -> bool:
+        self, journal: Resource, toc: str, pages: Pages, data: dict
+    ) -> List[Article]:
         """Find article in journal using journal's toc.
 
         This is preferable to relying on fuzzy matching ocr, but not all
@@ -362,11 +363,11 @@ class GallicaResource(Representation, ReprArgsMixin):
             args = data.copy()
             start_p, title = x
             try:
-                author, title = search(r"(.+?)\.* - (.+)", title).groups()
-            except:
+                author, title = search(r"(.+?)\.* - (.+)", title).groups()  # type: ignore
+            except AttributeError:
                 try:
-                    author, title = search(r"(.+?)\. (.+)", title).groups()
-                except:
+                    author, title = search(r"(.+?)\. (.+)", title).groups()  # type: ignore
+                except AttributeError:
                     self.logger.debug(f"Unable to parse toc entry {x[1]}")
                     author = ""
 
@@ -375,16 +376,16 @@ class GallicaResource(Representation, ReprArgsMixin):
             try:
                 end_p = int(entries[i + 1][0]) - 1
             except IndexError:
-                end_p = self.get_last_pno(pages)
+                end_p = self.get_last_pno(pages)  # type: ignore
             args["pages"] = list(range(int(start_p), int(end_p) + 1))
             start_p = self.get_physical_pno(start_p, pages)
-            end_p = self.get_physical_pno((end_p), pages)
+            end_p = self.get_physical_pno(str(end_p), pages)
             args["physical_pages"] = list(range(int(start_p), int(end_p) + 1))
             articles.append(Article.parse_obj(args))
 
         return articles
 
-    def get_article_candidates(self):
+    def get_article_candidates(self) -> List[Match]:
         """Generate match objs for each article in the corresponding issues.
 
         Returns:
@@ -452,7 +453,7 @@ class GallicaResource(Representation, ReprArgsMixin):
         return None
 
     @property
-    def resource(self):
+    def resource(self) -> Resource:
         """Resource()"""
         if not self._resource:
             self._resource = Resource(self.ark)
@@ -460,17 +461,16 @@ class GallicaResource(Representation, ReprArgsMixin):
         return self._resource
 
     @property
-    def timeout(self):
+    def timeout(self) -> int:
         "Timeout in url requests."
         return self.resource.timeout
 
     @timeout.setter
-    def timeout(self, val: int):
+    def timeout(self, val: int) -> None:
         self.resource.timeout = val
-        return self.resource
 
     @property
-    def pages(self) -> Pages:
+    def pages(self) -> Optional[Pages]:
         if not self._pages:
             either = self.resource.pagination_sync()
             if either.is_left:
@@ -482,7 +482,7 @@ class GallicaResource(Representation, ReprArgsMixin):
         """Get the physical pno for a logical pno."""
         if not pages:
             pages = self.pages
-        pnos = pages["livre"]["pages"]["page"]
+        pnos = pages["livre"]["pages"]["page"]  # type: ignore
         # sadly we have to do it ourselves
         for p in pnos:
             if p["numero"] == logical_pno:
@@ -525,8 +525,10 @@ class GallicaResource(Representation, ReprArgsMixin):
         if path.exists():
             return True
         try:
+            if not self.start_p or not self.end_p:
+                raise Exception("No pages.")
             for i, (start, length) in enumerate(
-                self._generate_blocks(self.start_p, self.end_p, blocksize)
+                self._generate_blocks(self.start_p, self.end_p, blocksize)  # type: ignore
             ):
 
                 fn = path.with_suffix(f".pdf.{i}")
