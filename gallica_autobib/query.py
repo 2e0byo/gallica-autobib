@@ -245,38 +245,6 @@ class GallicaResource(Representation):
         else:
             return f"{self.source_match.score * 100:2.5}%"
 
-    def check_vol_num(self, res):
-        either = res.oairecord_sync()
-        if either.is_left:
-            raise either.value
-        oai = either.value
-        desc = oai["results"]["notice"]["record"]["metadata"]["oai_dc:dc"][
-            "dc:description"
-        ]
-        desc = desc[1]
-        vol = search(r".*T([0-9]+)", desc)
-        vol = int(vol.group(1)) if vol else None
-        no = search(r".*N([0-9]+)", desc)
-        no = int(no.group(1)) if no else None
-        if self.target.volume and self.target.volume == vol:
-            return True
-        elif self.target.number and self.target.volume == no:
-            return True
-        else:
-            return False
-
-    def check_page_range(self, issue):
-        """Check to see if page range in given issue."""
-        either = issue.pagination_sync()
-        if either.is_left:
-            raise either.value
-        pnos = either.value["livre"]["pages"]["page"]
-        target = self.target.pages[0]
-        if any(p["numero"] == target for p in pnos):
-            return True
-        else:
-            return False
-
     def get_possible_issues(self) -> List[OrderedDict]:
         """Get possible issues.
 
