@@ -7,7 +7,7 @@ from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, List, Optional, Union, Tuple, Generator
+from typing import Any, Generator, List, Optional, Union
 
 import sruthi
 from bs4 import BeautifulSoup
@@ -158,7 +158,7 @@ class Query(GallicaSRU, Representation, ReprArgsMixin):
         query = self.target.generate_query()
         try:
             resps = self.fetcher.fetch_query(query)
-        except Exception as e:
+        except Exception:
             print_exc()
             return None
 

@@ -1,5 +1,6 @@
-from .monadic import Either as Either, Left as Left
 from typing import Any, Optional
+
+from .monadic import Either as Either, Left as Left
 
 def fetch(url: Any, timeout: int = ...) -> Any: ...
 def fetch_xml_html(url: Any, parser: str = ..., timeout: int = ...) -> Any: ...

@@ -1,5 +1,7 @@
-from lark import Transformer
 from typing import Any, Union
+
+from lark import Transformer
+
 from .monadic import Left, Right
 
 class Ark:

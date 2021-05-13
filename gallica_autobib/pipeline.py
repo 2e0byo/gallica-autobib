@@ -3,7 +3,7 @@ import logging
 from collections import namedtuple
 from multiprocessing import Pool
 from pathlib import Path
-from typing import Optional, TextIO, Tuple, Union, List
+from typing import List, Optional, TextIO, Tuple, Union
 from urllib.error import URLError
 
 import typer
@@ -11,9 +11,9 @@ from jinja2 import Environment, PackageLoader, Template, select_autoescape
 from slugify import slugify
 
 from . import process
+from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
 from .query import DownloadError, GallicaResource, MatchingError, Query
-from .models import RecordTypes, Article
 
 logger = logging.getLogger(__name__)
 

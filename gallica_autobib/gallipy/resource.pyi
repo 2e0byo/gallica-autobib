@@ -1,6 +1,7 @@
+from typing import Any, Optional
+
 from .ark import Ark as Ark
 from .monadic import Future as Future, Left as Left
-from typing import Any, Optional
 
 class Resource:
     timeout: int = ...

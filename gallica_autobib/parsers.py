@@ -1,5 +1,5 @@
 """Parsers for input data in various formats."""
-from typing import List, TextIO, Tuple, Union, Sequence
+from typing import List, TextIO, Tuple, Union
 
 import bibtexparser
 import rispy
