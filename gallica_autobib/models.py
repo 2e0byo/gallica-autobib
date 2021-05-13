@@ -59,9 +59,6 @@ VALID_QUERIES = (
 )
 
 
-RecordTypes = Union[Article, Collection, Book, Journal]
-
-
 class BibBase(BaseModel):
     """Properties shared with all kinds of bibliographic items."""
 
@@ -187,3 +184,5 @@ class GallicaBibObj(BaseModel):
 
 
 type_to_class = {"publication en série imprimée": Journal}
+
+RecordTypes = Union[Article, Collection, Book, Journal]
