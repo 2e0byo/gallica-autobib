@@ -533,7 +533,9 @@ class GallicaResource(
                 pass
         return self._end_p
 
-    def download_pdf(self, path: Path, blocksize: int = 100, trials: int = 3) -> bool:
+    def download_pdf(
+        self, path: Path, blocksize: int = 100, trials: int = 3, fetch_only: int = None
+    ) -> bool:
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
 
@@ -542,8 +544,11 @@ class GallicaResource(
         try:
             if not self.start_p or not self.end_p:
                 raise Exception("No pages.")
+            end_p = (
+                self.start_p + fetch_only - 1 if fetch_only is not None else self.end_p
+            )
             for i, (start, length) in enumerate(
-                self._generate_blocks(self.start_p, self.end_p, blocksize)  # type: ignore
+                self._generate_blocks(self.start_p, end_p, blocksize)  # type: ignore
             ):
 
                 fn = path.with_suffix(f".pdf.{i}")

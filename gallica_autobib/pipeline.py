@@ -24,7 +24,15 @@ env = Environment(
 
 _ProcessArgs = namedtuple(
     "_ProcessArgs",
-    ["record", "process_args", "download_args", "outf", "process", "clean"],
+    [
+        "record",
+        "process_args",
+        "download_args",
+        "outf",
+        "process",
+        "clean",
+        "fetch_only",
+    ],
 )
 
 
@@ -39,6 +47,7 @@ class InputParser:
         download_args: dict = None,
         process: bool = True,
         clean: bool = True,
+        fetch_only: Optional[int] = None,
     ):
         self.records: List[RecordTypes] = []
         self.raw: List[str] = []
@@ -53,6 +62,7 @@ class InputParser:
         self.scores: List[Optional[float]] = []
         self.output_template: Template = output_template  # type: ignore
         self.match = None
+        self.fetch_only = fetch_only
 
     @property
     def successful(self) -> int:
@@ -106,6 +116,7 @@ class InputParser:
                     self.generate_outf(record),
                     self.process,
                     self.clean,
+                    self.fetch_only,
                 )
                 for record in self.records
             ]
@@ -132,7 +143,9 @@ class InputParser:
         match = GallicaResource(args.record, match.candidate)
         try:
             logger.debug("Starting download.")
-            match.download_pdf(args.outf, **args.download_args)
+            match.download_pdf(
+                args.outf, fetch_only=args.fetch_only, **args.download_args
+            )
             score = match.confidence
         except MatchingError as e:
             logger.info(f"Failed to find match. ({e})")

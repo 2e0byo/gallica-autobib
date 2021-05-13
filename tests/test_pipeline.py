@@ -21,7 +21,7 @@ ids = ["pour-lire-augustin"]
 
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)
 def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path)
+    parser = BibtexParser(tmp_path, fetch_only=1)
     parser.read(bibtex)
     assert parser.progress == 0
     parser.run()
@@ -36,7 +36,7 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
 
 
 def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path)
+    parser = BibtexParser(tmp_path, fetch_only=1)
     parser.read(test_bibliographies_bibtex[0])
     args = _ProcessArgs(
         parser.records[0],
@@ -55,7 +55,7 @@ def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs
 
 
 def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path)
+    parser = BibtexParser(tmp_path, fetch_only=1)
     parser.read(test_bibliographies_bibtex[0])
     parser.clean = False
     args = _ProcessArgs(
@@ -76,7 +76,7 @@ def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_p
 
 
 def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path)
+    parser = BibtexParser(tmp_path, fetch_only=1)
     parser.read(test_bibliographies_bibtex[0])
     parser.process = False
     args = _ProcessArgs(
@@ -108,7 +108,7 @@ def parser(fixed_tmp_path):
     with tmpf.open("w") as f:
         f.write("-")
     args = dict(skip_existing=True)
-    parser = BibtexParser(fixed_tmp_path, process_args=args)
+    parser = BibtexParser(fixed_tmp_path, process_args=args, fetch_only=1)
     parser.read(test_bibliographies_bibtex[0])
     yield parser
 
@@ -162,7 +162,7 @@ from devtools import debug
 
 @pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
 def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
-    parser = RisParser(tmp_path)
+    parser = RisParser(tmp_path, fetch_only=1)
     parser.read(ris)
     debug(parser.records)
     report = parser.run()
