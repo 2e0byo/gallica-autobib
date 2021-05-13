@@ -7,14 +7,13 @@ from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import Any, Generator, List, Optional, Union
+from typing import Any, Generator, List, Optional, Union, TYPE_CHECKING
 
 import sruthi
 from bs4 import BeautifulSoup
 from devtools import debug
 from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
-from pydantic.typing import ReprArgs
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
@@ -22,6 +21,10 @@ from sruthi.response import SearchRetrieveResponse
 
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
+
+if TYPE_CHECKING:
+    from pydantic.typing import ReprArgs
+
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 
@@ -35,7 +38,7 @@ class DownloadError(Exception):
 
 
 class ReprArgsMixin:
-    def __repr_args__(self) -> ReprArgs:
+    def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
 
 
@@ -99,10 +102,10 @@ class Match(Representation, ReprArgsMixin):
         self._vals = vals
         return sum(v for _, v in vals.items()) / len(vals)
 
-    def __lt__(self, other: Match) -> bool:
+    def __lt__(self, other: "Match") -> bool:
         return self.score < other.score
 
-    def __gt__(self, other: Match) -> bool:
+    def __gt__(self, other: "Match") -> bool:
         return self.score > other.score
 
     def __eq__(self, other: object) -> bool:

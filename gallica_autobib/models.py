@@ -71,7 +71,7 @@ class BibBase(BaseModel):
         """Put together an sru query from a dict."""
         return " and ".join(f'{k} all "{v}"' for k, v in kwargs.items())
 
-    def _source(self) -> RecordTypes:
+    def _source(self) -> "RecordTypes":
         return self  # type: ignore
 
     def translate(self) -> dict:
@@ -95,22 +95,6 @@ class AuthorTitleMixin:
         else:
             n = f"{self.title[:short]} ({self.author[:short]})"  # type: ignore
         return n
-
-
-class Article(BibBase, AuthorTitleMixin):
-    """An article."""
-
-    title: str
-    journaltitle: str
-    pages: List[str]
-    author: str
-    editor: Optional[str] = None
-    number: Union[None, int, List[int]] = None
-    volume: Union[None, int, List[int]] = None
-    physical_pages: Optional[List[int]] = None
-
-    def _source(self) -> Journal:
-        return Journal.parse_obj(self.dict(by_alias=True))
 
 
 class Book(BibBase, AuthorTitleMixin):
@@ -155,6 +139,22 @@ class Journal(BibBase):
         return n
 
 
+class Article(BibBase, AuthorTitleMixin):
+    """An article."""
+
+    title: str
+    journaltitle: str
+    pages: List[str]
+    author: str
+    editor: Optional[str] = None
+    number: Union[None, int, List[int]] = None
+    volume: Union[None, int, List[int]] = None
+    physical_pages: Optional[List[int]] = None
+
+    def _source(self) -> Journal:
+        return Journal.parse_obj(self.dict(by_alias=True))
+
+
 class GallicaBibObj(BaseModel):
     """Class to represent Gallica's response."""
 
@@ -165,7 +165,7 @@ class GallicaBibObj(BaseModel):
     type: str
     date: str
 
-    def convert(self) -> RecordTypes:
+    def convert(self) -> "RecordTypes":
         """Return the right kind of model."""
         data = {
             "ark": self.ark,
