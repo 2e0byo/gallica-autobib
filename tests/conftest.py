@@ -11,7 +11,7 @@ logging.basicConfig(level=logging.DEBUG)
 @pytest.fixture
 def check_pdfs():
     def check(a, b):
-        assert pdfdiff(a, b, threshold=50), f"Pdf files {a} and {b} differ"
+        assert pdfdiff(a, b, threshold=30), f"Pdf files {a} and {b} differ"
 
     yield check
 
