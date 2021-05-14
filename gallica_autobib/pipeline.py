@@ -1,19 +1,22 @@
 """Pipeline to match and convert."""
+from pydantic import BaseModel
 import logging
 from collections import namedtuple
-from multiprocessing import Pool
+from concurrent.futures import ProcessPoolExecutor, Future
 from pathlib import Path
-from typing import List, Optional, TextIO, Tuple, Union
+from typing import List, Optional, TextIO, Tuple, Union, Literal
 from urllib.error import URLError
+from time import sleep
+import asyncio
 
 import typer
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
 from slugify import slugify
 
-from . import process
+from .process import process_pdf
 from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
-from .query import DownloadError, GallicaResource, MatchingError, Query
+from .query import DownloadError, GallicaResource, MatchingError, Query, Match
 
 logger = logging.getLogger(__name__)
 
@@ -22,18 +25,27 @@ env = Environment(
     autoescape=select_autoescape(["html", "xml"]),
 )
 
-_ProcessArgs = namedtuple(
-    "_ProcessArgs",
-    [
-        "record",
-        "process_args",
-        "download_args",
-        "outf",
-        "process",
-        "clean",
-        "fetch_only",
-    ],
-)
+
+class Record(BaseModel):
+    """Input"""
+
+    target: RecordTypes
+    raw: str
+    kind: Literal["bibtex", "ris"]
+
+
+class Result(BaseModel):
+    """Result of an pipeline run."""
+
+    record: Record
+    match: Optional[Match] = None
+    unprocessed: Optional[Path] = None
+    processed: Optional[Path] = None
+    errors: Optional[List[str]] = None
+    status: Optional[bool] = None
+
+    class Config:
+        arbitrary_types_allowed = True
 
 
 class InputParser:
@@ -58,11 +70,12 @@ class InputParser:
         self._outfs: List[Path] = []
         self.outdir = outdir
         self.clean = clean
-        self.results: List[Union[Path, None, bool]] = []
-        self.scores: List[Optional[float]] = []
+        self._results: List[Union[Path, None, bool]] = []
         self.output_template: Template = output_template  # type: ignore
-        self.match = None
         self.fetch_only = fetch_only
+        self._pool: Optional[ProcessPoolExecutor] = None
+        self.processes = 6
+        self.executing: Optional[List[Future]] = None
 
     @property
     def successful(self) -> int:
@@ -71,6 +84,15 @@ class InputParser:
     @property
     def total(self) -> int:
         return len(self.results)
+
+    @property
+    def results(self) -> List[Union[Path, None, bool]]:
+        for x in self.executing:
+            if x.done():
+                res = x.result()
+                if res not in self._results:
+                    self._results.append(res)
+        return self._results
 
     @property
     def output_template(self) -> Template:
@@ -86,9 +108,11 @@ class InputParser:
             self._output_template = env.get_template("output.txt")
 
     @property
-    def progress(self) -> float:
+    def progress(self) -> Optional[float]:
         """Progress in matching or failing."""
-        return len(self.results) / self.len_records
+        if not self.executing:
+            return None
+        return len([x for x in self.executing if x.done()]) / len(self.executing)
 
     def read(self, stream: Union[TextIO, str]) -> None:
         """Read input data."""
@@ -104,64 +128,120 @@ class InputParser:
         self._outfs.append(outf)
         return outf
 
-    def run(self, processes: int = 6) -> str:
+    def pool(self, pool: Optional[ProcessPoolExecutor] = None) -> ProcessPoolExecutor:
+        """Create or register pool, or return pool if extant."""
+        if pool:
+            self.pool.close()
+            self._pool = pool
+        elif not pool:
+            self._pool = ProcessPoolExecutor(self.processes)
+        return self._pool
+
+    def run(self) -> str:
+        """Run query, blocking until finished.
+
+        Returns:
+          Rendered report.
+        """
 
         logger.debug("Generating tasks.")
-        with Pool(processes=processes) as pool:
-            tasks = [
-                _ProcessArgs(
-                    record,
-                    self.process_args,
-                    self.download_args,
-                    self.generate_outf(record),
-                    self.process,
-                    self.clean,
-                    self.fetch_only,
-                )
-                for record in self.records
-            ]
-            with typer.progressbar(pool.imap(self.process_record, tasks)) as progress:
-                for res in progress:
-                    self.results.append(res[0])
-                    self.scores.append(res[1])
+        self.executing = self._send_records()
+        while self.progress < 1:
+            sleep(1)
+        print(self.results)
+        report = self.output_template.render(obj=self)
+        return report
 
-        return self.output_template.render(obj=self)
+    def _send_records(self) -> List[Future]:
+        """Send records to pool."""
+        return [
+            self.pool().submit(
+                self.process_record,
+                record,
+                self.generate_outf(record.target),
+                self.process,
+                self.clean,
+                fetch_only=self.fetch_only,
+                process_args=self.process_args,
+                download_args=self.download_args,
+            )
+            for record in self.records
+        ]
+
+    async def submit(self):
+        """Submit query to pool.
+
+        This is designed for use in web servers which may wish to use a
+        centrally defined pool shared between n queries.
+
+        Returns:
+          Rendered report.
+
+        """
+        logger.debug("Submitting tasks")
+        futures = self._send_records()
+        self.executing += futures
+        await asyncio.gather(asyncio.wrap_future(f) for f in futures)
+        report = self.output_template.render(obj=self)
+        self.executing = []
+        return report
 
     @staticmethod
     def process_record(
-        args: _ProcessArgs,
-    ) -> Tuple[Union[Path, None, bool], Optional[float]]:
+        record: Record,
+        outf: Path,
+        process: bool,
+        clean: bool,
+        fetch_only: Optional[bool] = None,
+        process_args: Optional[dict] = None,
+        download_args: Optional[dict] = None,
+    ) -> Result:
         """
-        Run pipeline on item, returning a path if it succeeds or None if it fails.
+        Run pipeline on item, returning a Result() object.
 
         """
-        query = Query(args.record)
+        query = Query(record.target)
         match = query.run()
+        args = dict(record=record, match=match)
         if not match:
-            logger.info(f"No match found for {args.record.author} {args.record.title}")
-            return None, None
-        match = GallicaResource(args.record, match.candidate)
+            logger.info(f"No match found for {record.target.name}")
+            args["status"] = None
+            return Result.parse_obj(args)
+
+        gallica_resource = GallicaResource(record.target, match.candidate)
+        if not download_args:
+            download_args = {}
         try:
             logger.debug("Starting download.")
-            match.download_pdf(
-                args.outf, fetch_only=args.fetch_only, **args.download_args
-            )
-            score = match.confidence
+            gallica_resource.download_pdf(outf, fetch_only=fetch_only, **download_args)
         except MatchingError as e:
-            logger.info(f"Failed to find match. ({e})")
-            return False, None
+            logger.info(f"Failed to match. ({e})")
+            result["errors"] = [e]
+            result["status"] = None
+            return Result.parse_obj(args)
+
         except (URLError, DownloadError) as e:
             logger.info(f"Failed to download. {e}")
-            return False, score
-        if args.process:
+            result["errors"] = [e]
+            result["status"] = False
+            return Result.parse_obj(args)
+
+        args["status"] = True
+
+        if process:
             logger.debug("Processing...")
-            outf = process.process_pdf(args.outf, **args.process_args)
-            if args.clean:
+            processed = process_pdf(outf, **process_args)
+            args["processed"] = processed
+            if clean:
                 logger.debug("Deleting original file.")
-                args.outf.unlink()
-            return outf, score
+                outf.unlink()
+            else:
+                args["unprocessed"] = outf
+            return Result.parse_obj(args)
+
         else:
-            return args.outf, score
+            args["unprocessed"] = outf
+            return Result.parse_obj(args)
 
 
 class BibtexParser(InputParser):
@@ -175,8 +255,11 @@ class BibtexParser(InputParser):
           str]: string to parse.
 
         """
-        self.records, self.raw = parse_bibtex(stream)
-        self.len_records = len(self.records)
+        records, raw = parse_bibtex(stream)
+        self.records = [
+            Record(target=records[i], raw=raw[i], kind="bibtex")
+            for i in range(len(records))
+        ]
 
 
 class RisParser(InputParser):
@@ -190,5 +273,8 @@ class RisParser(InputParser):
           str]: string to parse.
 
         """
-        self.records, self.raw = parse_ris(stream)
-        self.len_records = len(self.records)
+        records, raw = parse_ris(stream)
+        self.records = [
+            Record(target=records[i], raw=raw[i], kind="ris")
+            for i in range(len(records))
+        ]
