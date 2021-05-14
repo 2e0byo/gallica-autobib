@@ -1,22 +1,20 @@
 """Pipeline to match and convert."""
-from pydantic import BaseModel
-import logging
-from collections import namedtuple
-from concurrent.futures import ProcessPoolExecutor, Future
-from pathlib import Path
-from typing import List, Optional, TextIO, Tuple, Union, Literal
-from urllib.error import URLError
-from time import sleep
 import asyncio
+import logging
+from concurrent.futures import Future, ProcessPoolExecutor
+from pathlib import Path
+from time import sleep
+from typing import List, Literal, Optional, TextIO, Union
+from urllib.error import URLError
 
-import typer
 from jinja2 import Environment, PackageLoader, Template, select_autoescape
+from pydantic import BaseModel
 from slugify import slugify
 
-from .process import process_pdf
 from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
-from .query import DownloadError, GallicaResource, MatchingError, Query, Match
+from .process import process_pdf
+from .query import DownloadError, GallicaResource, Match, MatchingError, Query
 
 logger = logging.getLogger(__name__)
 

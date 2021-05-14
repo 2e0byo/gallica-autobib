@@ -1,8 +1,8 @@
 from pathlib import Path
+from tempfile import TemporaryDirectory
 
 import pytest
 from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser
-from tempfile import TemporaryDirectory
 
 
 @pytest.fixture(scope="module")
