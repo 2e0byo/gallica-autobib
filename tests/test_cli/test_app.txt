@@ -1,7 +1,7 @@
                                  Status Report
                                  -------------
 
-  ==M.-D. Chenu Ascèse et péché==
+  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1923, publisher=None, ark=None, title='Ascèse et péché', journaltitle='La Vie spirituelle', pages=['547', '548', '549', '550', '551'], author='M.-D. Chenu', editor=None, number=None, volume=7, physical_pages=None)>==
 
 @Article{chenu23:_asces,
   author =       {M.-D. Chenu},
@@ -13,12 +13,15 @@
   pages =     {547--51}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-ascese-et-peche-m-d-chenu.pdf
     
+      Processed: /tmp/pytest-template-tmpdir/processed-ascese-et-peche-m-d-chenu.pdf
+    
+    
+    Confidence: 93.33 %
   
 
 
-  ==M.-D. Chenu Aux incroyants==
+  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1923, publisher=None, ark=None, title='Aux incroyants', journaltitle='La Vie spirituelle', pages=['93', '94', '95'], author='M.-D. Chenu', editor=None, number=9, volume=None, physical_pages=None)>==
 
 @Article{chenu23:_aux,
   author =       {M.-D. Chenu},
@@ -30,12 +33,15 @@
   pages =     {93--5}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-aux-incroyants-m-d-chenu.pdf
     
+      Processed: /tmp/pytest-template-tmpdir/processed-aux-incroyants-m-d-chenu.pdf
+    
+    
+    Confidence: 76.67 %
   
 
 
-  ==J. de Vathaire Bulletin de Liturgie==
+  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1921, publisher=None, ark=None, title='Bulletin de Liturgie', journaltitle='La Vie spirituelle', pages=['223', '224', '225', '226', '227', '228', '229', '230', '231', '232', '233', '234'], author='J. de Vathaire', editor=None, number=None, volume=2, physical_pages=None)>==
 
 @Article{vathaire21:_bullet_litur,
   author =       {J. de Vathaire},
@@ -47,8 +53,11 @@
   language = {french}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-bulletin-de-liturgie-j-de-vathaire.pdf
     
+      Processed: /tmp/pytest-template-tmpdir/processed-bulletin-de-liturgie-j-de-vathaire.pdf
+    
+    
+    Confidence: 93.33 %
   
 
 

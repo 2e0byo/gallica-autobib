@@ -1,9 +1,9 @@
                                  Status Report
                                  -------------
 
-  ==M.-D. Chenu Pour lire saint Augustin==
+  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1930, publisher=None, ark=None, title='Pour lire saint Augustin', journaltitle='La Vie spirituelle', pages=['135', '136', '137', '138', '139', '140', '141', '142', '143', '144', '145', '146', '147', '148', '149', '150', '151', '152', '153', '154', '155', '156', '157'], author='M.-D. Chenu', editor=None, number=None, volume=24, physical_pages=None)>==
 
-    @Article{danielou30:_pour_augus,
+@Article{danielou30:_pour_augus,
       author =       {M.-D. Chenu},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
@@ -13,7 +13,10 @@
       pages =     {135-57}}
 
   
-    Output:  /tmp/pytest-template-tmpdir/processed-pour-lire-saint-augustin-m-d-chenu.pdf
     
+      Processed: /tmp/pytest-template-tmpdir/processed-pour-lire-saint-augustin-m-d-chenu.pdf
+    
+    
+    Confidence: 93.33 %
   
 
