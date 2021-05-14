@@ -1,11 +1,12 @@
 from pathlib import Path
+from concurrent.futures import ProcessPoolExecutor
 from tempfile import TemporaryDirectory
 
 import pytest
 from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture()
 def bibtex_parser():
     with TemporaryDirectory() as tmp_path:
         parser = BibtexParser(Path(tmp_path), fetch_only=1)
@@ -202,3 +203,20 @@ def test_base_parser():
     parser = InputParser(Path("."))
     with pytest.raises(NotImplementedError):
         parser.read("Inputstr")
+
+
+@pytest.mark.asyncio
+async def test_submit(bibtex_parser, file_regression, check_pdfs):
+    pool = ProcessPoolExecutor(1)
+    bibtex_parser.read(test_bibliographies_bibtex[-1])
+    bibtex_parser.pool(pool)
+    assert bibtex_parser.progress is None
+    await bibtex_parser.submit()
+    assert bibtex_parser.progress
+    res = bibtex_parser.results[0]
+    with res.processed.open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+    assert res.record.raw == test_bibliographies_bibtex[-1]
+    assert res.record.kind == "bibtex"

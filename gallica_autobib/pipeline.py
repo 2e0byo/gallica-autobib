@@ -129,7 +129,8 @@ class InputParser:
     def pool(self, pool: Optional[ProcessPoolExecutor] = None) -> ProcessPoolExecutor:
         """Create or register pool, or return pool if extant."""
         if pool:
-            self.pool.close()
+            if self._pool:
+                self.pool.close()
             self._pool = pool
         elif not pool:
             self._pool = ProcessPoolExecutor(self.processes)
@@ -177,10 +178,9 @@ class InputParser:
         """
         logger.debug("Submitting tasks")
         futures = self._send_records()
-        self.executing += futures
-        await asyncio.gather(asyncio.wrap_future(f) for f in futures)
+        self.executing = futures
+        await asyncio.gather(*[asyncio.wrap_future(f) for f in futures])
         report = self.output_template.render(obj=self)
-        self.executing = []
         return report
 
     @staticmethod
