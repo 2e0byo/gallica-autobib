@@ -1,7 +1,7 @@
 [tool.poetry]
 name = "gallica-autobib"
 version = "0.1.1"
-description = "Tools to convert SQLAlchemy models to Pydantic models"
+description = "Automatically match Bibliographies against bnf.gallica.fr"
 authors = ["John Morris <2e0byo@gmail.com>"]
 license = "MIT"
 readme = "README.md"
