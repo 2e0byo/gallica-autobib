@@ -61,6 +61,10 @@ class Match(
             self._score = self._calculate_score()
         return self._score
 
+    @property
+    def confidence(self) -> str:
+        return f"{self.score*100:2.4} %"
+
     def _calculate_score(self) -> float:
         """Calculate the score for a given match."""
         vals = {}
