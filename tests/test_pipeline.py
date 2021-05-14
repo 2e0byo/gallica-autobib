@@ -24,8 +24,7 @@ test_bibliographies_bibtex = [
       year =      1930,
       language =  {french},
       volume = 24,
-      pages =     {135-57}}
-"""
+      pages =     {135-57}}"""
 ]
 
 ids = ["pour-lire-augustin"]
