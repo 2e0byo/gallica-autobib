@@ -1,13 +1,13 @@
 * [{{ obj.successful }}/{{ obj.total }}] Status
- {% for record in obj.records %}
-** {% if obj.results[loop.index0] %} DONE {% else %} TODO {%endif %}{{record.author}}  /{{record.title}}/
+ {% for result in obj.results %}
+** {% if result.status %} DONE {% else %} TODO {%endif %}{{result.record.target.name()}}
 
-   #+BEGIN_SRC bibtex
-{{ obj.raw[loop.index0] }}
+   #+BEGIN_SRC {% if result.record.kind == "bibtex" %} bibtex {% elif result.record.kind == "ris" %} ris {% endif %}
+{{result.record.raw}}
    #+END_SRC
 
-   {% if obj.results[loop.index0] %}
-     [[{{ obj.results[loop.index0] }}][Processed Pdf]] {% if not obj.clean %}[[{{ obj._outfs[loop.index0] }}][Original Pdf]]{% endif %}  Confidence: {{ obj.scores[loop.index0] }}
+   {% if result.status %}
+     [[{{ result.processed }}][Processed Pdf]] {% if result.unprocessed %}[[{{ result.unprocessed }}][Original Pdf]]{% endif %}  Confidence: {{ result.match.confidence }}
    {% endif %}
 
  {% endfor %}

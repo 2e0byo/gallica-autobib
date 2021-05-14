@@ -1,15 +1,18 @@
                                  Status Report
                                  -------------
-{% for record in obj.records %}
-  =={{record.author}} {{ record.title }}==
+{% for result in obj.results %}
+  =={{ result.record.target.name }}==
 
-{{ obj.raw[loop.index0] }}
+{{ result.record.raw }}
 
-  {% if obj.results[loop.index0] %}
-    Output:  {{ obj.results[loop.index0] }}
-    {% if not obj.clean %}
-    Original: {{ obj._outfs[loop.index0] }}
+  {% if result.status %}
+    {% if result.processed %}
+      Processed: {{ result.processed }}
     {% endif %}
+    {% if result.unprocessed %}
+      Unprocessed: {{ result.unprocessed }}
+    {% endif %}
+    Confidence: {{ result.match.confidence }}
   {% else %}
     Failed to match :(
   {% endif %}
