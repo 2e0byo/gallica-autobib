@@ -17,8 +17,7 @@ def test_pipeline_attrs(bibtex_parser):
 
 
 test_bibliographies_bibtex = [
-    """
-    @Article{danielou30:_pour_augus,
+    """@Article{danielou30:_pour_augus,
       author =       {M.-D. Chenu},
       title =        {Pour lire saint Augustin},
       journaltitle = {La Vie spirituelle},
@@ -33,7 +32,7 @@ ids = ["pour-lire-augustin"]
 
 
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)
-def test_bibpiwuocessedtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
+def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path, fetch_only=1, clean=False)
     parser.read(bibtex)
     no = len(parser.records)
@@ -43,13 +42,16 @@ def test_bibpiwuocessedtex_parser(bibtex, file_regression, tmp_path, check_pdfs)
     assert len(parser.executing) == no, "Parser executed other stuff."
     assert len(parser.results) == no, "Spurious entry in results."
     assert len(parser.results) == no, "Spurious accumulation of results."
-    with parser.results[0].processed.open("rb") as f:
+    res = parser.results[0]
+    with res.processed.open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
         )
-    assert str(parser.generate_outf(parser.results[0].record.target)) == str(
-        parser.results[0].unprocessed
-    ).replace(".pdf", "-1.pdf")
+    assert str(parser.generate_outf(res.record.target)) == str(res.unprocessed).replace(
+        ".pdf", "-1.pdf"
+    )
+    assert res.record.raw == bibtex
+    assert res.record.kind == "bibtex"
 
 
 def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs):
@@ -143,59 +145,58 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
 #     file_regression.check(report)
 
 
-# test_bibliographies_ris = [
-#     [
-#         """
-# TY  - JOUR
-# TI  - Une opinion inconnue de l'école de Gilbert de la Porrée
-# AU  - M.-D. Chenu
-# JO  - Revue d'Histoire Ecclésiastique
-# VL  - 26
-# IS  - 2
-# SP  - 347
-# EP  - 353
-# SN  - 0035-2381
-# PY  - 1930
-# PB  - Université catholique de Louvain.
-# ER  -
-#     """,
-#         False,
-#     ],
-#     [
-#         """
-# TY  - JOUR
-# TI  - La surnaturalisation des vertus
-# AU  - M.-D. Chenu
-# T2  - Bulletin Thomiste
-# PY  - 1932
-# SP  - 93
-# EP  - 96
-# ER  -
-# """,
-#         False,
-#     ],
-# ]
+test_bibliographies_ris = [
+    [
+        """TY  - JOUR
+TI  - Une opinion inconnue de l'école de Gilbert de la Porrée
+AU  - M.-D. Chenu
+JO  - Revue d'Histoire Ecclésiastique
+VL  - 26
+IS  - 2
+SP  - 347
+EP  - 353
+SN  - 0035-2381
+PY  - 1930
+PB  - Université catholique de Louvain.
+ER  -""",
+        False,
+    ],
+    [
+        """TY  - JOUR
+TI  - La surnaturalisation des vertus
+AU  - M.-D. Chenu
+T2  - Bulletin Thomiste
+PY  - 1932
+SP  - 93
+EP  - 96
+ER  -""",
+        False,
+    ],
+]
 
-# ris_ids = ["inconnue", "surnaturalisation"]
+ris_ids = ["inconnue", "surnaturalisation"]
 
 
-# from devtools import debug
+from devtools import debug
 
 
-# @pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
-# def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
-#     parser = RisParser(tmp_path, fetch_only=1)
-#     parser.read(ris)
-#     debug(parser.records)
-#     report = parser.run()
-#     if status:
-#         assert "Output:" in report
-#         with parser.results[0].open("rb") as f:
-#             file_regression.check(
-#                 f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
-#             )
-#     else:
-#         assert "Failed to match :(" in report
+@pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
+def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
+    parser = RisParser(tmp_path, fetch_only=1)
+    parser.read(ris)
+    debug(parser.records)
+    report = parser.run()
+    if status:
+        assert "Processed:" in report
+        with parser.results[0].open("rb") as f:
+            file_regression.check(
+                f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+            )
+    else:
+        assert "Failed to match :(" in report
+    res = parser.results[0]
+    assert res.record.raw == ris
+    assert res.record.kind == "ris"
 
 
 # def test_base_parser():
