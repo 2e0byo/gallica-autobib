@@ -246,14 +246,14 @@ class GallicaResource(
         return self._ark
 
     @property
-    def confidence(self) -> Optional[str]:
-        """Confidence of the match, if any.  This will trigger a match."""
+    def match(self) -> Optional[Match]:
+        """The Match() object representing our choice.
+
+        This will trigger a match even if we use a cached download.
+        """
         if not self.source_match:
             self.ark
-        if not self.source_match:
-            return None
-        else:
-            return f"{self.source_match.score * 100:2.5}%"
+        return self.source_match
 
     def get_possible_issues(self) -> List[OrderedDict]:
         """Get possible issues.

@@ -148,7 +148,6 @@ class InputParser:
         self.executing = self._send_records()
         while self.progress < 1:
             sleep(1)
-        print(self.results)
         report = self.output_template.render(obj=self)
         return report
 
@@ -202,7 +201,7 @@ class InputParser:
         """
         query = Query(record.target)
         match = query.run()
-        args = dict(record=record, match=match)
+        args = dict(record=record)
         if not match:
             logger.info(f"No match found for {record.target.name}")
             args["status"] = None
@@ -214,16 +213,17 @@ class InputParser:
         try:
             logger.debug("Starting download.")
             gallica_resource.download_pdf(outf, fetch_only=fetch_only, **download_args)
+            args["match"] = gallica_resource.match
         except MatchingError as e:
             logger.info(f"Failed to match. ({e})")
-            result["errors"] = [e]
-            result["status"] = None
+            args["errors"] = [str(e)]
+            args["status"] = None
             return Result.parse_obj(args)
 
         except (URLError, DownloadError) as e:
             logger.info(f"Failed to download. {e}")
-            result["errors"] = [e]
-            result["status"] = False
+            args["errors"] = [str(e)]
+            args["status"] = False
             return Result.parse_obj(args)
 
         args["status"] = True
