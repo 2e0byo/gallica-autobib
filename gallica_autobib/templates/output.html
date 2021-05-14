@@ -1,14 +1,20 @@
 <h1>Gallica autobib</h1>
-{% for record in obj.records %}
-<h2> {{ record.author }} <i>{{record.title }}</i> </h2>
+
+{% for result in obj.results %}
+  <h2>{{result.record.target.name}}</h2>
   <pre>
     <code>
-{{ obj.raw[loop.index0] }}
+      {{result.record.raw}}
     </code>
   </pre>
-
-  {% if obj.results[loop.index0] %}
-    <a href="pdfs/{{obj.results[loop.index0].name}}">Processed Pdf</a>
+  {% if result.status %}
+    {% if result.processed %}
+      <a href="pdfs/{{result.processed.name}}">Processed Pdf</a>
+    {% endif %}
+    {% if result.unprocessed %}
+      <a href="pdfs/{{result.unprocessed.name}}">Unprocessed Pdf</a>
+    {% endif %}
+    Confidence: {{ result.match.confidence }}
   {% else %}
     Unable to download pdf :(
   {% endif %}
