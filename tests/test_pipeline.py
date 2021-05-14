@@ -119,30 +119,30 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
         )
 
 
-# report_types = ["output.txt", "output.org", "output.html"]
+report_types = ["output.txt", "output.org", "output.html"]
 
 
-# @pytest.fixture()
-# def parser(fixed_tmp_path):
-#     """A parser which has loaded something but won't actually download it."""
-#     tmpf = fixed_tmp_path / "m-d-chenu-pour-lire-saint-augustin.pdf"
-#     outf = fixed_tmp_path / "processed-m-d-chenu-pour-lire-saint-augustin.pdf"
-#     with outf.open("w") as f:
-#         f.write("-")
-#     with tmpf.open("w") as f:
-#         f.write("-")
-#     args = dict(skip_existing=True)
-#     parser = BibtexParser(fixed_tmp_path, process_args=args, fetch_only=1)
-#     parser.read(test_bibliographies_bibtex[0])
-#     yield parser
+@pytest.fixture()
+def parser(fixed_tmp_path):
+    """A parser which has loaded something but won't actually download it."""
+    tmpf = fixed_tmp_path / "m-d-chenu-pour-lire-saint-augustin.pdf"
+    outf = fixed_tmp_path / "processed-m-d-chenu-pour-lire-saint-augustin.pdf"
+    with outf.open("w") as f:
+        f.write("-")
+    with tmpf.open("w") as f:
+        f.write("-")
+    args = dict(skip_existing=True)
+    parser = BibtexParser(fixed_tmp_path, process_args=args, fetch_only=1)
+    parser.read(test_bibliographies_bibtex[0])
+    yield parser
 
 
-# @pytest.mark.parametrize("template", report_types)
-# def test_templates(parser, template, file_regression, fixed_tmp_path):
-#     parser.output_template = None
-#     parser.output_template = template
-#     report = parser.run()
-#     file_regression.check(report)
+@pytest.mark.parametrize("template", report_types)
+def test_templates(parser, template, file_regression, fixed_tmp_path):
+    parser.output_template = None
+    parser.output_template = template
+    report = parser.run()
+    file_regression.check(report)
 
 
 test_bibliographies_ris = [
@@ -199,7 +199,7 @@ def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
     assert res.record.kind == "ris"
 
 
-# def test_base_parser():
-#     parser = InputParser(Path("."))
-#     with pytest.raises(NotImplementedError):
-#         parser.read("Inputstr")
+def test_base_parser():
+    parser = InputParser(Path("."))
+    with pytest.raises(NotImplementedError):
+        parser.read("Inputstr")
