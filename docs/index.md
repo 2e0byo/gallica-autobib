@@ -1,7 +1,7 @@
 # pygallica-autobib
 
 <p align="center">
-    <em>A summary phrase to catch attention!</em>
+    <em>Automatically match Bibliographies against bnf.gallica.fr!</em>
 </p>
 
 <p align="center">
@@ -10,6 +10,9 @@
 </a>
 <a href="https://github.com/2e0byo/pygallica-autobib/actions?query=workflow%3APublish" target="_blank">
     <img src="https://github.com/2e0byo/pygallica-autobib/workflows/Publish/badge.svg" alt="Publish">
+</a>
+<a href="https://dependabot.com/" target="_blank">
+    <img src="https://flat.badgen.net/dependabot/2e0byo/pygallica-autobib?icon=dependabot" alt="Dependabot Enabled">
 </a>
 <a href="https://codecov.io/gh/2e0byo/pygallica-autobib" target="_blank">
     <img src="https://img.shields.io/codecov/c/github/2e0byo/pygallica-autobib?color=%2334D058" alt="Coverage">
@@ -20,34 +23,88 @@
 <a href="https://pypi.org/project/gallica-autobib/" target="_blank">
     <img src="https://img.shields.io/pypi/pyversions/gallica-autobib.svg" alt="Python Versions">
 </a>
+</p>
 
-## The Basic Idea
+## Overview
 
-This is a template module collecting many utilities I have liked from other projects, to serve as a personal reference.
+`pygallica-autobib` will match your bibliographies against the French National
+Library and download articles as pdfs if possible, optionally post-processing
+them.  Whilst it obviously cannot download articles which Gallica does not hold,
+it strives to achieve a 100% match rate. If you find an article it does not
+match, please [report a bug](https://github.com/2e0byo/pygallica-autobib/issues).
 
-- [https://github.com/tiangolo/pydantic-sqlalchemy/](https://github.com/tiangolo/pydantic-sqlalchemy/)
-- [https://github.com/cookiecutter/cookiecutter](https://github.com/cookiecutter/cookiecutter)
+Features:
 
-## Features
+- Input in RIS or Bibtex format
+- Output report generated with a jinja template (templates for org-mode, html
+  and plaintext supplied)
 
-- Poetry (virtual environment and publish to PyPi, all with one tool)
-- black (linting/formatter)
-- autoflake (removing unused packages)
-- isort (dependency organization)
-- mypy (static type checking)
-- pytest (including test coverage)
-- GitHub Actions for CI/CD
-- mkdocs for documentation (with material theme)
 
-## Installing gallica-autobib
+## Online Demo
 
-Install the latest release:
+There is an [online demo](https://phd.2e0byo.co.uk/gallica) with a very basic
+interface, allowing
+
+## Installation
+
+You need python >= 3.9 (but if anyone needs to use this with an older python,
+open an issue and I will refactor the few incompatible statements).  Then
+install as usual:
 
 ```bash
-pip install gallica-autobib
+pipx install gallica-autobib # prefered, if you have pipx, or
+python -m pip install gallica-autobib
 ```
 
-Or you can clone `gallica-autobib` and get started locally
+## Standalone Usage
+
+```bash
+gallica-autobib my-bibliography.bib pdfs # match my-bibliography and put files in ./pdfs
+gallica-autobib --help
+```
+
+## As a library
+```python
+
+from pathlib import Path
+from gallica_autobib.models import Article
+from gallica_autobib.query import Query, GallicaResource
+
+target = Article(
+    journaltitle="La Vie spirituelle",
+    author="M.-D. Chenu",
+    pages=list(range(547, 552)),
+    volume=7,
+    year=1923,
+    title="Ascèse et péché originel",
+)
+query = Query(target)
+candidate = Query.run().candidate # get candidate journal
+gallica_resource = GallicaResource(candidate, source)
+ark = gallica_resource.ark # match candidate article
+gallica_resource.download_pdf(Path("article.pdf"))
+```
+
+or if you just want to do what the cli does:
+
+```python
+from pathlib import Path
+from gallica_resource.pipeline import BibtexParser
+
+parser = BibtexParser(Path("outdir"))
+
+with Path("articles.bib").open() as f:
+    parser.read(f)
+
+parser.run()
+for result in parser.results:
+    print(result)
+```
+
+for more advanced usage see the documentation and the test suite.
+
+
+## Developing
 
 ```bash
 
@@ -56,71 +113,53 @@ pip install --user poetry
 
 # install all dependencies (including dev)
 poetry install
-
-# develop!
-
 ```
 
-## Example Usage
+When your feature is ready, open a PR.
 
-```python
-import gallica-autobib
+## Testing
+We use pytest and mypy.  You may want to focus on getting unit tests passing
+first:
 
-# do stuff
+```bash
+poetry run pytest --cov=gallica_autobib --cov-report html --cov-branch tests
 ```
 
-Only **Python 3.6+** is supported as required by the black, pydantic packages
+If you have started a shell with `poetry shell` you can drop the `poetry run`.
 
-## Publishing to Pypi
+When unittests are passing you can run the whole suite with:
 
-### Poetry's documentation
-
-Note that it is recommended to use [API tokens](https://pypi.org/help/#apitoken) when uploading packages to PyPI.
-
->Once you have created a new token, you can tell Poetry to use it:
-
-<https://python-poetry.org/docs/repositories/#configuring-credentials>
-
-We do this using GitHub Actions' Workflows and Repository Secrets!
-
-### Repo Secrets
-
-Go to your repo settings and add a `PYPI_TOKEN` environment variable:
-
-![Github Actions setup of Poetry token environment variable](images/Github-Secrets-PYPI_TOKEN-Setup.png)
-
-### Inspect the GitHub Actions Publish Workflows
-
-```yml
-name: Publish
-
-on:
-  release:
-    types:
-      - created
-
-jobs:
-  publish:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      ...
-      ...
-      ...
-      - name: Publish
-        env:
-          PYPI_TOKEN: ${{ secrets.PYPI_TOKEN }}
-        run: |
-          poetry config pypi-token.pypi $PYPI_TOKEN
-          bash scripts/publish.sh
+```bash
+poetry run scripts/test.sh
 ```
 
-> That's it!
+Note that tests will only pass fully if `/tmp/` exists and is writeable, and if
+`poppler` and `imagemagick` are installed.  This is due to the use of
+`pdf-diff-visually` and the rather hackish template tests.
+ 
+You may wish to check your formatting first with
 
-When you make a release on GitHub, the publish workflow will run and deploy to PyPi! 🚀🎉😎
+```bash
+poetry run scripts/format.sh
+```
 
-## Contributing Guide
+Alternatively, just open a premature PR to run the tests in CI.  Note that this
+is rather slow.
 
-Welcome! 😊👋
+## Plausibly Askable Questions
 
-> Please see the [Contributing Guide](CONTRIBUTING.md).
+### Why don't you also check xyz.com?
+Because I don't know about it.  Open an issue and I'll look into it.
+
+### Why don't you use library xyz for image processing?
+Probably because I don't know about it.  This is a quick tool written to help me
+research.  Submit a PR and I'll happily update it.
+
+### Why is the code so verbose?
+It is rather object-oriented.  It might be rather over engineered. It was
+written in a hurry and the design evolved as it went along.  On the other hand,
+it should be easier to extend.
+
+### Why not just extend pygallica?
+I mean to submit the SRU stuff as an extension to `pygallica`
+
