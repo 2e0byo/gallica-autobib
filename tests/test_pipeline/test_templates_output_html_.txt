@@ -1,12 +1,23 @@
 <h1>Gallica autobib</h1>
 
-<h2>  <i></i> </h2>
+
+  <h2>Pour lire saint Augustin (M.-D. Chenu)</h2>
   <pre>
     <code>
-
+@Article{danielou30:_pour_augus,
+      author =       {M.-D. Chenu},
+      title =        {Pour lire saint Augustin},
+      journaltitle = {La Vie spirituelle},
+      year =      1930,
+      language =  {french},
+      volume = 24,
+      pages =     {135-57}}
     </code>
   </pre>
-
   
-    <a href="pdfs/">Processed Pdf</a>
+    
+      <a href="pdfs/processed-pour-lire-saint-augustin-m-d-chenu.pdf">Processed Pdf</a>
+    
+    
+    Confidence: 93.33 %
   
