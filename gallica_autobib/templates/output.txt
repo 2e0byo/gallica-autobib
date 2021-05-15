@@ -1,7 +1,7 @@
                                  Status Report
                                  -------------
 {% for result in obj.results %}
-  =={{ result.record.target.name }}==
+  =={{ result.record.target.name() }}==
 
 {{ result.record.raw }}
 
