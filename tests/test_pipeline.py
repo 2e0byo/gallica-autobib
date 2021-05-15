@@ -125,8 +125,8 @@ report_types = ["output.txt", "output.org", "output.html"]
 @pytest.fixture()
 def parser(fixed_tmp_path):
     """A parser which has loaded something but won't actually download it."""
-    tmpf = fixed_tmp_path / "m-d-chenu-pour-lire-saint-augustin.pdf"
-    outf = fixed_tmp_path / "processed-m-d-chenu-pour-lire-saint-augustin.pdf"
+    tmpf = fixed_tmp_path / "pour-lire-saint-augustin-m-d-chenu.pdf"
+    outf = fixed_tmp_path / "processed-pour-lire-saint-augustin-m-d-chenu.pdf"
     with outf.open("w") as f:
         f.write("-")
     with tmpf.open("w") as f:
