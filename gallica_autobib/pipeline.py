@@ -59,7 +59,7 @@ class InputParser:
         clean: bool = True,
         fetch_only: Optional[int] = None,
     ):
-        self.records: List[RecordTypes] = []
+        self.records: List[Record] = []
         self.raw: List[str] = []
         self.len_records: int = 0
         self.process = process
@@ -73,7 +73,7 @@ class InputParser:
         self.fetch_only = fetch_only
         self._pool: Optional[ProcessPoolExecutor] = None
         self.processes = 6
-        self.executing: Optional[List[Future]] = None
+        self.executing: List[Future] = []
 
     @property
     def successful(self) -> int:
@@ -130,11 +130,11 @@ class InputParser:
         """Create or register pool, or return pool if extant."""
         if pool:
             if self._pool:
-                self.pool.close()
+                self.pool.shutdown(wait=True)  # type: ignore
             self._pool = pool
         elif not pool:
             self._pool = ProcessPoolExecutor(self.processes)
-        return self._pool
+        return self._pool  # type: ignore
 
     def run(self) -> str:
         """Run query, blocking until finished.
@@ -145,7 +145,7 @@ class InputParser:
 
         logger.debug("Generating tasks.")
         self.executing = self._send_records()
-        while self.progress < 1:
+        while self.progress < 1:  # type: ignore
             sleep(1)
         return self.report()
 
@@ -165,7 +165,7 @@ class InputParser:
             for record in self.records
         ]
 
-    async def submit(self):
+    async def submit(self) -> str:
         """Submit query to pool.
 
         This is designed for use in web servers which may wish to use a
@@ -200,10 +200,15 @@ class InputParser:
         """
         query = Query(record.target)
         match = query.run()
-        args = dict(record=record)
+        args = dict(record=record)  # type: ignore
+        if not process_args:
+            process_args = {}
+        if not download_args:
+            download_args = {}
+
         if not match:
             logger.info(f"No match found for {record.target.name}")
-            args["status"] = None
+            args["status"] = None  # type: ignore
             return Result.parse_obj(args)
 
         gallica_resource = GallicaResource(record.target, match.candidate)
@@ -212,34 +217,34 @@ class InputParser:
         try:
             logger.debug("Starting download.")
             gallica_resource.download_pdf(outf, fetch_only=fetch_only, **download_args)
-            args["match"] = gallica_resource.match
+            args["match"] = gallica_resource.match  # type: ignore
         except MatchingError as e:
             logger.info(f"Failed to match. ({e})")
-            args["errors"] = [str(e)]
-            args["status"] = None
+            args["errors"] = [str(e)]  # type: ignore
+            args["status"] = None  # type: ignore
             return Result.parse_obj(args)
 
         except (URLError, DownloadError) as e:
             logger.info(f"Failed to download. {e}")
-            args["errors"] = [str(e)]
-            args["status"] = False
+            args["errors"] = [str(e)]  # type: ignore
+            args["status"] = False  # type: ignore
             return Result.parse_obj(args)
 
-        args["status"] = True
+        args["status"] = True  # type: ignore
 
         if process:
             logger.debug("Processing...")
             processed = process_pdf(outf, **process_args)
-            args["processed"] = processed
+            args["processed"] = processed  # type: ignore
             if clean:
                 logger.debug("Deleting original file.")
                 outf.unlink()
             else:
-                args["unprocessed"] = outf
+                args["unprocessed"] = outf  # type: ignore
             return Result.parse_obj(args)
 
         else:
-            args["unprocessed"] = outf
+            args["unprocessed"] = outf  # type: ignore
             return Result.parse_obj(args)
 
 
