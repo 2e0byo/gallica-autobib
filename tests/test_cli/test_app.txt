@@ -1,7 +1,7 @@
                                  Status Report
                                  -------------
 
-  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1923, publisher=None, ark=None, title='Ascèse et péché', journaltitle='La Vie spirituelle', pages=['547', '548', '549', '550', '551'], author='M.-D. Chenu', editor=None, number=None, volume=7, physical_pages=None)>==
+  ==Ascèse et péché (M.-D. Chenu)==
 
 @Article{chenu23:_asces,
   author =       {M.-D. Chenu},
@@ -21,7 +21,7 @@
   
 
 
-  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1923, publisher=None, ark=None, title='Aux incroyants', journaltitle='La Vie spirituelle', pages=['93', '94', '95'], author='M.-D. Chenu', editor=None, number=9, volume=None, physical_pages=None)>==
+  ==Aux incroyants (M.-D. Chenu)==
 
 @Article{chenu23:_aux,
   author =       {M.-D. Chenu},
@@ -41,7 +41,7 @@
   
 
 
-  ==<bound method AuthorTitleMixin.name of Article(publicationdate=1921, publisher=None, ark=None, title='Bulletin de Liturgie', journaltitle='La Vie spirituelle', pages=['223', '224', '225', '226', '227', '228', '229', '230', '231', '232', '233', '234'], author='J. de Vathaire', editor=None, number=None, volume=2, physical_pages=None)>==
+  ==Bulletin de Liturgie (J. de Vathaire)==
 
 @Article{vathaire21:_bullet_litur,
   author =       {J. de Vathaire},
