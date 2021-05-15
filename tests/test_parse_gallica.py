@@ -2,11 +2,11 @@
 
 Wouldn't it be nice if apis returned machine-readable data?!
 """
-import pytest
 from pathlib import Path
-from devtools import debug
 
-test_tocs = ["toc-no-cells.xml", "toc-with-cells.xml"]
+import pytest
+
+test_tocs = ["toc-no-cells.xml", "toc-with-cells.xml", "mix.xml"]
 
 
 @pytest.mark.parametrize("xml", test_tocs)

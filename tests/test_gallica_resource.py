@@ -17,54 +17,6 @@ def pages():
         yield pickle.load(f)
 
 
-@pytest.fixture
-def gallica_resource():
-    target = Article(
-        journaltitle="La vie spirituelle",
-        pages=list(range(135, 158)),
-        title="Pour lire saint Augustin",
-        author="M.-D. Chenu",
-        year=1930,
-    )
-    source = Journal(
-        year=[
-            1919,
-            1920,
-            1921,
-            1922,
-            1923,
-            1924,
-            1925,
-            1926,
-            1927,
-            1928,
-            1929,
-            1930,
-            1931,
-            1932,
-            1933,
-            1934,
-            1935,
-            1936,
-            1937,
-            1938,
-            1939,
-            1940,
-            1941,
-            1942,
-            1943,
-            1944,
-            1945,
-        ],
-        publisher="Le Cerf (Paris)",
-        ark="http://catalogue.bnf.fr/ark:/12148/cb34406663m",
-        journaltitle="La Vie spirituelle, ascétique et mystique",
-        number=None,
-        volume=None,
-    )
-    yield GallicaResource(target, source)
-
-
 def test_ark(gallica_resource):
     ark = gallica_resource.ark
     assert get_ark(ark) == get_ark("ark:/12148/bpt6k9735634r")
@@ -154,7 +106,18 @@ candidates = [
             title="Ascèse et péché originel",
         ),
         dict(ark="ark:/12148/bpt6k97356214"),
-    ]
+    ],
+    [
+        Article(
+            journaltitle="La Vie spirituelle",
+            author="Réginald Garrigou-lagrange",
+            year=1921,
+            title="La perfection de la charité",
+            volume=2,
+            pages=list(range(1, 21)),
+        ),
+        dict(ark="ark:/12148/bpt6k9736026f"),
+    ],
 ]
 
 

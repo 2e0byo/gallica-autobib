@@ -1,9 +1,9 @@
-from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
+from pathlib import Path
 from tempfile import TemporaryDirectory
-from gallica_autobib import pipeline
 
 import pytest
+from gallica_autobib import pipeline
 from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser
 
 
@@ -51,18 +51,10 @@ test_bibliographies_bibtex = [
       year =      1930,
       language =  {french},
       volume = 24,
-      pages =     {135-57}}""",
-    """@Article{garrigou-lagrange21:_la,
-  author =       {Réginald Garrigou-Lagrange},
-  title =        {La perfection de la charité},
-  journaltitle = {La Vie spirituelle},
-  year =      1921,
-  language =  {french},
-  volume =    2,
-  pages =     {1--20}}""",
+      pages =     {135-57}}"""
 ]
 
-ids = ["pour-lire-augustin", "perfection"]
+ids = ["pour-lire-augustin"]
 
 # downloads 1 page
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)

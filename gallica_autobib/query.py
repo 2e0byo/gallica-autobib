@@ -13,8 +13,8 @@ from typing import (
     List,
     Optional,
     OrderedDict,
-    Union,
     Tuple,
+    Union,
 )
 
 import sruthi
@@ -554,12 +554,11 @@ class GallicaResource(
         if not self._start_p:
             try:
                 self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
-            except AttributeError as e:
+            except AttributeError:
                 from traceback import print_exc
 
                 print_exc()
                 debug(self.target)
-                pass
         return self._start_p
 
     @property
