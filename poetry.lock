@@ -520,6 +520,18 @@ python-versions = ">=3.5"
 mkdocs-material = ">=5.0.0"
 
 [[package]]
+name = "mkdocs-versioning"
+version = "0.4.0"
+description = "A tool that allows for versioning sites built with mkdocs"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+mkdocs = ">=1.1"
+PyYAML = ">=5.3"
+
+[[package]]
 name = "multipledispatch"
 version = "0.6.0"
 description = "Multiple dispatch"
@@ -869,6 +881,20 @@ pprintpp = "*"
 pytest = ">=3.5.0"
 
 [[package]]
+name = "pytest-mock"
+version = "3.6.1"
+description = "Thin-wrapper around the mock package for easier use with pytest"
+category = "dev"
+optional = false
+python-versions = ">=3.6"
+
+[package.dependencies]
+pytest = ">=5.0"
+
+[package.extras]
+dev = ["pre-commit", "tox", "pytest-asyncio"]
+
+[[package]]
 name = "pytest-regressions"
 version = "2.2.0"
 description = "Easy to use fixtures to write regression tests."
@@ -1215,7 +1241,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "b715d30db4c0baaa9944e184fa31a4832a35703292d74e96bb1bcbf758c63b6f"
+content-hash = "2309bc482f9bf61cc1f4f0c59c742eff6a1a85481f2ce225aab999411d1b7e81"
 
 [metadata.files]
 appdirs = [
@@ -1576,6 +1602,10 @@ mkdocs-material-extensions = [
     {file = "mkdocs-material-extensions-1.0.1.tar.gz", hash = "sha256:6947fb7f5e4291e3c61405bad3539d81e0b3cd62ae0d66ced018128af509c68f"},
     {file = "mkdocs_material_extensions-1.0.1-py3-none-any.whl", hash = "sha256:d90c807a88348aa6d1805657ec5c0b2d8d609c110e62b9dce4daf7fa981fa338"},
 ]
+mkdocs-versioning = [
+    {file = "mkdocs-versioning-0.4.0.tar.gz", hash = "sha256:2eb0053ae96ed8d897499165a66ef630dba4b8c8c0817a534e23967664a3fd63"},
+    {file = "mkdocs_versioning-0.4.0-py3-none-any.whl", hash = "sha256:6da04a2e7483b1800db3ff35bce86ed64b273ce886bcdf857aec46bda1f992d9"},
+]
 multipledispatch = [
     {file = "multipledispatch-0.6.0-py2-none-any.whl", hash = "sha256:407e6d8c5fa27075968ba07c4db3ef5f02bea4e871e959570eeb69ee39a6565b"},
     {file = "multipledispatch-0.6.0-py3-none-any.whl", hash = "sha256:a55c512128fb3f7c2efd2533f2550accb93c35f1045242ef74645fc92a2c3cba"},
@@ -1787,6 +1817,10 @@ pytest-datadir = [
 pytest-diff = [
     {file = "pytest-diff-0.1.14.tar.gz", hash = "sha256:f1a86070fa53c2d6f29f5e242aac78df29dcb24a0ccaabb9b354d099665bc0fc"},
     {file = "pytest_diff-0.1.14-py3-none-any.whl", hash = "sha256:bbed16b05f5a73d19575f293d6777cbd2b1de7e59df5e8a933574177bdd0552b"},
+]
+pytest-mock = [
+    {file = "pytest-mock-3.6.1.tar.gz", hash = "sha256:40217a058c52a63f1042f0784f62009e976ba824c418cced42e88d5f40ab0e62"},
+    {file = "pytest_mock-3.6.1-py3-none-any.whl", hash = "sha256:30c2f2cc9759e76eee674b81ea28c9f0b94f8f0445a1b87762cadf774f0df7e3"},
 ]
 pytest-regressions = [
     {file = "pytest-regressions-2.2.0.tar.gz", hash = "sha256:15a71f77cb266dd4ca94331abe4c339ad056b2b2175e47442711c98cf6d65716"},

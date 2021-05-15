@@ -51,6 +51,8 @@ importmagic = "^0.1.7"
 diff-pdf-visually = "^1.6.2"
 mypy = "^0.812"
 pytest-asyncio = "^0.15.1"
+mkdocs-versioning = "^0.4.0"
+pytest-mock = "^3.6.1"
 
 [build-system]
 requires = ["poetry>=0.12"]

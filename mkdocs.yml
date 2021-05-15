@@ -9,5 +9,9 @@ repo_name: 2e0byo/pygallica-autobib
 repo_url: https://github.com/2e0byo/pygallica-autobib
 edit_uri: ''
 
+plugins:
+  - mkdocs-versioning:
+      version: 0.3.0
 nav:
     - gallica-autobib: 'index.md'
+    - version Selector: "../"
