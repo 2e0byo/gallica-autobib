@@ -16,7 +16,7 @@ def check_pdfs():
     yield check
 
 
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def fixed_tmp_path():
     path = Path("/tmp/pytest-template-tmpdir/")
     if path.exists():

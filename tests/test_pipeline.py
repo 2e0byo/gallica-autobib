@@ -1,6 +1,7 @@
 from pathlib import Path
 from concurrent.futures import ProcessPoolExecutor
 from tempfile import TemporaryDirectory
+from gallica_autobib import pipeline
 
 import pytest
 from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser
@@ -8,9 +9,34 @@ from gallica_autobib.pipeline import BibtexParser, InputParser, RisParser
 
 @pytest.fixture()
 def bibtex_parser():
+    """A bibtex parser which downloads 1 page."""
     with TemporaryDirectory() as tmp_path:
         parser = BibtexParser(Path(tmp_path), fetch_only=1)
         yield parser
+
+
+def mock_download_pdf(self, path, blocksize=100, trials=3, fetch_only=None):
+    with (Path("tests/test_pdfs") / path.name).open("rb") as f:
+        with path.open("wb") as o:
+            o.write(f.read())
+    return True
+
+
+def mock_ark():
+    return "https://gallica.bnf.fr/ark:/12148/bpt6k9735634r"
+
+
+@pytest.fixture()
+def mock_bibtex_parser(tmp_path, mocker):
+    """A bibtex parser for the pour-lire-augustin result which neither searches nor downloads."""
+    download_pdf = pipeline.GallicaResource.download_pdf
+    ark = pipeline.GallicaResource.ark
+    pipeline.GallicaResource.download_pdf = mock_download_pdf
+    pipeline.GallicaResource.ark = mock_ark
+    parser = pipeline.BibtexParser(tmp_path)
+    yield parser
+    pipeline.GallicaResource.download_pdf = download_pdf
+    pipeline.GallicaResource.ark = ark
 
 
 def test_pipeline_attrs(bibtex_parser):
@@ -30,7 +56,7 @@ test_bibliographies_bibtex = [
 
 ids = ["pour-lire-augustin"]
 
-
+# downloads 1 page
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)
 def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path, fetch_only=1, clean=False)
@@ -54,8 +80,14 @@ def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     assert res.record.kind == "bibtex"
 
 
-def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path, fetch_only=1)
+def test_bibtex_parser_single_thread_clean(
+    mock_bibtex_parser, file_regression, tmp_path, check_pdfs
+):
+    """Test the processing step only, mocking the others.
+
+    Neither downloads nor searches.
+    """
+    parser = mock_bibtex_parser
     parser.read(test_bibliographies_bibtex[0])
     outf = parser.generate_outf(parser.records[0].target)
     result = parser.process_record(
@@ -75,8 +107,13 @@ def test_bibtex_parser_single_thread_clean(file_regression, tmp_path, check_pdfs
         )
 
 
-def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path, fetch_only=1)
+def test_bibtex_parser_single_thread_no_clean(
+    mock_bibtex_parser, file_regression, tmp_path, check_pdfs
+):
+    """Test not cleaning.
+
+    Neither downloads nor searches."""
+    parser = mock_bibtex_parser
     parser.read(test_bibliographies_bibtex[0])
     outf = parser.generate_outf(parser.records[0].target)
     result = parser.process_record(
@@ -90,15 +127,17 @@ def test_bibtex_parser_single_thread_no_clean(file_regression, tmp_path, check_p
     )
     assert result.processed != result.unprocessed
     assert result.unprocessed
-    assert outf.exists()
-    with result.processed.open("rb") as f:
-        file_regression.check(
-            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
-        )
+    assert outf.exists()  # no need to regression check as same file as above.
 
 
-def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check_pdfs):
-    parser = BibtexParser(tmp_path, fetch_only=1)
+def test_bibtex_parser_single_thread_no_process(
+    mock_bibtex_parser, file_regression, tmp_path, check_pdfs
+):
+    """Test not processing.
+
+    Neither downloads nor searches.
+    """
+    parser = mock_bibtex_parser
     parser.read(test_bibliographies_bibtex[0])
     outf = parser.generate_outf(parser.records[0].target)
     result = parser.process_record(
@@ -113,16 +152,11 @@ def test_bibtex_parser_single_thread_no_process(file_regression, tmp_path, check
     assert not result.processed
     assert result.unprocessed
     assert outf.exists()
-    with result.unprocessed.open("rb") as f:
-        file_regression.check(
-            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
-        )
+    sourcefile = Path("tests/test_pdfs") / outf.name
+    assert result.unprocessed.stat().st_size == sourcefile.stat().st_size
 
 
-report_types = ["output.txt", "output.org", "output.html"]
-
-
-@pytest.fixture()
+@pytest.fixture(scope="module")
 def parser(fixed_tmp_path):
     """A parser which has loaded something but won't actually download it."""
     tmpf = fixed_tmp_path / "pour-lire-saint-augustin-m-d-chenu.pdf"
@@ -133,15 +167,20 @@ def parser(fixed_tmp_path):
         f.write("-")
     args = dict(skip_existing=True)
     parser = BibtexParser(fixed_tmp_path, process_args=args, fetch_only=1)
+    parser.process_args = {"skip_existing": True}
     parser.read(test_bibliographies_bibtex[0])
+    parser.run()
     yield parser
+
+
+report_types = ["output.txt", "output.org", "output.html"]
 
 
 @pytest.mark.parametrize("template", report_types)
 def test_templates(parser, template, file_regression, fixed_tmp_path):
-    parser.output_template = None
+    """Test templates.  Runs queries to generate templates.  Doesn't download."""
     parser.output_template = template
-    report = parser.run()
+    report = parser.report()
     file_regression.check(report)
 
 
@@ -182,6 +221,9 @@ from devtools import debug
 
 @pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
 def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
+    """Would download if any matched---but they don't.
+
+    This fn can be replaced with an equivalence test on the generated objects between bibtex and ris."""
     parser = RisParser(tmp_path, fetch_only=1)
     parser.read(ris)
     debug(parser.records)
@@ -205,18 +247,18 @@ def test_base_parser():
         parser.read("Inputstr")
 
 
+# downloads 1 page
 @pytest.mark.asyncio
-async def test_submit(bibtex_parser, file_regression, check_pdfs):
+async def test_submit(mock_bibtex_parser, file_regression, check_pdfs):
+    mock_bibtex_parser.process = False
     pool = ProcessPoolExecutor(1)
-    bibtex_parser.read(test_bibliographies_bibtex[-1])
-    bibtex_parser.pool(pool)
-    assert bibtex_parser.progress is None
-    await bibtex_parser.submit()
-    assert bibtex_parser.progress
-    res = bibtex_parser.results[0]
-    with res.processed.open("rb") as f:
-        file_regression.check(
-            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
-        )
-    assert res.record.raw == test_bibliographies_bibtex[-1]
-    assert res.record.kind == "bibtex"
+    mock_bibtex_parser.read(test_bibliographies_bibtex[-1])
+    mock_bibtex_parser.pool(pool)
+    assert mock_bibtex_parser.progress is None
+    await mock_bibtex_parser.submit()
+    assert mock_bibtex_parser.progress
+    for result in mock_bibtex_parser.results:
+        outf = result.unprocessed
+        sourcef = Path("tests/test_pdfs") / outf.name
+        assert outf.stat().st_size == sourcef.stat().st_size
+        assert result.record.kind == "bibtex"
