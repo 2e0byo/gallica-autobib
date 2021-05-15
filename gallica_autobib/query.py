@@ -406,9 +406,11 @@ class GallicaResource(
             except IndexError:
                 end_p = self.get_last_pno(pages)  # type: ignore
             args["pages"] = list(range(int(start_p), int(end_p) + 1))
-            start_p = self.get_physical_pno(start_p, pages)
-            end_p = self.get_physical_pno(str(end_p), pages)
-            args["physical_pages"] = list(range(int(start_p), int(end_p) + 1))
+            physical_start_p = self.get_physical_pno(start_p, pages)
+            physical_end_p = self.get_physical_pno(str(end_p), pages)
+            args["physical_pages"] = list(
+                range(int(physical_start_p), int(physical_end_p) + 1)
+            )
             articles.append(Article.parse_obj(args))
 
         return articles
