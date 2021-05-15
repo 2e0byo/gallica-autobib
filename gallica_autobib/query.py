@@ -19,7 +19,6 @@ from typing import (
 
 import sruthi
 from bs4 import BeautifulSoup
-from devtools import debug
 from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
 from pydantic.utils import Representation
@@ -554,13 +553,7 @@ class GallicaResource(
     def start_p(self) -> Optional[int]:
         """Physical page we start on."""
         if not self._start_p:
-            try:
-                self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
-            except AttributeError:
-                from traceback import print_exc
-
-                print_exc()
-                debug(self.target)
+            self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
         return self._start_p
 
     @property
@@ -582,7 +575,6 @@ class GallicaResource(
         if path.exists():
             return True
         try:
-            debug(self.start_p, self.end_p)
             if not self.start_p or not self.end_p:
                 raise Exception("No pages.")
             end_p = (
