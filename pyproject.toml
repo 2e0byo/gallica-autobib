@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "gallica-autobib"
-version = "0.1.1"
+version = "0.1.2"
 description = "Automatically match Bibliographies against bnf.gallica.fr"
 authors = ["John Morris <2e0byo@gmail.com>"]
 license = "MIT"
