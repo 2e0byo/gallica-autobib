@@ -147,8 +147,7 @@ class InputParser:
         self.executing = self._send_records()
         while self.progress < 1:
             sleep(1)
-        report = self.output_template.render(obj=self)
-        return report
+        return self.report()
 
     def _send_records(self) -> List[Future]:
         """Send records to pool."""
@@ -180,8 +179,10 @@ class InputParser:
         futures = self._send_records()
         self.executing = futures
         await asyncio.gather(*[asyncio.wrap_future(f) for f in futures])
-        report = self.output_template.render(obj=self)
-        return report
+        return self.report()
+
+    def report(self) -> str:
+        return self.output_template.render(obj=self)
 
     @staticmethod
     def process_record(
