@@ -17,6 +17,6 @@
       Processed: /tmp/pytest-template-tmpdir/processed-pour-lire-saint-augustin-m-d-chenu.pdf
     
     
-    Confidence: 93.33 %
+    Confidence: 72.33 %
   
 

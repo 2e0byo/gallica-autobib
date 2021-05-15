@@ -10,5 +10,5 @@
   ascétique et mystique'', number=None, volume=None) series_ark={''scheme'': ''http'',
   ''authority'': ''catalogue.bnf.fr'', ''naan'': ''12148'', ''name'': ''cb34406663m'',
   ''qualifier'': None} _ark=None _resource=None logger=<Logger Pour lire saint Augustin
-  (M.-D. Chenu) (DEBUG)> _start_p=None _end_p=None _pages=None consider_toc=False
-  source_match=None minimum_confidence=0.5'
+  (M.-D. Chenu) (DEBUG)> _start_p=None _end_p=None _pages=None consider_toc=True source_match=None
+  minimum_confidence=0.5'
