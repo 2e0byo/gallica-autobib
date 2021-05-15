@@ -51,10 +51,18 @@ test_bibliographies_bibtex = [
       year =      1930,
       language =  {french},
       volume = 24,
-      pages =     {135-57}}"""
+      pages =     {135-57}}""",
+    """@Article{garrigou-lagrange21:_la,
+  author =       {Réginald Garrigou-Lagrange},
+  title =        {La perfection de la charité},
+  journaltitle = {La Vie spirituelle},
+  year =      1921,
+  language =  {french},
+  volume =    2,
+  pages =     {1--20}}""",
 ]
 
-ids = ["pour-lire-augustin"]
+ids = ["pour-lire-augustin", "perfection"]
 
 # downloads 1 page
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)
