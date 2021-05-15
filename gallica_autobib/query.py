@@ -6,7 +6,16 @@ from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import TYPE_CHECKING, Any, Generator, List, Optional, OrderedDict, Union
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generator,
+    List,
+    Optional,
+    OrderedDict,
+    Union,
+    Tuple,
+)
 
 import sruthi
 from bs4 import BeautifulSoup
@@ -21,8 +30,8 @@ from sruthi.response import SearchRetrieveResponse
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
-if TYPE_CHECKING:
-    from pydantic.typing import ReprArgs
+if TYPE_CHECKING:  # pragma: nocover
+    from pydantic.typing import ReprArgs  # pragma: nocover
 
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
@@ -225,7 +234,7 @@ class GallicaResource(
         self._start_p = None
         self._end_p = None
         self._pages: Optional[Pages] = None
-        self.consider_toc = False
+        self.consider_toc = True
         self.source_match: Optional[Match] = None
         self.minimum_confidence = 0.5
 
@@ -373,11 +382,11 @@ class GallicaResource(
         holds.
 
         """
-        soup = BeautifulSoup(toc, "xml")
-        entries = [(x.xref.text, x.seg.text) for x in soup.find_all("item")]
+        target: Article = self.target  # type: ignore
+        target_start_p = str(target.pages[0])
+        entries = [x for x in self.parse_gallica_toc(toc) if x[0] == target_start_p]
         entries.sort(key=lambda x: int(x[0]))
         articles = []
-        debug(entries)
         for i, x in enumerate(entries):
             args = data.copy()
             start_p, title = x
@@ -403,6 +412,27 @@ class GallicaResource(
             articles.append(Article.parse_obj(args))
 
         return articles
+
+    @staticmethod
+    def parse_gallica_toc(xml: str) -> List[Tuple[str, str]]:
+        """Parse Gallica' toc xml.  There are, needless to say, *several* forms."""
+        soup = BeautifulSoup(xml, "xml")
+        toc = []
+        if soup.find("row"):
+            for row in soup.find_all("row"):
+                title = pno = None
+                if seg := row.find("seg"):
+                    title = seg.text.strip()
+                if xref := row.find("xref"):
+                    pno = xref.text.strip()
+                if title and pno:
+                    toc.append((pno, title))
+        else:
+            for item in soup.find_all("item"):
+                if not item.find("seg"):
+                    continue
+                toc.append((item.xref.text.strip(), item.seg.text.strip()))
+        return toc
 
     def get_article_candidates(self) -> List[Match]:
         """Generate match objs for each article in the corresponding issues.
@@ -434,16 +464,17 @@ class GallicaResource(
                 raise either.value
             pages = either.value
 
-            if not self.consider_toc or (either := issue.toc_sync()).is_left:
-                if self.ocr_find_article_in_journal(issue, pages):
-                    args = dict(self.target)
-                    args.update(data)
-                    matches.append(Match(self.target, Article.parse_obj(args)))
-            else:
+            articles = []
+            if self.consider_toc and not (either := issue.toc_sync()).is_left:
                 articles = self.toc_find_article_in_journal(
                     issue, either.value, pages, data
                 )
                 matches += [Match(self.target, a) for a in articles]
+            if not articles:
+                if self.ocr_find_article_in_journal(issue, pages):
+                    args = dict(self.target)
+                    args.update(data)
+                    matches.append(Match(self.target, Article.parse_obj(args)))
 
             matches.sort(reverse=True)
             if matches and matches[0].score > 0.7:
@@ -523,7 +554,11 @@ class GallicaResource(
         if not self._start_p:
             try:
                 self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
-            except AttributeError:
+            except AttributeError as e:
+                from traceback import print_exc
+
+                print_exc()
+                debug(self.target)
                 pass
         return self._start_p
 
@@ -546,6 +581,7 @@ class GallicaResource(
         if path.exists():
             return True
         try:
+            debug(self.start_p, self.end_p)
             if not self.start_p or not self.end_p:
                 raise Exception("No pages.")
             end_p = (
