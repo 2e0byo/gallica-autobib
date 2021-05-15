@@ -1,10 +1,10 @@
 <h1>Gallica autobib</h1>
 
 {% for result in obj.results %}
-  <h2>{{result.record.target.name}}</h2>
+  <h2>{{result.record.target.name()}}</h2>
   <pre>
     <code>
-      {{result.record.raw}}
+{{result.record.raw}}
     </code>
   </pre>
   {% if result.status %}
