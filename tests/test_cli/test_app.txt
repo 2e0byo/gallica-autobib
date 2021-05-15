@@ -37,7 +37,7 @@
       Processed: /tmp/pytest-template-tmpdir/processed-aux-incroyants-m-d-chenu.pdf
     
     
-    Confidence: 76.67 %
+    Confidence: 74.0 %
   
 
 
