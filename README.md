@@ -9,10 +9,7 @@
     <img src="https://github.com/2e0byo/pygallica-autobib/workflows/Test/badge.svg" alt="Test">
 </a>
 <a href="https://github.com/2e0byo/pygallica-autobib/actions?query=workflow%3APublish" target="_blank">
-    <img src="https://github.com/2e0byo/pygallica-autobib/workflows/Publish/badge.svg" alt="Publish">
-</a>
-<a href="https://dependabot.com/" target="_blank">
-    <img src="https://flat.badgen.net/dependabot/2e0byo/pygallica-autobib?icon=dependabot" alt="Dependabot Enabled">
+    <img src="https://github.com/2e0byo/pygalln=dependabot" alt="Dependabot Enabled">
 </a>
 <a href="https://codecov.io/gh/2e0byo/pygallica-autobib" target="_blank">
     <img src="https://img.shields.io/codecov/c/github/2e0byo/pygallica-autobib?color=%2334D058" alt="Coverage">
@@ -42,8 +39,10 @@ Features:
 
 ## Online Demo
 
-There is an [online demo](https://phd.2e0byo.co.uk/gallica) with a very basic
-interface, allowing
+There is an [online demo](http://gallica.phd.2e0byo.co.uk) with a very basic
+interface. It is not currently production ready. Note that Gallica use some
+*very* aggressive rate limiting, so if you hit it with the same requests too
+often it will simply go down.
 
 ## Installation
 
