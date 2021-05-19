@@ -97,13 +97,18 @@ class AuthorTitleMixin:
         return n
 
 
-class Book(BibBase, AuthorTitleMixin):
+class HasPublisher(BibBase):
+    publisher: Optional[str] = None
+    location: Optional[str] = None
+
+
+class Book(HasPublisher, AuthorTitleMixin):
     title: str
     author: str
     editor: Optional[str] = None
 
 
-class Collection(BibBase, AuthorTitleMixin):
+class Collection(HasPublisher, AuthorTitleMixin):
     title: str
     author: str
     editor: Optional[str] = None
