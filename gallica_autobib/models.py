@@ -1,7 +1,13 @@
 # package imports
-from typing import List, Optional, Union
+from typing import List, Optional, Union, Tuple
+from jinja2 import Environment, PackageLoader
 
 from pydantic import BaseModel, Field
+
+env = Environment(
+    loader=PackageLoader("gallica_autobib", "templates"),
+)
+
 
 record_types = {
     "Article": None,
@@ -87,6 +93,20 @@ class BibBase(BaseModel):
 
         return self.assemble_query(**data)
 
+    @property
+    def omit(self) -> Tuple[str]:
+        return ()
+
+    def bibtex(self) -> str:
+        args = {k: v for k, v in dict(self).items() if k not in self.omit}
+        args["name"] = type(self).__name__
+        return env.get_template(f"{args['name']}.bib").render(obj=args)
+
+    def ris(self) -> str:
+        args = {k: v for k, v in dict(self).items() if k not in self.omit}
+        args["name"] = type(self).__name__
+        return env.get_template(f"{args['name']}.ris").render(obj=args)
+
 
 class AuthorTitleMixin:
     def name(self, short: Optional[int] = None) -> str:
@@ -100,6 +120,7 @@ class AuthorTitleMixin:
 class HasPublisher(BibBase):
     publisher: Optional[str] = None
     location: Optional[str] = None
+    pages: Optional[int] = None
 
 
 class Book(HasPublisher, AuthorTitleMixin):
@@ -158,6 +179,10 @@ class Article(BibBase, AuthorTitleMixin):
 
     def _source(self) -> Journal:
         return Journal.parse_obj(self.dict(by_alias=True))
+
+    @property
+    def _suppress(self) -> Tuple[str]:
+        return "physical_pages"
 
 
 class GallicaBibObj(BaseModel):
