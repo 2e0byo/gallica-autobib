@@ -1,6 +1,6 @@
 """Handle our internal cache, which we use to avoid hammering Gallica's
 servers, and to make our life easier when re-running."""
-from sqlitedict import SqliteDict
+import sqlite3
 import jsonpickle
 from typing import Optional, TYPE_CHECKING, Any
 from xdg import xdg_cache_home
@@ -17,25 +17,30 @@ class Cached:
 
     def __init__(self, cachename: str) -> None:
         """A resource in the cache, stored in a separate table."""
+        self.tablename = cachename
         if not self.cachedir.exists():
             self.cachedir.mkdir()
         cache = self.cachedir / self.CACHEFN
-        self.sqldict = SqliteDict(
-            tablename=cachename,
-            encode=jsonpickle.dumps,
-            decode=jsonpickle.loads,
-            autocommit=True,
-            filename=str(cache),
-        )
+        self.con = sqlite3.connect(cache)
+        MAKE_TABLE = f'CREATE TABLE IF NOT EXISTS "{cachename}" (key TEXT PRIMARY KEY, value BLOB)'
+        self.con.execute(MAKE_TABLE)
+        self.con.commit()
+
+    def __del__(self) -> None:
+        self.con.close()
 
     def __getitem__(self, key: int) -> Optional[Any]:
-        try:
-            return self.sqldict[key]
-        except KeyError:
+        GET_ITEM = f'SELECT value FROM "{self.tablename}" WHERE key = (?)'
+        item = self.con.execute(GET_ITEM, (key,)).fetchone()
+        if item:
+            return jsonpickle.loads(item[0])
+        else:
             return None
 
     def __setitem__(self, key: int, val: any) -> None:
-        self.sqldict[key] = val
+        SET = f'REPLACE INTO "{self.tablename}" (key, value) VALUES (?,?)'
+        self.con.execute(SET, (key, jsonpickle.dumps(val)))
+        self.con.commit()
 
     def __delitem__(self, key: int) -> None:
         del self.sqldict[key]
