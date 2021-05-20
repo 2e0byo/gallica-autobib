@@ -1,4 +1,5 @@
 from typing import List, Optional, Union, Tuple
+from slugify import slugify
 from .templating import latex_env, env
 
 from pydantic import BaseModel, Field
@@ -103,12 +104,15 @@ class BibBase(BaseModel):
 
 
 class AuthorTitleMixin:
-    def name(self, short: Optional[int] = None) -> str:
-        if short is not None:
+    def name(self, short: Optional[int] = None, slug: bool = False) -> str:
+        if short is None:
             n = f"{self.title} ({self.author})"  # type: ignore
         else:
             n = f"{self.title[:short]} ({self.author[:short]})"  # type: ignore
-        return n
+        if slug:
+            return slugify(n)
+        else:
+            return n
 
 
 class HasPublisher(BibBase):
@@ -149,14 +153,17 @@ class Journal(BibBase):
         data["title"] = self.journaltitle
         return data
 
-    def name(self, short: Optional[int] = None) -> str:
+    def name(self, short: Optional[int] = None, slug: bool = False) -> str:
         if short is not None:
             n = f"{self.journaltitle[:short]} {self.publicationdate}"
         else:
             n = f"{self.journaltitle} {self.publicationdate}"
         n += f" vol. {self.volume}" if self.volume else ""
         n += f" n. {self.number}" if self.number else ""
-        return n
+        if slug:
+            return slugify(n)
+        else:
+            return n
 
 
 class Article(BibBase, AuthorTitleMixin):
