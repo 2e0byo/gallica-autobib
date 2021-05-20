@@ -14,7 +14,7 @@ from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
 from .process import process_pdf
 from .query import DownloadError, GallicaResource, Match, MatchingError, Query
-from .templating import env
+from .templating import env, Template
 
 logger = logging.getLogger(__name__)
 
