@@ -28,6 +28,9 @@ typer = "^0.3.2"
 Jinja2 = "^2.11.3"
 python-slugify = "^5.0.2"
 fuzzysearch = "^0.7.3"
+xdg = "^5.0.2"
+sqlitedict = "^1.7.0"
+jsonpickle = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "^20.8b1"
