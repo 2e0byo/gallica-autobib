@@ -7,7 +7,6 @@ from time import sleep
 from typing import List, Literal, Optional, TextIO, Union
 from urllib.error import URLError
 
-from jinja2 import Environment, PackageLoader, Template, select_autoescape
 from pydantic import BaseModel
 from slugify import slugify
 
@@ -15,13 +14,9 @@ from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
 from .process import process_pdf
 from .query import DownloadError, GallicaResource, Match, MatchingError, Query
+from .templating import env
 
 logger = logging.getLogger(__name__)
-
-env = Environment(
-    loader=PackageLoader("gallica_autobib", "templates"),
-    autoescape=select_autoescape(["html", "xml"]),
-)
 
 
 class Record(BaseModel):

@@ -1,13 +1,7 @@
-# package imports
 from typing import List, Optional, Union, Tuple
-from jinja2 import Environment, PackageLoader
+from .templating import latex_env, env
 
 from pydantic import BaseModel, Field
-
-env = Environment(
-    loader=PackageLoader("gallica_autobib", "templates"),
-)
-
 
 record_types = {
     "Article": None,
@@ -100,7 +94,7 @@ class BibBase(BaseModel):
     def bibtex(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
         args["name"] = type(self).__name__
-        return env.get_template(f"{args['name']}.bib").render(obj=args)
+        return latex_env.get_template(f"{args['name']}.bib").render(obj=args)
 
     def ris(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
