@@ -94,12 +94,12 @@ class BibBase(BaseModel):
     def bibtex(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
         args["name"] = type(self).__name__
-        return latex_env.get_template(f"{args['name']}.bib").render(obj=args)
+        return latex_env.get_template(f"{args['name']}.bib").render(rep=args, obj=self)
 
     def ris(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
         args["name"] = type(self).__name__
-        return env.get_template(f"{args['name']}.ris").render(obj=args)
+        return env.get_template(f"{args['name']}.ris").render(rep=args, obj=self)
 
 
 class AuthorTitleMixin:
