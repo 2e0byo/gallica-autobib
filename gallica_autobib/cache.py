@@ -1,8 +1,9 @@
 """Handle our internal cache, which we use to avoid hammering Gallica's
 servers, and to make our life easier when re-running."""
 import sqlite3
+from typing import TYPE_CHECKING, Any, Optional
+
 import jsonpickle
-from typing import Optional, TYPE_CHECKING, Any
 from xdg import xdg_cache_home
 
 if TYPE_CHECKING:  # pragma: nocover

@@ -7,14 +7,22 @@ from time import sleep
 from typing import List, Literal, Optional, TextIO, Union
 from urllib.error import URLError
 
+from jinja2 import Template
 from pydantic import BaseModel
 from slugify import slugify
 
 from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
 from .process import process_pdf
-from .query import DownloadError, GallicaResource, Match, MatchingError, Query
-from .templating import Template, env
+from .query import (
+    DownloadError,
+    GallicaResource,
+    Match,
+    MatchingError,
+    Query,
+    source_match_cache,
+)
+from .templating import env
 
 logger = logging.getLogger(__name__)
 
@@ -193,8 +201,11 @@ class InputParser:
         Run pipeline on item, returning a Result() object.
 
         """
-        query = Query(record.target)
-        match = query.run()
+        key = record.target.key()
+        match = source_match_cache[key]
+        if not match:
+            query = Query(record.target)
+            match = query.run()
         args = dict(record=record)  # type: ignore
         if not process_args:
             process_args = {}
@@ -206,6 +217,7 @@ class InputParser:
             args["status"] = None  # type: ignore
             return Result.parse_obj(args)
 
+        logger.debug("Generating gallica resource.")
         gallica_resource = GallicaResource(record.target, match.candidate)
         if not download_args:
             download_args = {}

@@ -1,7 +1,8 @@
-from gallica_autobib import cache
-from tempfile import TemporaryDirectory
 from pathlib import Path
+from tempfile import TemporaryDirectory
+
 import pytest
+from gallica_autobib import cache
 
 
 @pytest.fixture

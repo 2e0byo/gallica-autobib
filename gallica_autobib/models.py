@@ -1,3 +1,4 @@
+from hashlib import sha1
 from typing import List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
@@ -68,8 +69,11 @@ class BibBase(BaseModel):
     publisher: Optional[str] = None
     ark: Optional[str] = None
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(repr(self))
+
+    def key(self) -> str:
+        return sha1(repr(self).encode()).hexdigest()
 
     @staticmethod
     def assemble_query(**kwargs: dict) -> str:

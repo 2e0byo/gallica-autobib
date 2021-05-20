@@ -26,6 +26,7 @@ from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
 from sruthi.response import SearchRetrieveResponse
 
+from .cache import Cached
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
@@ -34,6 +35,8 @@ if TYPE_CHECKING:  # pragma: nocover
 
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
+ark_cache = Cached("ark")
+source_match_cache = Cached("source_match")
 
 
 class MatchingError(Exception):
@@ -152,6 +155,7 @@ class Query(
         super().__init__()
         self.target = target._source()
         self.fetcher = GallicaSRU()
+        self.logger = logging.getLogger(f"QU {target.name(short=6)}")
 
     @staticmethod
     def get_at_str(obj: Union[str, List[str]]) -> Optional[str]:
@@ -177,13 +181,15 @@ class Query(
 
     def run(self, give_up: int = 50) -> Any:
         """Try to get best match."""
+        self.logger.debug("Generting query")
         query = self.target.generate_query()
         try:
+            self.logger.debug("Fetching query")
             resps = self.fetcher.fetch_query(query)
         except Exception:
             print_exc()
             return None
-
+        self.logger.debug(f"Got {len(list(resps))} candidates.")
         matches = []
         for i, resp in enumerate(resps[:give_up]):
             candidate = self.resp_to_obj(resp)
@@ -196,17 +202,17 @@ class Query(
                     break
 
         if not matches:
+            self.logger.debug("Failed to match.")
             return None
 
+        self.logger.debug("Matched.")
         return max(matches)
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
 
 
-class GallicaResource(
-    Representation,
-):
+class GallicaResource(Representation):
     """A resource on Gallica."""
 
     BASE_TIMEOUT = 60
@@ -220,21 +226,24 @@ class GallicaResource(
             raise NotImplementedError("We only handle article for now")
         if any(isinstance(source, x) for x in (Book, Collection)):
             raise NotImplementedError("We only handle fetching from journals")
+        self.logger = logging.getLogger(f"GR {target.name(short=6)}")
 
         self.target = target
+        self.key = target.key()
         self.source = source
         a = Ark.parse(source.ark)
         if a.is_left:
             raise a.value
         self.series_ark = a.value
-        self._ark = None
+        self._ark = ark_cache[self.key]
+        self.logger.debug(f"Ark is {self._ark}, {self.key}")
         self._resource: Optional[Resource] = None  # so we can pass resource around
-        self.logger = logging.getLogger(target.name(short=6))
         self._start_p = None
         self._end_p = None
         self._pages: Optional[Pages] = None
         self.consider_toc = True
-        self.source_match: Optional[Match] = None
+        self.source_match = source_match_cache[self.key]
+        self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
 
     @property
@@ -244,12 +253,15 @@ class GallicaResource(
             if isinstance(self.source, Journal):
                 self.logger.debug("No ark, Finding best match.")
                 self.source_match = self.get_best_article_match()
+                source_match_cache[self.key] = self.source_match
                 if self.source_match:
                     self._ark = self.source_match.candidate.ark
                 else:
                     raise MatchingError("Unable to match.")
             else:
-                self._ark = self.series_ark
+                self._ark = self._source_ark
+            ark_cache[self.key] = self._ark
+            self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
 
         return self._ark
 
@@ -261,6 +273,7 @@ class GallicaResource(
         """
         if not self.source_match:
             self.ark
+            source_match_cache[self.key] = self.source_match
         return self.source_match
 
     def get_possible_issues(self) -> List[OrderedDict]:
