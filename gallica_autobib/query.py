@@ -221,6 +221,7 @@ class GallicaResource(Representation):
         self,
         target: Union[Article, Book, Collection, Journal],
         source: Union[Journal, Book, Collection],
+        cache: bool = True,
     ):
         if any(isinstance(target, x) for x in (Book, Collection, Journal)):
             raise NotImplementedError("We only handle article for now")
@@ -235,14 +236,14 @@ class GallicaResource(Representation):
         if a.is_left:
             raise a.value
         self.series_ark = a.value
-        self._ark = ark_cache[self.key]
+        self._ark = ark_cache[self.key] if cache else None
         self.logger.debug(f"Ark is {self._ark}, {self.key}")
         self._resource: Optional[Resource] = None  # so we can pass resource around
         self._start_p = None
         self._end_p = None
         self._pages: Optional[Pages] = None
         self.consider_toc = True
-        self.source_match = source_match_cache[self.key]
+        self.source_match = source_match_cache[self.key] if cache else None
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
 
@@ -269,7 +270,10 @@ class GallicaResource(Representation):
     def match(self) -> Optional[Match]:
         """The Match() object representing our choice.
 
-        This will trigger a match even if we use a cached download.
+        This will trigger a match even if we use a cached download. (However if
+        we have a cached match and have not disabled caching, we will use
+        that.)
+
         """
         if not self.source_match:
             self.ark

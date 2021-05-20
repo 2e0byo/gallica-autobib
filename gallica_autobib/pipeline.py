@@ -61,6 +61,7 @@ class InputParser:
         process: bool = True,
         clean: bool = True,
         fetch_only: Optional[int] = None,
+        ignore_cache: bool = False,
     ):
         self.records: List[Record] = []
         self.raw: List[str] = []
@@ -77,6 +78,7 @@ class InputParser:
         self._pool: Optional[ProcessPoolExecutor] = None
         self.processes = 6
         self.executing: List[Future] = []
+        self.ignore_cache = ignore_cache
 
     @property
     def successful(self) -> int:
@@ -164,6 +166,7 @@ class InputParser:
                 fetch_only=self.fetch_only,
                 process_args=self.process_args,
                 download_args=self.download_args,
+                cache=not self.ignore_cache,
             )
             for record in self.records
         ]
@@ -196,13 +199,16 @@ class InputParser:
         fetch_only: Optional[bool] = None,
         process_args: Optional[dict] = None,
         download_args: Optional[dict] = None,
+        cache: bool = True,
     ) -> Result:
         """
         Run pipeline on item, returning a Result() object.
 
         """
+        from devtools import debug
+
         key = record.target.key()
-        match = source_match_cache[key]
+        match = source_match_cache[key] if cache else None
         if not match:
             query = Query(record.target)
             match = query.run()
@@ -218,7 +224,7 @@ class InputParser:
             return Result.parse_obj(args)
 
         logger.debug("Generating gallica resource.")
-        gallica_resource = GallicaResource(record.target, match.candidate)
+        gallica_resource = GallicaResource(record.target, match.candidate, cache=cache)
         if not download_args:
             download_args = {}
         try:

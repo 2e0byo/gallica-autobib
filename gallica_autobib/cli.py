@@ -28,6 +28,7 @@ def process_bibliograpy(
     template: Path = None,
     verbosity: int = 1,
     out: Path = None,
+    ignore_cache: bool = False,
 ) -> None:
     """
     Process a bibliography file.
@@ -55,6 +56,7 @@ def process_bibliograpy(
         process=post_process,
         clean=clean,
         output_template=template,
+        ignore_cache=ignore_cache,
     )
     if bibfile.suffix == ".bib":
         logger.debug("Detected bibtex.")
