@@ -7,7 +7,7 @@ def test_article():
         journaltitle="La vie spirituelle",
         pages=list(range(135, 138)),
         title="Pour lire saint Augustin",
-        author="Daniélou",
+        author="M.-D. Chenu",
         year=1930,
     )
     assert isinstance(a, Article)
@@ -19,6 +19,8 @@ def test_article():
     assert a._source().translate()["title"] == "La vie spirituelle"
     assert isinstance(a.pages, list)
     assert isinstance(a.pages[0], str)
+    assert a.name() == "Pour lire saint Augustin (M.-D. Chenu)"
+    assert a.name(short=4) == "Pour (M.-D)"
 
 
 def test_book():
@@ -51,3 +53,16 @@ query_candidates = [
 @pytest.mark.parametrize("kwargs,outstr", query_candidates)
 def test_assemble_query(kwargs, outstr):
     assert BibBase.assemble_query(kwargs=outstr)
+
+
+def test_bibtex_render_article(file_regression):
+    a = Article(
+        journaltitle="La vie spirituelle",
+        pages=list(range(135, 138)),
+        title="Pour lire saint Augustin",
+        author="M.-D. Chenu",
+        year=1930,
+        volume=12,
+        number=1,
+    )
+    file_regression.check(a.bibtex(), extension=".bib")

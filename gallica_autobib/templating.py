@@ -1,5 +1,4 @@
-from jinja2 import Environment, PackageLoader, Template, select_autoescape
-
+from jinja2 import Environment, PackageLoader, select_autoescape
 
 latex_env = Environment(
     block_start_string="\\BLOCK{",

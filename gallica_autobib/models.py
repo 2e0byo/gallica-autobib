@@ -1,8 +1,9 @@
-from typing import List, Optional, Union, Tuple
-from slugify import slugify
-from .templating import latex_env, env
+from typing import List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
+from slugify import slugify
+
+from .templating import env, latex_env
 
 record_types = {
     "Article": None,
@@ -92,10 +93,16 @@ class BibBase(BaseModel):
     def omit(self) -> Tuple[str]:
         return ()
 
+    @property
+    def page_ranges(self) -> Tuple[Tuple[str]]:
+        """Represent page ranges in this nicest way possible."""
+
     def bibtex(self) -> str:
-        args = {k: v for k, v in dict(self).items() if k not in self.omit}
-        args["name"] = type(self).__name__.lower()
-        return latex_env.get_template(f"{args['name']}.bib").render(rep=args, obj=self)
+        props = {
+            k: v for k, v in self.dict(by_alias=True).items() if k not in self.omit
+        }
+        name = type(self).__name__.lower()
+        return latex_env.get_template(f"{name}.bib").render(rep=props, obj=self)
 
     def ris(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
