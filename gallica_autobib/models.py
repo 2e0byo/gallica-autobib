@@ -68,6 +68,9 @@ class BibBase(BaseModel):
     publisher: Optional[str] = None
     ark: Optional[str] = None
 
+    def __hash__(self):
+        return hash(repr(self))
+
     @staticmethod
     def assemble_query(**kwargs: dict) -> str:
         """Put together an sru query from a dict."""

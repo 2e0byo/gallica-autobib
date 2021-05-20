@@ -21,6 +21,10 @@ def test_article():
     assert isinstance(a.pages[0], str)
     assert a.name() == "Pour lire saint Augustin (M.-D. Chenu)"
     assert a.name(short=4) == "Pour (M.-D)"
+    ahash = a.__hash__()
+    assert ahash == hash(a)
+    a.publicationdate = 1940
+    assert ahash != hash(a)
 
 
 def test_book():
