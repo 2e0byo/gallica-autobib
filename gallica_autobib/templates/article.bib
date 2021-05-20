@@ -1,6 +1,8 @@
-@Article{\VAR{obj.name(short=4},
-  \BLOCK{for x in rep}
-  \VAR{x} = {\VAR{rep[x]}},
-  \BLOCK{endfor}
+@Article{\VAR{obj.name(short=8, slug=True)},
+\BLOCK{for x in rep}
+\BLOCK{if rep[x]}
+    \VAR{x} = {\VAR{rep[x]}},
+\BLOCK{endif}
+\BLOCK{endfor}
 }
 
