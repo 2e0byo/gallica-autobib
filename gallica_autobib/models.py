@@ -1,10 +1,12 @@
 from hashlib import sha1
+import datetime
 from typing import List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
 from slugify import slugify
 
 from .templating import env, latex_env
+from .util import pretty_page_range
 
 record_types = {
     "Article": None,
@@ -103,6 +105,7 @@ class BibBase(BaseModel):
     @property
     def page_ranges(self) -> Tuple[Tuple[str]]:
         """Represent page ranges in this nicest way possible."""
+        return pretty_page_range(self.pages)
 
     def bibtex(self) -> str:
         props = {
@@ -195,9 +198,15 @@ class Article(BibBase, AuthorTitleMixin):
     def _source(self) -> Journal:
         return Journal.parse_obj(self.dict(by_alias=True))
 
-    @property
-    def _suppress(self) -> Tuple[str]:
-        return "physical_pages"
+
+class NewspaperArticle(BibBase, AuthorTitleMixin):
+    """A newspaper article, which has no page range.
+    This is actually a kind of journal."""
+
+    journaltitle: str
+    date: datetime.date
+    author: str
+    title: str
 
 
 class GallicaBibObj(BaseModel):

@@ -70,3 +70,15 @@ def test_bibtex_render_article(file_regression):
         number=1,
     )
     file_regression.check(a.bibtex(), extension=".bib")
+
+
+@pytest.fixture
+def article():
+    a = Article(
+        journaltitle="La vie spirituelle",
+        pages=list(range(135, 138)),
+        title="Pour lire saint Augustin",
+        author="M.-D. Chenu",
+        year=1930,
+    )
+    yield a
