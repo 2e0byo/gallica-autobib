@@ -56,3 +56,16 @@ def prettify(pages: list[int], arabic: bool) -> str:
         # for now we don't do anything clever with roman numerals, although
         # combining is possible.
         return f"{roman.toRoman(pages[0]).lower()}--{roman.toRoman(pages[-1]).lower()}"
+
+
+def deprettify(rangestr: str) -> list[int]:
+    pages = []
+    ranges = rangestr.split(",")
+    for r in ranges:
+        start, end = r.replace("--", "-").split("-")
+        ls, le = len(start), len(end)
+        if le < ls:
+            end = start[: ls - le] + end
+        pages += list(range(int(start), int(end) + 1))
+
+    return pages

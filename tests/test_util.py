@@ -15,3 +15,9 @@ page_ranges = [
 @pytest.mark.parametrize("inp,oup", page_ranges)
 def test_page_ranges(inp, oup):
     assert util.pretty_page_range(inp) == oup
+
+
+@pytest.mark.parametrize("inp,oup", page_ranges[:4])
+def test_deprettify(inp, oup):
+    pretty = util.pretty_page_range(inp)
+    assert util.deprettify(pretty.replace("pp. ", "")) == [int(i) for i in inp]
