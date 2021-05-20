@@ -102,16 +102,13 @@ class BibBase(BaseModel):
     def omit(self) -> Tuple[str]:
         return ()
 
-    @property
-    def page_ranges(self) -> Tuple[Tuple[str]]:
-        """Represent page ranges in this nicest way possible."""
-        return pretty_page_range(self.pages)
-
     def bibtex(self) -> str:
         props = {
             k: v for k, v in self.dict(by_alias=True).items() if k not in self.omit
         }
         name = type(self).__name__.lower()
+        if "pages" in props.keys:
+            props["pages"] = pretty_page_range(props["pages"])
         return latex_env.get_template(f"{name}.bib").render(rep=props, obj=self)
 
     def ris(self) -> str:
