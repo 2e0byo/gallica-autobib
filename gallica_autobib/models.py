@@ -1,12 +1,12 @@
-from hashlib import sha1
 import datetime
+from hashlib import sha1
 from typing import List, Optional, Tuple, Union
 
 from pydantic import BaseModel, Field
 from slugify import slugify
 
 from .templating import env, latex_env
-from .util import pretty_page_range
+from .util import prettify, pretty_page_range
 
 record_types = {
     "Article": None,
@@ -88,13 +88,24 @@ class BibBase(BaseModel):
     def translate(self) -> dict:
         return self.dict(exclude={"editor"})
 
+    @staticmethod
+    def format_query_item(item: Union[list, str]) -> str:
+        if isinstance(item, list):
+            return " ".join(str(x) for x in item)
+        else:
+            return item
+
     def generate_query(self) -> str:
         """Get query str"""
         source = self._source()
         data = source.translate()
         data["recordtype"] = record_types[type(source).__name__]
 
-        data = {f"bib.{k}": v for k, v in data.items() if v and k in VALID_QUERIES}
+        data = {
+            f"bib.{k}": self.format_query_item(v)
+            for k, v in data.items()
+            if v and k in VALID_QUERIES
+        }
 
         return self.assemble_query(**data)
 
@@ -102,19 +113,27 @@ class BibBase(BaseModel):
     def omit(self) -> Tuple[str]:
         return ()
 
+    def bibtex_transform(self) -> dict:
+        return {k: v for k, v in self.dict(by_alias=True).items() if k not in self.omit}
+
     def bibtex(self) -> str:
-        props = {
-            k: v for k, v in self.dict(by_alias=True).items() if k not in self.omit
-        }
+        props = self.bibtex_transform()
         name = type(self).__name__.lower()
-        if "pages" in props.keys:
+        if "pages" in props.keys():
             props["pages"] = pretty_page_range(props["pages"])
+        if "year" in props.keys() and isinstance(props["year"], list):
+            props["year"] = prettify(props["year"], True)
         return latex_env.get_template(f"{name}.bib").render(rep=props, obj=self)
 
     def ris(self) -> str:
         args = {k: v for k, v in dict(self).items() if k not in self.omit}
         args["name"] = type(self).__name__.lower()
         return env.get_template(f"{args['name']}.ris").render(rep=args, obj=self)
+
+
+class HasTitle(BibBase):
+    title: str
+    subtitle: Optional[str]
 
 
 class AuthorTitleMixin:
@@ -129,20 +148,24 @@ class AuthorTitleMixin:
             return n
 
 
-class HasPublisher(BibBase):
+class HasPublisher(HasTitle):
     publisher: Optional[str] = None
     location: Optional[str] = None
-    pages: Optional[int] = None
+    page_count: Optional[int] = None
+
+    def bibtex_transform(self):
+        props = super().bibtex_transform()
+        if self.page_count:
+            props["note"] = f"{self.page_count} pp."
+        return props
 
 
 class Book(HasPublisher, AuthorTitleMixin):
-    title: str
     author: str
     editor: Optional[str] = None
 
 
 class Collection(HasPublisher, AuthorTitleMixin):
-    title: str
     author: str
     editor: Optional[str] = None
 
@@ -180,10 +203,9 @@ class Journal(BibBase):
             return n
 
 
-class Article(BibBase, AuthorTitleMixin):
+class Article(HasTitle, AuthorTitleMixin):
     """An article."""
 
-    title: str
     journaltitle: str
     pages: List[str]
     author: str
@@ -216,6 +238,13 @@ class GallicaBibObj(BaseModel):
     type: str
     date: str
 
+    @staticmethod
+    def safe_convert(thing: str) -> Optional[int]:
+        try:
+            return int(thing)
+        except ValueError:
+            return None
+
     def convert(self) -> "RecordTypes":
         """Return the right kind of model."""
         data = {
@@ -226,10 +255,18 @@ class GallicaBibObj(BaseModel):
             "year": [],
         }
         for r in self.date.split(","):
-            try:
-                start, end = r.split("-")
-                data["year"] += list(range(int(start), int(end) + 1))  # type: ignore
-            except ValueError:
+            split = r.split("-")
+            if len(split) > 1:
+                if len(split) > 2:
+                    raise Exception(f"Unable to handle date {r}")
+                start, end = (self.safe_convert(x) for x in split)
+                if not start and not end:
+                    raise Exception(f"Unable to handle date {r}")
+                if start and end:
+                    data["year"] += list(range(int(start), int(end) + 1))  # type: ignore
+                else:
+                    data["year"] = start if start else end
+            else:
                 data["year"].append(int(r))  # type: ignore
         return type_to_class[self.type].parse_obj(data)
 

@@ -8,6 +8,7 @@ from bibtexparser.customization import convert_to_unicode
 from roman import fromRoman, toRoman
 
 from .models import Article, Book, Collection, RecordTypes
+from .util import deprettify
 
 parser = BibTexParser()
 parser.customization = convert_to_unicode
@@ -31,25 +32,27 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[st
     parsed = []
     for record in db.entries:
         pages = record["pages"]
-        if isinstance(pages, list):
-            continue
 
-        roman = "i" in pages.lower()
-        lower = "i" in pages
-        try:
-            pages = pages.replace("--", "-")
-            start, end = pages.split("-")
-            startno = fromRoman(start.upper()) if roman else int(start)
-            endno = fromRoman(end.upper()) if roman else int(end)
-            if not roman and endno < startno:
-                endno = int(f"{start[0]}{end}")
-            record["pages"] = list(range(startno, endno + 1))
-            if roman:
-                record["pages"] = [
-                    toRoman(x).lower() if lower else toRoman(x) for x in record["pages"]
-                ]
-        except ValueError:
-            record["pages"] = [record["pages"]]
+        if not isinstance(pages, list):
+            roman = "i" in pages.lower()
+            lower = "i" in pages
+            try:
+                pages = pages.replace("--", "-")
+                start, end = pages.split("-")
+                startno = fromRoman(start.upper()) if roman else int(start)
+                endno = fromRoman(end.upper()) if roman else int(end)
+                if not roman and endno < startno:
+                    endno = int(f"{start[0]}{end}")
+                record["pages"] = list(range(startno, endno + 1))
+                if roman:
+                    record["pages"] = [
+                        toRoman(x).lower() if lower else toRoman(x)
+                        for x in record["pages"]
+                    ]
+            except ValueError:
+                record["pages"] = [record["pages"]]
+
+        record["year"] = deprettify(record["year"])
 
         type_ = record["ENTRYTYPE"]
         mapping = {"article": Article, "book": Book, "collection": Collection}

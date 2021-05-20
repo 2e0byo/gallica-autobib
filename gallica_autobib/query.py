@@ -102,6 +102,7 @@ class Match(
                     raise NotImplementedError(v, candidate_v)
 
             if isinstance(v, list):
+                matches = []
                 if isinstance(candidate_v, list):
                     matches = [1 if i in candidate_v else 0 for i in v]
                 elif candidate_v in v:

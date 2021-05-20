@@ -205,7 +205,6 @@ class InputParser:
         Run pipeline on item, returning a Result() object.
 
         """
-        from devtools import debug
 
         key = record.target.key()
         match = source_match_cache[key] if cache else None

@@ -1,4 +1,5 @@
 from typing import Union
+
 import roman
 
 
@@ -62,10 +63,13 @@ def deprettify(rangestr: str) -> list[int]:
     pages = []
     ranges = rangestr.split(",")
     for r in ranges:
-        start, end = r.replace("--", "-").split("-")
-        ls, le = len(start), len(end)
-        if le < ls:
-            end = start[: ls - le] + end
-        pages += list(range(int(start), int(end) + 1))
+        try:
+            start, end = r.replace("--", "-").split("-")
+            ls, le = len(start), len(end)
+            if le < ls:
+                end = start[: ls - le] + end
+            pages += list(range(int(start), int(end) + 1))
+        except ValueError:
+            pages.append(int(r))
 
     return pages

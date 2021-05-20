@@ -1,7 +1,6 @@
 import pytest
 from gallica_autobib import util
 
-
 page_ranges = [
     [[str(i) for i in range(1, 11)], "pp. 1--10"],
     [[str(i) for i in range(450, 456)], "pp. 450--5"],
