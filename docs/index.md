@@ -42,8 +42,10 @@ Features:
 
 ## Online Demo
 
-There is an [online demo](https://phd.2e0byo.co.uk/gallica) with a very basic
-interface, allowing
+There is an [online demo](http://gallica.phd.2e0byo.co.uk) with a very basic
+interface. It is not currently production ready. Note that Gallica use some
+*very* aggressive rate limiting, so if you hit it with the same requests too
+often it will simply go down.
 
 ## Installation
 
@@ -162,4 +164,3 @@ it should be easier to extend.
 
 ### Why not just extend pygallica?
 I mean to submit the SRU stuff as an extension to `pygallica`
-
