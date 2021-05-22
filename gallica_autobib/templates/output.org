@@ -6,6 +6,10 @@
 {{result.record.raw}}
    #+END_SRC
 
+   #+BEGIN_SRC python
+ark = "{{result.match.candidate.ark}}"
+   #+END_SRC
+
    {% if result.status %}
      [[{{ result.processed }}][Processed Pdf]] {% if result.unprocessed %}[[{{ result.unprocessed }}][Original Pdf]]{% endif %}  Confidence: {{ result.match.confidence }}
    {% endif %}

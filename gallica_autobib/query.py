@@ -173,7 +173,8 @@ class Query(
         # could use a Language() obj to internationalise this
         resp["language"] = resp["language"][1]
         resp["type"] = resp["type"][0]["text"]
-        resp["publisher"] = self.get_at_str(resp["publisher"])
+        if "publisher" in resp.keys():
+            resp["publisher"] = self.get_at_str(resp["publisher"])
         resp["title"] = self.get_at_str(resp["title"])
         # resp["publisher"] = resp["publisher"][0]
         # resp["title"] = resp["title"][0]
@@ -206,8 +207,9 @@ class Query(
             self.logger.debug("Failed to match.")
             return None
 
-        self.logger.debug("Matched.")
-        return max(matches)
+        match = max(matches)
+        self.logger.debug(f"Matched. {repr(match)}")
+        return match
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
@@ -247,6 +249,7 @@ class GallicaResource(Representation):
         self.source_match = source_match_cache[self.key] if cache else None
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
+        self.suppress_cover_page: bool = False
 
     @property
     def ark(self) -> Optional[Union[str, Ark]]:
@@ -261,7 +264,7 @@ class GallicaResource(Representation):
                 else:
                     raise MatchingError("Unable to match.")
             else:
-                self._ark = self._source_ark
+                self._ark = self.source.ark
             ark_cache[self.key] = self._ark
             self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
 
@@ -463,6 +466,7 @@ class GallicaResource(Representation):
         details = self.get_possible_issues()
         matches = []
         for detail in details:
+            self.logger.debug(f"Considering {detail['#text']}")
             data = {}
             ark = Ark(naan=self.series_ark.naan, name=detail["@ark"])
             issue = Resource(ark)
@@ -625,12 +629,14 @@ class GallicaResource(Representation):
             length = end - i + 1 if i + size > end else size  # truncate last block
             yield (i, length)
 
-    @staticmethod
-    def _merge_partials(path: Path, partials: List[Path]) -> None:
+    def _merge_partials(self, path: Path, partials: List[Path]) -> None:
         """Merge partial files"""
         merger = PdfFileMerger()
         for i, fn in enumerate(partials):
-            args = {"pages": PageRange("2:")}  # if i else {}
+            if self.suppress_cover_page:
+                args = {"pages": PageRange("2:")}  # if i else {}
+            else:
+                args = {"pages": PageRange("2:")} if i else {}
             merger.append(str(fn.resolve()), **args)
         with path.open("wb") as f:
             merger.write(f)
