@@ -15,3 +15,7 @@ plugins:
 nav:
     - gallica-autobib: 'index.md'
     - version Selector: "../"
+    - Processing Downloads: 'image_processing.md'
+
+markdown_extensions:
+  - attr_list
