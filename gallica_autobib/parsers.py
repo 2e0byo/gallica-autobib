@@ -10,15 +10,14 @@ from roman import fromRoman, toRoman
 from .models import Article, Book, Collection, RecordTypes
 from .util import deprettify
 
-parser = BibTexParser()
-parser.customization = convert_to_unicode
-
 
 class ParsingError(Exception):
     pass
 
 
 def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[str]]:
+    parser = BibTexParser()
+    parser.customization = convert_to_unicode
     try:
         if isinstance(bibtex, str):
             db = bibtexparser.loads(bibtex, parser=parser)
