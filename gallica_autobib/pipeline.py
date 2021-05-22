@@ -79,6 +79,7 @@ class InputParser:
         self.processes = 6
         self.executing: List[Future] = []
         self.ignore_cache = ignore_cache
+        self.suppress_cover_page: bool = False
 
     @property
     def successful(self) -> int:
@@ -104,7 +105,7 @@ class InputParser:
     @output_template.setter
     def output_template(self, output_template: Union[str, Path] = None) -> None:
         if isinstance(output_template, str):
-            self._output_template = env.get_template(output_template)
+            self._output_template = env.get_template(f"output.{output_template}")
         elif isinstance(output_template, Path):
             self._output_template = Template(output_template.open().read())
         else:
@@ -167,6 +168,7 @@ class InputParser:
                 process_args=self.process_args,
                 download_args=self.download_args,
                 cache=not self.ignore_cache,
+                suppress_cover_page=self.suppress_cover_page,
             )
             for record in self.records
         ]
@@ -200,6 +202,7 @@ class InputParser:
         process_args: Optional[dict] = None,
         download_args: Optional[dict] = None,
         cache: bool = True,
+        suppress_cover_page: bool = False,
     ) -> Result:
         """
         Run pipeline on item, returning a Result() object.
@@ -224,6 +227,7 @@ class InputParser:
 
         logger.debug("Generating gallica resource.")
         gallica_resource = GallicaResource(record.target, match.candidate, cache=cache)
+        gallica_resource.suppress_cover_page = suppress_cover_page
         if not download_args:
             download_args = {}
         try:
@@ -246,7 +250,9 @@ class InputParser:
 
         if process:
             logger.debug("Processing...")
-            processed = process_pdf(outf, **process_args)
+            processed = process_pdf(
+                outf, has_cover_page=not suppress_cover_page, **process_args
+            )
             args["processed"] = processed  # type: ignore
             if clean:
                 logger.debug("Deleting original file.")

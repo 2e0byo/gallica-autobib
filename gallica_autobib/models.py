@@ -110,7 +110,7 @@ class BibBase(BaseModel):
         return self.assemble_query(**data)
 
     @property
-    def omit(self) -> Tuple[str]:
+    def omit(self) -> Union[Tuple[str], Tuple]:
         return ()
 
     def bibtex_transform(self) -> dict:
@@ -153,7 +153,7 @@ class HasPublisher(HasTitle):
     location: Optional[str] = None
     page_count: Optional[int] = None
 
-    def bibtex_transform(self):
+    def bibtex_transform(self) -> dict:
         props = super().bibtex_transform()
         if self.page_count:
             props["note"] = f"{self.page_count} pp."
@@ -233,10 +233,10 @@ class GallicaBibObj(BaseModel):
 
     ark: str
     title: str
-    publisher: str
     language: str
     type: str
     date: str
+    publisher: Optional[str] = None
 
     @staticmethod
     def safe_convert(thing: str) -> Optional[int]:
@@ -253,7 +253,7 @@ class GallicaBibObj(BaseModel):
             "journaltitle": self.title,
             "publisher": self.publisher,
             "year": [],
-        }
+        }  # type: ignore
         for r in self.date.split(","):
             split = r.split("-")
             if len(split) > 1:
@@ -265,7 +265,7 @@ class GallicaBibObj(BaseModel):
                 if start and end:
                     data["year"] += list(range(int(start), int(end) + 1))  # type: ignore
                 else:
-                    data["year"] = start if start else end
+                    data["year"] = start if start else end  # type: ignore
             else:
                 data["year"].append(int(r))  # type: ignore
         return type_to_class[self.type].parse_obj(data)

@@ -1,9 +1,10 @@
 import logging
 from pathlib import Path
-from typing import Dict
+from typing import Dict, Optional
 
 import typer
 
+from . import __version__
 from .pipeline import BibtexParser, RisParser
 
 logger = logging.getLogger(__name__)
@@ -17,32 +18,43 @@ log_level = [logging.NOTSET, logging.ERROR, logging.DEBUG]
 app = typer.Typer()
 
 
+def version_callback(value: bool) -> None:
+    if value:
+        typer.echo(f"Gallica-Autobib Version: {__version__}")
+        raise typer.Exit()
+
+
 @app.command()
 def process_bibliograpy(
-    bibfile: Path,
-    outdir: Path,
-    post_process: bool = True,
-    preserve_text: bool = False,
-    processes: int = 6,
-    clean: bool = True,
-    template: Path = None,
-    verbosity: int = 1,
-    out: Path = None,
-    ignore_cache: bool = False,
+    bibfile: Path = typer.Argument(..., help="Bibliographic file to read."),
+    outdir: Path = typer.Argument(..., help="Output directory."),
+    version: Optional[bool] = typer.Option(
+        None, "--version", callback=version_callback
+    ),
+    post_process: bool = typer.Option(True, help="Post-process download."),
+    preserve_text: bool = typer.Option(True, help="Preserve text in post processing."),
+    processes: int = typer.Option(
+        6,
+        help="Number of processes to run.  We are largely network bound so > nproc might make sense.",
+    ),
+    clean: bool = typer.Option(True, help="Clean up intermediate files."),
+    template: Path = typer.Option(None, help="Path to output template to use."),
+    template_format: str = typer.Option(
+        None,
+        help="Which internal template to use.  Ignored if a template path is provided.",
+    ),
+    verbosity: int = typer.Option(1, help="Verbosity between 0 and 2."),
+    out: Path = typer.Option(None, help="Output path for report.  Default is STDOUT."),
+    ignore_cache: bool = typer.Option(
+        False,
+        help="Ignore cache and rematch.  Note this will overwrite the cache with any matches.",
+    ),
+    suppress_cover_page: bool = typer.Option(
+        False, help="Suppress Gallica's cover page."
+    ),
 ) -> None:
     """
     Process a bibliography file.
-
-    Args:
-      bibfile: Path: The bibliography file to process.
-      outdir: Path: The directory to save output in.
-      post-process: bool: Whether to post-process pdfs.  (Default value = True)
-      preserve_text: bool: Whether to preserve text in pdfs (implies only cropping them.)  (Default value = False)
-      processes: int: Number of processes to run in parallel
-      clean: bool: Remove original file if successful.
-      template: Path: Template to render output.
-      verbosity: int: Verbosity between 0 and 3, (Default value = 3)
-      out: Path: Path to save report to.  Default to stdout.
 
     """
     process_args = {"preserve_text": preserve_text}
@@ -55,7 +67,7 @@ def process_bibliograpy(
         download_args=download_args,
         process=post_process,
         clean=clean,
-        output_template=template,
+        output_template=template if template else template_format,
         ignore_cache=ignore_cache,
     )
     if bibfile.suffix == ".bib":
@@ -67,6 +79,8 @@ def process_bibliograpy(
     else:
         raise AutoBibError("Input is not bibtex or ris.")
 
+    parser.processes = processes
+    parser.suppress_cover_page = suppress_cover_page
     with bibfile.open() as f:
         parser.read(f)
     report = parser.run()

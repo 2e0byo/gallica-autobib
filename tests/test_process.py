@@ -30,9 +30,7 @@ test_image_pdf = [
     ImgTest(Path("tests/test_process/test5.pdf"), "png"),
     ImgTest(Path("tests/test_process/test2.pdf"), "jpg"),
     ImgTest(Path("tests/test_process/test3.pdf"), "jp2"),
-    ImgTest(Path("tests/test_gallica_resource/test_download_pdf.pdf"), "jpg"),
     ImgTest(Path("tests/test_process/tiff.pdf"), "tiff"),
-    # ImgTest(Path("tests/test_process/test4.pdf"), "tiff"),
 ]
 
 
@@ -113,7 +111,7 @@ def test_filter_brute_force(inf, image_regression, tmp_path):
 
 def test_process_pdf_no_preserve(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    process_pdf(inf, tmp_path / "test1.pdf")
+    process_pdf(inf, tmp_path / "test1.pdf", has_cover_page=True)
     with (tmp_path / "test1.pdf").open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
@@ -126,7 +124,7 @@ def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
         with (tmp_path / "test.pdf").open("wb") as f:
             f.write(i.read())
     inf = tmp_path / "test.pdf"
-    process_pdf(inf, preserve_text=True)
+    process_pdf(inf, preserve_text=True, has_cover_page=True)
     with (tmp_path / "processed-test.pdf").open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
@@ -136,7 +134,7 @@ def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
 @pytest.mark.xfail
 def test_process_pdf_equal_size(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    process_pdf(inf, tmp_path / "test1.pdf", equal_size=True)
+    process_pdf(inf, tmp_path / "test1.pdf", equal_size=True, has_cover_page=True)
     with (tmp_path / "test1.pdf").open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs

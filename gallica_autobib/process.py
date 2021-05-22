@@ -157,7 +157,7 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     """
     if img.mode != "1":
         img = prepare_img(img)
-    # ImageShow.show(img)
+    # img.show()
     # res = detect_spine(img)
     # logger.debug(res.lh_page)
     # crop out corner errors
@@ -193,6 +193,7 @@ def process_pdf(
     preserve_text: bool = False,
     equal_size: bool = False,
     skip_existing: bool = False,
+    has_cover_page: bool = False,
 ) -> Path:
     """Process a pdf.
 
@@ -205,6 +206,7 @@ def process_pdf(
       preserve_text: bool: Preserve OCRd text.  (Default value = False)
       equal_size: Make all pages equal sized.  (Default value = False)
       skip_existing: Whether to skip existing files.  (Default value = False)
+      has_cover_page: bool: Whether we have a cover page to resize (Default value=False.)
 
     Returns:
       A Path() object pointing to the cropped pdf.
@@ -223,10 +225,14 @@ def process_pdf(
         return outf
     reader = PdfFileReader(str(pdf))
 
+    pages = reader.pages
+    writer = PdfFileWriter()
+    if has_cover_page:
+        pages = pages[2:]
+
     if preserve_text:
         logger.debug("Preserving text.")
-        writer = PdfFileWriter()
-        for page in reader.pages:
+        for page in pages:
             img, _ = extract_image(page)
             bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
@@ -238,7 +244,7 @@ def process_pdf(
     else:
         logger.debug("Not preserving text.")
         imgs = []
-        for i, page in enumerate(reader.pages):
+        for i, page in enumerate(pages):
             logger.debug(f"Processing page {i}")
             img, _ = extract_image(page)
             bbox = get_crop_bounds(img)

@@ -2,12 +2,12 @@ import pytest
 from gallica_autobib import util
 
 page_ranges = [
-    [[str(i) for i in range(1, 11)], "pp. 1--10"],
-    [[str(i) for i in range(450, 456)], "pp. 450--5"],
-    [[str(i) for i in range(450, 470)], "pp. 450--69"],
-    [["10", "11", "12", "13", "17", "18", "19"], "pp. 10--3, 17--9"],
-    [["i", "ii", "iii"], "pp. i--iii"],
-    [["1", "2", "i", "ii", "iii"], "pp. 1--2, i--iii"],
+    [[str(i) for i in range(1, 11)], "1--10"],
+    [[str(i) for i in range(450, 456)], "450--5"],
+    [[str(i) for i in range(450, 470)], "450--69"],
+    [["10", "11", "12", "13", "17", "18", "19"], "10--3, 17--9"],
+    [["i", "ii", "iii"], "i--iii"],
+    [["1", "2", "i", "ii", "iii"], "1--2, i--iii"],
 ]
 
 
@@ -19,4 +19,4 @@ def test_page_ranges(inp, oup):
 @pytest.mark.parametrize("inp,oup", page_ranges[:4])
 def test_deprettify(inp, oup):
     pretty = util.pretty_page_range(inp)
-    assert util.deprettify(pretty.replace("pp. ", "")) == [int(i) for i in inp]
+    assert util.deprettify(pretty) == [int(i) for i in inp]

@@ -34,6 +34,7 @@ def mock_bibtex_parser(tmp_path, mocker):
     pipeline.GallicaResource.download_pdf = mock_download_pdf
     pipeline.GallicaResource.ark = mock_ark
     parser = pipeline.BibtexParser(tmp_path)
+    parser.suppress_cover_page = True
     yield parser
     pipeline.GallicaResource.download_pdf = download_pdf
     pipeline.GallicaResource.ark = ark
@@ -88,6 +89,7 @@ def test_bibtex_parser_single_thread_clean(
     Neither downloads nor searches.
     """
     parser = mock_bibtex_parser
+    assert parser.suppress_cover_page
     parser.read(test_bibliographies_bibtex[0])
     outf = parser.generate_outf(parser.records[0].target)
     result = parser.process_record(
@@ -98,6 +100,7 @@ def test_bibtex_parser_single_thread_clean(
         fetch_only=parser.fetch_only,
         process_args=parser.process_args,
         download_args=parser.download_args,
+        suppress_cover_page=parser.suppress_cover_page,
     )
     assert not result.unprocessed
     assert not outf.exists()
@@ -124,6 +127,7 @@ def test_bibtex_parser_single_thread_no_clean(
         fetch_only=parser.fetch_only,
         process_args=parser.process_args,
         download_args=parser.download_args,
+        suppress_cover_page=parser.suppress_cover_page,
     )
     assert result.processed != result.unprocessed
     assert result.unprocessed
@@ -148,6 +152,7 @@ def test_bibtex_parser_single_thread_no_process(
         fetch_only=parser.fetch_only,
         process_args=parser.process_args,
         download_args=parser.download_args,
+        suppress_cover_page=parser.suppress_cover_page,
     )
     assert not result.processed
     assert result.unprocessed
@@ -173,7 +178,7 @@ def parser(fixed_tmp_path):
     yield parser
 
 
-report_types = ["output.txt", "output.org", "output.html"]
+report_types = ["txt", "org", "html"]
 
 
 @pytest.mark.parametrize("template", report_types)

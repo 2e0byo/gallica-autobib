@@ -30,7 +30,7 @@ class Cached:
     def __del__(self) -> None:
         self.con.close()
 
-    def __getitem__(self, key: int) -> Optional[Any]:
+    def __getitem__(self, key: str) -> Optional[Any]:
         GET_ITEM = f'SELECT value FROM "{self.tablename}" WHERE key = (?)'
         item = self.con.execute(GET_ITEM, (key,)).fetchone()
         if item:
@@ -38,10 +38,7 @@ class Cached:
         else:
             return None
 
-    def __setitem__(self, key: int, val: any) -> None:
+    def __setitem__(self, key: str, val: Any) -> None:
         SET = f'REPLACE INTO "{self.tablename}" (key, value) VALUES (?,?)'
         self.con.execute(SET, (key, jsonpickle.dumps(val)))
         self.con.commit()
-
-    def __delitem__(self, key: int) -> None:
-        del self.sqldict[key]

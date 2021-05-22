@@ -3,9 +3,9 @@ from typing import Union
 import roman
 
 
-def pretty_page_range(pages: list[Union[str, int]]) -> str:
+def pretty_page_range(pages: list[str]) -> str:
     """Prettify a page range."""
-    ranges = []
+    ranges: list[dict] = []
     try:
         int(pages[0])
         arabic = True
@@ -27,22 +27,22 @@ def pretty_page_range(pages: list[Union[str, int]]) -> str:
             except roman.InvalidRomanNumeralError:
                 ranges.append(dict(arabic=arabic, pages=pp))
                 arabic = True
-                pp = [p]
+                pp = [int(p)]
     ranges.append(dict(arabic=arabic, pages=pp))
 
     pretty = []
     for r in ranges:
         pp = [r["pages"][0]]
         arabic = r["arabic"]
-        for p in r["pages"][1:]:
-            if p == pp[-1] + 1:
-                pp.append(p)
+        for pqr in r["pages"][1:]:
+            if pqr == pp[-1] + 1:
+                pp.append(pqr)
             else:
                 pretty.append(prettify(pp, arabic))
-                pp = [p]
+                pp = [pqr]
         pretty.append(prettify(pp, arabic))
 
-    return "pp. " + ", ".join(pretty)
+    return ", ".join(pretty)
 
 
 def prettify(pages: list[int], arabic: bool) -> str:
@@ -59,9 +59,13 @@ def prettify(pages: list[int], arabic: bool) -> str:
         return f"{roman.toRoman(pages[0]).lower()}--{roman.toRoman(pages[-1]).lower()}"
 
 
-def deprettify(rangestr: str) -> list[int]:
+def deprettify(rangestr: Union[str, int]) -> Union[list[int], int, None]:
+    try:
+        return int(rangestr)
+    except ValueError:
+        pass
     pages = []
-    ranges = rangestr.split(",")
+    ranges = rangestr.split(",")  # type: ignore
     for r in ranges:
         try:
             start, end = r.replace("--", "-").split("-")
@@ -72,4 +76,4 @@ def deprettify(rangestr: str) -> list[int]:
         except ValueError:
             pages.append(int(r))
 
-    return pages
+    return pages if len(pages) > 1 else pages[0] if pages else None
