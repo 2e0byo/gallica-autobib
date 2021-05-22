@@ -212,8 +212,6 @@ def process_pdf(
       A Path() object pointing to the cropped pdf.
 
     """
-    if equal_size:
-        raise NotImplementedError("Equal sizes not yet implemented.")
 
     if not outf:
         if skip_existing:
@@ -230,31 +228,69 @@ def process_pdf(
     if has_cover_page:
         pages = pages[2:]
 
+    max_width, max_height = 0, 0
+
     if preserve_text:
         logger.debug("Preserving text.")
         for page in pages:
             img, _ = extract_image(page)
-            bbox = get_crop_bounds(img)
+            _bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
-            page.cropBox.lowerLeft = (bbox[0] * scale, bbox[1] * scale)
-            page.cropBox.upperRight = (bbox[2] * scale, bbox[3] * scale)
+            bbox = [x * scale for x in _bbox]
+            page.cropBox.lowerLeft = (bbox[0], bbox[1])
+            page.cropBox.upperRight = (bbox[2], bbox[3])
+            max_width = max(max_width, page.cropBox.getWidth())
+            max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
-        with outf.open("wb") as f:
-            writer.write(f)
     else:
         logger.debug("Not preserving text.")
         imgs = []
         for i, page in enumerate(pages):
             logger.debug(f"Processing page {i}")
             img, _ = extract_image(page)
-            bbox = get_crop_bounds(img)
-            img = img.crop(bbox)
+            scale = page.mediaBox.getWidth() / img.width
+            crop_bbox = get_crop_bounds(img)
+            img = img.crop(crop_bbox)
             if img.mode != "1":
                 img = filter_algorithm_brute_force(img)
             imgs.append(img)
-        imgs[0].save(
-            str(outf), "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
-        )
+        if not has_cover_page:
+            imgs[0].save(
+                outf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
+            )
+            return outf
+        else:
+            tmpf = BytesIO()
+            imgs[0].save(
+                tmpf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
+            )
+            tmp_reader = PdfFileReader(tmpf)
+            max_height, max_width = 0, 0
+            for page in tmp_reader.pages:
+                max_width = max(max_width, page.cropBox.getWidth())
+                max_height = max(max_height, page.cropBox.getHeight())
+                writer.addPage(page)
+
+    if equal_size:
+        new_writer = PdfFileWriter()
+        for i in range(writer.getNumPages()):
+            new_writer.addBlankPage(width=max_width, height=max_height)
+            # TODO: Centre page
+            new_writer.getPage(i).mergePage(writer.getPage(i))
+        writer = new_writer
+
+    if has_cover_page:
+        scale_x = max_width / reader.getPage(0).mediaBox.getWidth()
+        scale_y = max_height / reader.getPage(0).mediaBox.getHeight()
+        scale = min(scale_x, scale_y)
+
+        for i in range(2):
+            page = reader.getPage(i)
+            writer.insertBlankPage(width=max_width, height=max_height, index=i)
+            writer.getPage(i).mergeScaledPage(page, scale)
+
+    with outf.open("wb") as f:
+        writer.write(f)
 
     logger.info(f"Finished processing {str(outf)}")
     return outf

@@ -131,10 +131,24 @@ def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
         )
 
 
-@pytest.mark.xfail
 def test_process_pdf_equal_size(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     process_pdf(inf, tmp_path / "test1.pdf", equal_size=True, has_cover_page=True)
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+
+
+def test_process_pdf_equal_size_preserve(file_regression, tmp_path, check_pdfs):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+    process_pdf(
+        inf,
+        tmp_path / "test1.pdf",
+        equal_size=True,
+        has_cover_page=True,
+        preserve_text=True,
+    )
     with (tmp_path / "test1.pdf").open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
