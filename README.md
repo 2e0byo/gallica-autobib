@@ -46,5 +46,5 @@ for result in parser.results:
 ```
 
 Gallica-Autobib is capable of much more than this. For more information, see the
-[homepage](2e0byo.github.io/pygallica-autobib).
+[homepage](https://2e0byo.github.io/pygallica-autobib).
 
