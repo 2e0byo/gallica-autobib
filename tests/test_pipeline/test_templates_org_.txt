@@ -1,0 +1,24 @@
+* [1/1] Status
+ 
+**  DONE Pour lire saint Augustin (M.-D. Chenu)
+
+   #+BEGIN_SRC  bibtex 
+@Article{danielou30:_pour_augus,
+      author =       {M.-D. Chenu},
+      title =        {Pour lire saint Augustin},
+      journaltitle = {La Vie spirituelle},
+      year =      1930,
+      language =  {french},
+      volume = 24,
+      pages =     {135-57}}
+   #+END_SRC
+
+   #+BEGIN_SRC python
+ark = "https://gallica.bnf.fr/ark:/12148/bpt6k9735634r"
+   #+END_SRC
+
+   
+     [[/tmp/pytest-template-tmpdir/processed-pour-lire-saint-augustin-m-d-chenu.pdf][Processed Pdf]]   Confidence: 72.33 %
+   
+
+ 

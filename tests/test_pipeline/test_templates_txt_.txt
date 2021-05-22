@@ -1,0 +1,22 @@
+                                 Status Report
+                                 -------------
+
+  ==Pour lire saint Augustin (M.-D. Chenu)==
+
+@Article{danielou30:_pour_augus,
+      author =       {M.-D. Chenu},
+      title =        {Pour lire saint Augustin},
+      journaltitle = {La Vie spirituelle},
+      year =      1930,
+      language =  {french},
+      volume = 24,
+      pages =     {135-57}}
+
+  
+    
+      Processed: /tmp/pytest-template-tmpdir/processed-pour-lire-saint-augustin-m-d-chenu.pdf
+    
+    
+    Confidence: 72.33 %
+  
+
