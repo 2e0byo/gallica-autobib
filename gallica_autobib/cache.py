@@ -20,7 +20,7 @@ class Cached:
         """A resource in the cache, stored in a separate table."""
         self.tablename = cachename
         if not self.cachedir.exists():
-            self.cachedir.mkdir()
+            self.cachedir.mkdir(parents=True)
         cache = self.cachedir / self.CACHEFN
         self.con = sqlite3.connect(cache)
         MAKE_TABLE = f'CREATE TABLE IF NOT EXISTS "{cachename}" (key TEXT PRIMARY KEY, value BLOB)'
