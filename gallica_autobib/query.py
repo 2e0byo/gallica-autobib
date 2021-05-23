@@ -38,6 +38,7 @@ if TYPE_CHECKING:  # pragma: nocover
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 ark_cache = Cached("ark")
 source_match_cache = Cached("source_match")
+ocr_cache = Cached("ocr_bounds")
 UnscaledPageData = namedtuple(
     "UnscaledPageData", ["upper", "lower", "total_width", "total_height"]
 )
@@ -256,6 +257,7 @@ class GallicaResource(Representation):
         self.suppress_cover_page: bool = False
         self.trials = 3
         self._desired_pages: Optional[List[int]] = None
+        self._ocr_bounds = ocr_cache[self.key] if cache else None
 
     @property
     def ark(self) -> Optional[Union[str, Ark]]:
@@ -557,22 +559,27 @@ class GallicaResource(Representation):
     @property
     def ocr_bounds(self) -> List[UnscaledPageData]:
         """Text box from Gallica's ocr for every page."""
-        ocr_bounds = []
-        for pno in self._desired_pages:  # type: ignore
-            soup = self.get_ocr_data(pno)
-            page = soup.find("page")
-            height, width = int(page.get("height")), int(page.get("width"))
-            printspace = soup.find("printspace")
-            text_height = int(printspace.get("height"))
-            text_width = int(printspace.get("width"))
-            vpos = int(printspace.get("vpos"))
-            hpos = int(printspace.get("hpos"))
-            ocr_bounds.append(
-                UnscaledPageData(
-                    (hpos, vpos), (hpos + text_width, vpos + text_height), width, height
+        if not self._ocr_bounds:
+            bounds = []
+            for pno in self._desired_pages:  # type: ignore
+                soup = self.get_ocr_data(pno)
+                page = soup.find("page")
+                height, width = int(page.get("height")), int(page.get("width"))
+                printspace = soup.find("printspace")
+                text_height = int(printspace.get("height"))
+                text_width = int(printspace.get("width"))
+                vpos = int(printspace.get("vpos"))
+                hpos = int(printspace.get("hpos"))
+                bounds.append(
+                    UnscaledPageData(
+                        (hpos, vpos),
+                        (hpos + text_width, vpos + text_height),
+                        width,
+                        height,
+                    )
                 )
-            )
-        return ocr_bounds
+            self._ocr_bounds = bounds
+        return self._ocr_bounds
 
     def get_ocr_data(self, pno: int) -> BeautifulSoup:
         """Get ocr data from Gallica for pno."""

@@ -3,7 +3,7 @@ import logging
 from collections import namedtuple
 from io import BytesIO
 from pathlib import Path
-from typing import Tuple
+from typing import TYPE_CHECKING, Tuple
 
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
@@ -13,6 +13,9 @@ from PyPDF4.pdf import PageObject
 logger = logging.getLogger(__name__)
 
 Point = namedtuple("Point", ["x", "y"])
+
+if TYPE_CHECKING:
+    from .query import UnscaledPageData
 
 
 class ExtractionError(Exception):
@@ -176,6 +179,54 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     right += x + 10
     lower += x + 10
     return (left, upper, right, lower)
+
+
+def get_crop_from_ocr(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
+    """Get crop from Gallica's ocr data, looking for omitted pno.
+
+    Image must be grayscale!
+    """
+    xscale = img.height / ocr.total_height
+    yscale = img.width / ocr.total_width
+    upper = Point(round(ocr.upper[0] * xscale), round(ocr.upper[1] * xscale))
+    lower = Point(round(ocr.lower[0] * yscale), round(ocr.lower[1] * yscale))
+    img_array = np.array(img)
+    mean = img_array.mean(axis=1)
+    gradient = np.gradient(mean)
+    gstd = np.std(gradient)
+    gmean = gradient.mean()
+
+    search = round(img.height * 0.05)
+    upper_bound = round(upper.y - search)
+    lower_bound = round(lower.y + search)
+    upper_search = gradient[upper.y : upper_bound : -1]
+    lower_search = gradient[lower.y : lower_bound]
+    lower_diff_thresh = gmean - 1.5 * gstd
+    upper_diff_thresh = gmean + 1.5 * gstd
+
+    peaked = 0
+    for up, x in enumerate(upper_search):
+        if not peaked and x >= upper_diff_thresh:
+            peaked = 1
+        elif not peaked and x <= lower_diff_thresh:
+            peaked = 2
+            break
+
+    up = up if peaked == 2 else 0
+
+    peaked = 0
+    for down, x in enumerate(lower_search):
+        if not peaked and x <= lower_diff_thresh:
+            peaked = 1
+        elif peaked and x >= upper_diff_thresh:
+            peaked = 2
+            break
+
+    down = down if peaked == 2 else 0
+
+    upper = Point(upper.x, upper.y - up)
+    lower = Point(lower.x, lower.y + down)
+    return upper, lower
 
 
 def generate_filename(candidate: Path) -> Path:
