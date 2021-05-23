@@ -12,6 +12,8 @@ from PyPDF4.pdf import PageObject
 
 logger = logging.getLogger(__name__)
 
+Point = namedtuple("Point", ["x", "y"])
+
 
 class ExtractionError(Exception):
     pass
@@ -196,9 +198,6 @@ def process_pdf(
     has_cover_page: bool = False,
 ) -> Path:
     """Process a pdf.
-
-    Note that currently preserve_text implies not editing the image, and
-    equal_size is unimplemented.
 
     Args:
       pdf: Path: The pdf file to crop.

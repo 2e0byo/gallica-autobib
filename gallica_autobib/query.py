@@ -1,6 +1,7 @@
 import imghdr
 import logging
 import unicodedata
+from collections import namedtuple
 from functools import total_ordering
 from pathlib import Path
 from re import search
@@ -37,6 +38,9 @@ if TYPE_CHECKING:  # pragma: nocover
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 ark_cache = Cached("ark")
 source_match_cache = Cached("source_match")
+UnscaledPageData = namedtuple(
+    "UnscaledPageData", ["upper", "lower", "total_width", "total_height"]
+)
 
 
 class MatchingError(Exception):
@@ -250,6 +254,8 @@ class GallicaResource(Representation):
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
         self.suppress_cover_page: bool = False
+        self.trials = 3
+        self._desired_pages: Optional[List[int]] = None
 
     @property
     def ark(self) -> Optional[Union[str, Ark]]:
@@ -534,6 +540,49 @@ class GallicaResource(Representation):
         return self._resource
 
     @property
+    def desired_pages(self) -> List[int]:
+        """The pages we want to get from the target, as views (physical pnos)."""
+        if not self._desired_pages:
+            if hasattr(self.target, "pages"):
+                self._desired_pages = [
+                    self.get_physical_pno(p) for p in self.target.pages  # type: ignore
+                ]
+            else:
+                pages = self.pages
+                pnos = pages["livre"]["pages"]["page"]  # type: ignore
+                self._desired_pages = [int(p["ordre"]) for p in pages]  # type: ignore
+
+        return self._desired_pages
+
+    @property
+    def ocr_bounds(self) -> List[UnscaledPageData]:
+        """Text box from Gallica's ocr for every page."""
+        ocr_bounds = []
+        for pno in self._desired_pages:  # type: ignore
+            soup = self.get_ocr_data(pno)
+            page = soup.find("page")
+            height, width = int(page.get("height")), int(page.get("width"))
+            printspace = soup.find("printspace")
+            text_height = int(printspace.get("height"))
+            text_width = int(printspace.get("width"))
+            vpos = int(printspace.get("vpos"))
+            hpos = int(printspace.get("hpos"))
+            ocr_bounds.append(
+                UnscaledPageData(
+                    (hpos, vpos), (hpos + text_width, vpos + text_height), width, height
+                )
+            )
+        return ocr_bounds
+
+    def get_ocr_data(self, pno: int) -> BeautifulSoup:
+        """Get ocr data from Gallica for pno."""
+        for _ in range(self.trials):
+            either = self.resource.ocr_data_sync(view=pno)
+            if not either.is_left:
+                return BeautifulSoup(either.value.decode(), "xml")
+        raise DownloadError(f"Failed to fetch ocr data for p {pno}")
+
+    @property
     def timeout(self) -> int:
         "Timeout in url requests."
         return self.resource.timeout
@@ -544,6 +593,7 @@ class GallicaResource(Representation):
 
     @property
     def pages(self) -> Optional[Pages]:
+        """Physical pages in volume."""
         if not self._pages:
             either = self.resource.pagination_sync()
             if either.is_left:
@@ -589,7 +639,10 @@ class GallicaResource(Representation):
         return self._end_p
 
     def download_pdf(
-        self, path: Path, blocksize: int = 100, trials: int = 3, fetch_only: int = None
+        self,
+        path: Path,
+        blocksize: int = 100,
+        fetch_only: int = None,
     ) -> bool:
         """Download a resource as a pdf in blocks to avoid timeout."""
         partials = []
@@ -607,7 +660,7 @@ class GallicaResource(Representation):
             ):
 
                 fn = path.with_suffix(f".pdf.{i}")
-                status = self._fetch_block(start, length, trials, fn)
+                status = self._fetch_block(start, length, fn)
                 if not status:
                     raise DownloadError("Failed to download.")
                 with fn.open("rb") as f:
@@ -641,12 +694,12 @@ class GallicaResource(Representation):
         with path.open("wb") as f:
             merger.write(f)
 
-    def _fetch_block(self, startview: int, nviews: int, trials: int, fn: Path) -> bool:
+    def _fetch_block(self, startview: int, nviews: int, fn: Path) -> bool:
         """Fetch block."""
         url = self.resource.content_sync(
             startview=startview, nviews=nviews, url_only=True
         )
-        for i in range(trials):
+        for i in range(self.trials):
             status = downloader.download(
                 url,
                 download_file=str(fn.resolve()),
