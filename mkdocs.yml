@@ -1,23 +1,48 @@
-site_name: gallica-autobib
-site_description: Automatically match bibliography against gallica.bnf.fr
-site_url: https://github.com/2e0byo/pygallica-autobib
+site_name: Gallica Autobib
+site_description: Automatically match bibliographies against gallica.bnf.fr
+site_url: https://2e0byo.github.io/pygallica-autobib/
 
 theme:
     name: 'material'
+    features:
+      - navigation.instant
+      - navigation.tracking
+    palette:
+      - media: "(prefers-color-scheme: dark)"
+        scheme: slate
+        toggle:
+          icon: material/toggle-switch
+          name: Switch to light mode
+      - media: "(prefers-color-scheme: light)"
+        scheme: default
+        toggle:
+          icon: material/toggle-switch-off-outline
+          name: Switch to dark mode
+
 
 repo_name: 2e0byo/pygallica-autobib
 repo_url: https://github.com/2e0byo/pygallica-autobib
-edit_uri: ''
+edit_uri: 'edit/master/docs'
+
+extra:
+  version:
+    provider: mike
 
 plugins:
-  - mkdocs-versioning:
-      version: 0.1.4
+  - mike:
+      version_selector: true
+  - search
+
 nav:
-    - gallica-autobib: 'index.md'
-    - version Selector: "../"
+    - About: 'index.md'
+    - Matching: 'matching.md'
     - Processing Downloads: 'image_processing.md'
+    - Caching: 'caching.md'
+    - Output: 'output.md'
 
 markdown_extensions:
   - attr_list
   - pymdownx.highlight
   - pymdownx.superfences
+  - footnotes
+
