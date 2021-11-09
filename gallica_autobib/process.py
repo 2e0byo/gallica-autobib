@@ -252,6 +252,7 @@ def process_pdf(
     skip_existing: bool = False,
     has_cover_page: bool = False,
     suppress_pages: Collection = None,
+    progress: bool = False,
 ) -> Path:
     """Process a pdf.
 
