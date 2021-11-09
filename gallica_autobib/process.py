@@ -300,9 +300,12 @@ def process_pdf(
             if suppress_pages and i in suppress_pages:
                 logger.info(f"Skipping page {i}")
                 continue
+            logger.debug(f"Processing page {i}")
+
             img, _ = extract_image(page)
-            _bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
+            _bbox = get_crop_bounds(img)
+            # show(img, _bbox)
             bbox = [x * scale for x in _bbox]
             height = float(page.cropBox.getHeight())
             page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
@@ -310,6 +313,7 @@ def process_pdf(
             max_width = max(max_width, page.cropBox.getWidth())
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
+
         if equal_size:
             for i in range(writer.getNumPages()):
                 page = writer.getPage(i)
@@ -327,6 +331,7 @@ def process_pdf(
                 logger.info(f"Skipping page {i}")
                 continue
             logger.debug(f"Processing page {i}")
+
             img, _ = extract_image(page)
             scale = page.mediaBox.getWidth() / img.width
             crop_bbox = get_crop_bounds(img)
