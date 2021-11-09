@@ -10,6 +10,7 @@ import numpy as np
 from PIL import Image, ImageChops, ImageOps
 from PyPDF4 import PdfFileReader, PdfFileWriter
 from PyPDF4.pdf import PageObject
+from tqdm import tqdm
 
 logger = logging.getLogger(__name__)
 
@@ -282,8 +283,8 @@ def process_pdf(
     max_width, max_height = 0, 0
 
     if preserve_text:
-        logger.debug("Preserving text.")
-        for page in pages:
+        logger.info("Preserving text so only cropping.")
+        for i, page in enumerate(tqdm(pages, disable=not progress)):
             img, _ = extract_image(page)
             _bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
@@ -294,9 +295,9 @@ def process_pdf(
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
     else:
-        logger.debug("Not preserving text.")
+        logger.info("Not preserving text; will process images.")
         imgs = []
-        for i, page in enumerate(pages):
+        for i, page in enumerate(tqdm(pages, disable=not progress)):
             logger.debug(f"Processing page {i}")
             img, _ = extract_image(page)
             scale = page.mediaBox.getWidth() / img.width
@@ -313,14 +314,15 @@ def process_pdf(
             )
             tmp_reader = PdfFileReader(tmpf)
             max_height, max_width = 0, 0
-            for page in tmp_reader.pages:
+            for page in tqdm(tmp_reader.pages, disable=not progress):
                 max_width = max(max_width, page.cropBox.getWidth())
                 max_height = max(max_height, page.cropBox.getHeight())
                 writer.addPage(page)
 
     if equal_size:
         new_writer = PdfFileWriter()
-        for i in range(writer.getNumPages()):
+        logger.info("Scaling all pages to same size.")
+        for i in tqdm(list(range(writer.getNumPages())), disable=not progress):
             new_writer.addBlankPage(width=max_width, height=max_height)
             # TODO: Centre page
             new_writer.getPage(i).mergePage(writer.getPage(i))
