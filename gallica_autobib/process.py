@@ -1,6 +1,7 @@
 """Fns to process.  These are wrapped in a class in pipeline, which is probably what you want."""
 import logging
 from collections import namedtuple
+from collections.abc import Collection
 from io import BytesIO
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
