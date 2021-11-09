@@ -3,6 +3,7 @@ import logging
 from collections import namedtuple
 from io import BytesIO
 from pathlib import Path
+from tempfile import SpooledTemporaryFile
 from typing import TYPE_CHECKING, Tuple
 
 import numpy as np
@@ -304,13 +305,9 @@ def process_pdf(
             if img.mode != "1":
                 img = filter_algorithm_brute_force(img)
             imgs.append(img)
-        if not has_cover_page:
-            imgs[0].save(
-                outf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
-            )
-            return outf
-        else:
-            tmpf = BytesIO()
+
+        if has_cover_page:
+            tmpf = SpooledTemporaryFile()
             imgs[0].save(
                 tmpf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
             )
@@ -341,6 +338,9 @@ def process_pdf(
 
     with outf.open("wb") as f:
         writer.write(f)
+
+    if tmpf:
+        tmpf.close()
 
     logger.info(f"Finished processing {str(outf)}")
     return outf
