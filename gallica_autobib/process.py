@@ -12,6 +12,8 @@ from PyPDF4 import PdfFileReader, PdfFileWriter
 from PyPDF4.pdf import PageObject
 from tqdm import tqdm
 
+# from util import show
+
 logger = logging.getLogger(__name__)
 
 Point = namedtuple("Point", ["x", "y"])
