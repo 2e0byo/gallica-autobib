@@ -251,6 +251,7 @@ def process_pdf(
     equal_size: bool = False,
     skip_existing: bool = False,
     has_cover_page: bool = False,
+    ocr_data: "UnscaledPageData" = None,
     suppress_pages: Collection = None,
     progress: bool = False,
 ) -> Path:
@@ -262,7 +263,8 @@ def process_pdf(
       preserve_text: bool: Preserve OCRd text.  (Default value = False)
       equal_size: Make all pages equal sized.  (Default value = False)
       skip_existing: Whether to skip existing files.  (Default value = False)
-      has_cover_page: bool: Whether we have a cover page to resize (Default value=False.)
+      has_cover_page: bool: Whether we have a cover page to resize (Default value=False)
+      ocr_data: UnscaledPageData: ocr data for this page if available. (Default value = None)
 
     Returns:
       A Path() object pointing to the cropped pdf.
@@ -288,6 +290,9 @@ def process_pdf(
             suppress_pages = [x - 2 for x in suppress_pages]
 
     max_width, max_height = 0, 0
+
+    if ocr_data:
+        raise NotImplementedError("Call ocr bound fn here.")
 
     if preserve_text:
         logger.info("Preserving text so only cropping.")
