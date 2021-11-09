@@ -299,11 +299,21 @@ def process_pdf(
             _bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
             bbox = [x * scale for x in _bbox]
-            page.cropBox.lowerLeft = (bbox[0], bbox[1])
-            page.cropBox.upperRight = (bbox[2], bbox[3])
+            height = float(page.cropBox.getHeight())
+            page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
+            page.cropBox.upperRight = (bbox[2], height - bbox[1])
             max_width = max(max_width, page.cropBox.getWidth())
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
+        if equal_size:
+            for i in range(writer.getNumPages()):
+                page = writer.getPage(i)
+                xdiff = (max_width - page.cropBox.getWidth()) / 2
+                ydiff = (max_height - page.cropBox.getHeight()) / 2
+                curr = page.cropBox.lowerLeft
+                page.cropBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
+                curr = page.cropBox.upperRight
+                page.cropBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
     else:
         logger.info("Not preserving text; will process images.")
         imgs = []
@@ -332,7 +342,7 @@ def process_pdf(
                 max_height = max(max_height, page.cropBox.getHeight())
                 writer.addPage(page)
 
-    if equal_size:
+    if equal_size and not preserve_text:
         new_writer = PdfFileWriter()
         logger.info("Scaling all pages to same size.")
         for i in tqdm(list(range(writer.getNumPages())), disable=not progress):
