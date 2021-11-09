@@ -69,16 +69,36 @@ def test_detect_spine():
 bounds_tests = [
     ("tests/test_process/rh.jpg", (161, 158, 899, 1394)),
     ("tests/test_process/lh.jpg", (46, 116, 841, 1393)),
-    ("tests/test_process/test_get_bounds.jpg", (0, 0, 0, 0)),
+    ("tests/test_process/test_get_bounds.jpg", (558, 32, 2034, 2008)),
 ]
+
+
+def show(img, bounds):
+    import matplotlib.pyplot as plt
+    from matplotlib.patches import Rectangle
+
+    fig, ax = plt.subplots()
+    plt.imshow(img)
+    box = ax.add_patch(
+        Rectangle(
+            bounds[:2],
+            bounds[2] - bounds[0],
+            bounds[3] - bounds[1],
+            edgecolor="red",
+            facecolor="none",
+            lw=2,
+        )
+    )
+    plt.show()
 
 
 @pytest.mark.parametrize("f, bbox", bounds_tests)
 def test_get_crop_bounds(f, bbox):
     img = Image.open(f)
     bounds = get_crop_bounds(img)
-    for exp, res in zip(bbox, bounds):
-        assert abs(res - exp) < 7
+    # handy when setting up new testcases for test-driven
+    # show(img, bounds)
+    assert bounds == pytest.approx(bbox, rel=7)
 
 
 filter_tests = [
