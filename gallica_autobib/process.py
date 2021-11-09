@@ -251,6 +251,7 @@ def process_pdf(
     equal_size: bool = False,
     skip_existing: bool = False,
     has_cover_page: bool = False,
+    suppress_pages: Collection = None,
 ) -> Path:
     """Process a pdf.
 
@@ -281,12 +282,17 @@ def process_pdf(
     writer = PdfFileWriter()
     if has_cover_page:
         pages = pages[2:]
+        if suppress_pages:
+            suppress_pages = [x - 2 for x in suppress_pages]
 
     max_width, max_height = 0, 0
 
     if preserve_text:
         logger.info("Preserving text so only cropping.")
         for i, page in enumerate(tqdm(pages, disable=not progress)):
+            if suppress_pages and i in suppress_pages:
+                logger.info(f"Skipping page {i}")
+                continue
             img, _ = extract_image(page)
             _bbox = get_crop_bounds(img)
             scale = page.mediaBox.getWidth() / img.width
@@ -300,6 +306,9 @@ def process_pdf(
         logger.info("Not preserving text; will process images.")
         imgs = []
         for i, page in enumerate(tqdm(pages, disable=not progress)):
+            if suppress_pages and i in suppress_pages:
+                logger.info(f"Skipping page {i}")
+                continue
             logger.debug(f"Processing page {i}")
             img, _ = extract_image(page)
             scale = page.mediaBox.getWidth() / img.width
