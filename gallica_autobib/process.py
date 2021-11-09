@@ -351,6 +351,11 @@ def process_pdf(
                 max_width = max(max_width, page.cropBox.getWidth())
                 max_height = max(max_height, page.cropBox.getHeight())
                 writer.addPage(page)
+        else:
+            imgs[0].save(
+                outf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
+            )
+            return outf
 
     if equal_size and not preserve_text:
         new_writer = PdfFileWriter()
