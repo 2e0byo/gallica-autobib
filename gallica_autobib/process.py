@@ -268,6 +268,7 @@ def process_pdf(
       A Path() object pointing to the cropped pdf.
 
     """
+    tmpf = None
 
     if not outf:
         if skip_existing:
