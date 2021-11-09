@@ -67,6 +67,7 @@ def test_detect_spine():
 
 
 bounds_tests = [
+    ("tests/test_process/test_get_bounds2.jpg", (558, 32, 2034, 2008)),
     ("tests/test_process/rh.jpg", (161, 158, 899, 1394)),
     ("tests/test_process/lh.jpg", (46, 116, 841, 1393)),
     ("tests/test_process/test_get_bounds.jpg", (558, 32, 2034, 2008)),
