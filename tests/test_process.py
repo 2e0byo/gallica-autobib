@@ -66,22 +66,19 @@ def test_detect_spine():
     assert not detect_spine(img).lh_page
 
 
-def test_crop_bounds_lh():
-    inf = "tests/test_process/lh.jpg"
-    img = Image.open(inf)
-    bbox = (46, 116, 841, 1393)
-    res = get_crop_bounds(img)
-    for i, val in enumerate(bbox):
-        assert abs(res[i] - val) < 7
+bounds_tests = [
+    ("tests/test_process/rh.jpg", (161, 158, 899, 1394)),
+    ("tests/test_process/lh.jpg", (46, 116, 841, 1393)),
+    ("tests/test_process/test_get_bounds.jpg", (0, 0, 0, 0)),
+]
 
 
-def test_crop_bounds_rh():
-    inf = "tests/test_process/rh.jpg"
-    img = Image.open(inf)
-    bbox = (161, 158, 899, 1394)
-    res = get_crop_bounds(img)
-    for i, val in enumerate(bbox):
-        assert abs(res[i] - val) < 7
+@pytest.mark.parametrize("f, bbox", bounds_tests)
+def test_get_crop_bounds(f, bbox):
+    img = Image.open(f)
+    bounds = get_crop_bounds(img)
+    for exp, res in zip(bbox, bounds):
+        assert abs(res - exp) < 7
 
 
 filter_tests = [
