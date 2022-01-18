@@ -6,6 +6,8 @@ import typer
 
 from . import __version__
 from .pipeline import BibtexParser, RisParser
+from .query import DownloadableResource
+from .process import process_pdf
 
 logger = logging.getLogger(__name__)
 
@@ -89,6 +91,45 @@ def process_bibliograpy(
             f.write(report)
     else:
         print(report)
+
+
+@app.command()
+def fetch(
+    ark: str = typer.Argument(..., help="Ark for the resource to fetch."),
+    outf: Path = typer.Argument(..., help="Output path."),
+    post_process: bool = typer.Option(True, help="Post-process download."),
+    preserve_text: bool = typer.Option(True, help="Preserve text in post processing."),
+    clean: bool = typer.Option(True, help="Clean up intermediate files."),
+    verbosity: int = typer.Option(1, help="Verbosity between 0 and 2."),
+    suppress_cover_page: bool = typer.Option(
+        False, help="Suppress Gallica's cover page."
+    ),
+) -> None:
+    """Fetch a single resource to a pdf."""
+
+    process_args = {"preserve_text": preserve_text}
+    download_args: Dict[str, bool] = {}
+
+    logging.basicConfig(level=log_level[verbosity])
+    logger = logging.getLogger("CLI")
+
+    resource = DownloadableResource()
+    resource.ark = ark
+    resource.set_max_pages()
+    resource.download_pdf(outf)
+    if post_process:
+        logger.debug("Processing...")
+        processed = process_pdf(
+            outf,
+            has_cover_page=not suppress_cover_page,
+            preserve_text=preserve_text,
+        )
+        if clean:
+            logger.debug("Deleting original file.")
+            outf.unlink()
+        print(f"Output written to {processed}")
+    if outf.exists():
+        print(f"Original file at {outf}")
 
 
 if __name__ == "__main__":
