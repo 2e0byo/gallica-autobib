@@ -341,7 +341,7 @@ class DownloadableResource(Representation):
             if not self.start_p or not self.end_p:
                 raise Exception("No pages.")
 
-            trial = self.resource.content_sync()
+            trial = self.resource.content_sync(self.start_p, 1)
             if trial.is_left and "451" in trial.value.reason:
                 self.logger.warn(
                     f"Failed to download with {trial.value}; falling back to image"
