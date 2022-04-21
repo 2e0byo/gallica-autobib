@@ -751,7 +751,7 @@ class GallicaResource(DownloadableResource):
         """Text box from Gallica's ocr for every page."""
         if not self._ocr_bounds:
             bounds = []
-            for pno in self._desired_pages:  # type: ignore
+            for pno in self.desired_pages:  # type: ignore
                 soup = self.get_ocr_data(pno)
                 page = soup.find("page")
                 height, width = int(page.get("height")), int(page.get("width"))
