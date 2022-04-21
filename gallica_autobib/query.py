@@ -183,12 +183,8 @@ class Query(
         """Try to get best match."""
         self.logger.debug("Generting query")
         query = self.target.generate_query()
-        try:
-            self.logger.debug("Fetching query")
-            resps = self.fetcher.fetch_query(query)
-        except Exception:
-            print_exc()
-            return None
+        self.logger.debug("Fetching query")
+        resps = self.fetcher.fetch_query(query)
         self.logger.debug(f"Got {len(list(resps))} candidates.")
         matches = []
         for i, resp in enumerate(resps[:give_up]):
