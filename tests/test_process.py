@@ -2,18 +2,12 @@ from collections import namedtuple
 from pathlib import Path
 
 import pytest
-from gallica_autobib.process import (
-    ExtractionError,
-    deanomalise,
-    detect_spine,
-    extract_image,
-    filter_algorithm_brute_force,
-    generate_filename,
-    get_crop_bounds,
-    get_crop_from_ocr,
-    prepare_img,
-    process_pdf,
-)
+from gallica_autobib.process import (ExtractionError, deanomalise,
+                                     detect_spine, extract_image,
+                                     filter_algorithm_brute_force,
+                                     generate_filename, get_crop_bounds,
+                                     get_crop_from_ocr, prepare_img,
+                                     process_pdf)
 from gallica_autobib.query import UnscaledPageData
 from PIL import Image, ImageOps
 from PyPDF4 import PdfFileReader
