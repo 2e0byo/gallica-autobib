@@ -773,6 +773,7 @@ class GallicaResource(DownloadableResource):
 
     def get_ocr_data(self, pno: int) -> BeautifulSoup:
         """Get ocr data from Gallica for pno."""
+        self.logger.debug(f"Getting ocr data for page {pno}")
         for _ in range(self.trials):
             either = self.resource.ocr_data_sync(view=pno)
             if not either.is_left:
