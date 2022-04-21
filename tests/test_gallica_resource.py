@@ -202,6 +202,13 @@ def test_last_pno(gallica_resource, pages):
     assert resp == "676"
 
 
+def test_ocr_bounds(gallica_resource, data_regression):
+    gallica_resource.ark  # trigger search before we edit pages
+    gallica_resource.target.pages = gallica_resource.target.pages[:3]
+    bounds = gallica_resource.ocr_bounds
+    data_regression.check([x._asdict() for x in bounds])
+
+
 @pytest.mark.xfail
 def test_ocr_find_article_in_journal(gallica_resource):
     ark = "ark:/12148/bpt6k9737289z"
