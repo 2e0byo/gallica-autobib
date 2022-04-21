@@ -1,16 +1,17 @@
-'logger=<Logger GR Pour l (M.-D. ) (DEBUG)> target=Article(publicationdate=1930, publisher=None,
-  ark=None, title=''Pour lire saint Augustin'', subtitle=None, journaltitle=''La vie
-  spirituelle'', pages=[''135'', ''136'', ''137'', ''138'', ''139'', ''140'', ''141'',
-  ''142'', ''143'', ''144'', ''145'', ''146'', ''147'', ''148'', ''149'', ''150'',
-  ''151'', ''152'', ''153'', ''154'', ''155'', ''156'', ''157''], author=''M.-D. Chenu'',
-  editor=None, number=None, volume=None, physical_pages=None) key=''ba07bc75d289254cfec1517a0fc9e59020d9a9af''
+'_ark=''https://gallica.bnf.fr/ark:/12148/bpt6k9735634r'' _start_p=None _end_p=None
+  _resource=None _pages=None logger=<Logger GR Pour l (M.-D. ) (DEBUG)> trials=3 suppress_cover_page=False
+  target=Article(publicationdate=1930, publisher=None, ark=None, title=''Pour lire
+  saint Augustin'', subtitle=None, journaltitle=''La vie spirituelle'', pages=[''135'',
+  ''136'', ''137'', ''138'', ''139'', ''140'', ''141'', ''142'', ''143'', ''144'',
+  ''145'', ''146'', ''147'', ''148'', ''149'', ''150'', ''151'', ''152'', ''153'',
+  ''154'', ''155'', ''156'', ''157''], author=''M.-D. Chenu'', editor=None, number=None,
+  volume=None, physical_pages=None) key=''ba07bc75d289254cfec1517a0fc9e59020d9a9af''
   source=Journal(publicationdate=[1919, 1920, 1921, 1922, 1923, 1924, 1925, 1926,
   1927, 1928, 1929, 1930, 1931, 1932, 1933, 1934, 1935, 1936, 1937, 1938, 1939, 1940,
   1941, 1942, 1943, 1944, 1945], publisher=''Le Cerf (Paris)'', ark=''http://catalogue.bnf.fr/ark:/12148/cb34406663m'',
   journaltitle=''La Vie spirituelle, ascétique et mystique'', number=None, volume=None)
   series_ark={''scheme'': ''http'', ''authority'': ''catalogue.bnf.fr'', ''naan'':
-  ''12148'', ''name'': ''cb34406663m'', ''qualifier'': None} _ark=''https://gallica.bnf.fr/ark:/12148/bpt6k9735634r''
-  _resource=None _start_p=None _end_p=None _pages=None consider_toc=True source_match=Match(target=Article(publicationdate=1930,
+  ''12148'', ''name'': ''cb34406663m'', ''qualifier'': None} consider_toc=True source_match=Match(target=Article(publicationdate=1930,
   publisher=None, ark=None, title=''Pour lire saint Augustin'', subtitle=None, journaltitle=''La
   vie spirituelle'', pages=[''135'', ''136'', ''137'', ''138'', ''139'', ''140'',
   ''141'', ''142'', ''143'', ''144'', ''145'', ''146'', ''147'', ''148'', ''149'',
@@ -43,4 +44,4 @@
   246, 247, 248, 249, 250, 251, 252, 253, 254, 255, 256, 257, 258, 259, 260, 261,
   262]), _score=0.6679999999999999, _vals={''publicationdate'': 1, ''title'': 0.21,
   ''journaltitle'': 0.6, ''pages'': 1.0, ''author'': 0.53}) minimum_confidence=0.5
-  suppress_cover_page=False'
+  _desired_pages=None _ocr_bounds=None'
