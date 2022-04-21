@@ -320,8 +320,7 @@ def process_pdf(
             writer.addPage(page)
 
         if equal_size:
-            for i in range(writer.getNumPages()):
-                page = writer.getPage(i)
+            for page in (writer.getPage(i) for i in range(writer.getNumPages())):
                 xdiff = (max_width - page.cropBox.getWidth()) / 2
                 ydiff = (max_height - page.cropBox.getHeight()) / 2
                 curr = page.cropBox.lowerLeft
