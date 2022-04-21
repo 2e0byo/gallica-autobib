@@ -753,13 +753,13 @@ class GallicaResource(DownloadableResource):
             bounds = []
             for pno in self.desired_pages:  # type: ignore
                 soup = self.get_ocr_data(pno)
-                page = soup.find("page")
-                height, width = int(page.get("height")), int(page.get("width"))
-                printspace = soup.find("printspace")
-                text_height = int(printspace.get("height"))
-                text_width = int(printspace.get("width"))
-                vpos = int(printspace.get("vpos"))
-                hpos = int(printspace.get("hpos"))
+                page = soup.find("Page")
+                height, width = int(page.get("HEIGHT")), int(page.get("WIDTH"))
+                printspace = soup.find("PrintSpace")
+                text_height = int(printspace.get("HEIGHT"))
+                text_width = int(printspace.get("WIDTH"))
+                vpos = int(printspace.get("VPOS"))
+                hpos = int(printspace.get("HPOS"))
                 bounds.append(
                     UnscaledPageData(
                         (hpos, vpos),
