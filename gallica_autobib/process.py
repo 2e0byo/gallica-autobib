@@ -172,18 +172,27 @@ def crop_bounds(img: Image.Image) -> Bbox:
     # res = detect_spine(img)
     # logger.debug(res.lh_page)
     # crop out corner errors
-    x = 40
-    img = img.crop((x, x, img.width - x, img.height - x))
+    MARGIN_PIXELS = 40
+    img = img.crop(
+        (
+            MARGIN_PIXELS,
+            MARGIN_PIXELS,
+            img.width - MARGIN_PIXELS,
+            img.height - MARGIN_PIXELS,
+        )
+    )
 
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
     diff = ImageChops.difference(img, bg)
 
+    GROW_PIXELS = 10
     left, upper, right, lower = diff.getbbox()
-    left += x - 10
-    upper += x - 10
-    right += x + 10
-    lower += x + 10
+    # show(img, [diff.getbbox()])
+    left += MARGIN_PIXELS - GROW_PIXELS
+    upper += MARGIN_PIXELS - GROW_PIXELS
+    right += MARGIN_PIXELS + GROW_PIXELS
+    lower += MARGIN_PIXELS + GROW_PIXELS
     return Bbox(left, upper, right, lower)
 
 
