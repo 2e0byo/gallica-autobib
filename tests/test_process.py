@@ -46,7 +46,7 @@ def test_extract_image(img_test, image_regression, tmp_path):
     outf = tmp_path / f"test.{type_}"
     img.save(str(outf))
     with outf.open("rb") as f:
-        image_regression.check(f.read())
+        image_regression.check(f.read(), diff_threshold=0.2)
 
 
 def test_deanomalise():
@@ -126,7 +126,7 @@ def test_filter_brute_force(inf, image_regression, tmp_path):
 
     img.save(f"{tmp_path}/test.jpg")
     with (tmp_path / f"test.jpg").open("rb") as f:
-        image_regression.check(f.read())
+        image_regression.check(f.read(), diff_threshold=0.2)
 
 
 def test_process_pdf_no_preserve(file_regression, tmp_path, check_pdfs):
