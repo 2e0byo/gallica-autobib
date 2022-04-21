@@ -332,9 +332,6 @@ def process_pdf(
 
     max_width, max_height = 0, 0
 
-    if ocr_data:
-        raise NotImplementedError("Call ocr bound fn here.")
-
     if preserve_text:
         logger.info("Preserving text so only cropping.")
         for i, page in enumerate(tqdm(pages, disable=not progress)):
@@ -344,6 +341,8 @@ def process_pdf(
             logger.debug(f"Processing page {i}")
 
             img, _bbox, scale = extract_page(page)
+            if ocr_data:
+                _bbox = ocr_crop_bounds(img, ocr_data[i])
             # show(img, _bbox)
             bbox = Bbox(*(x * scale for x in _bbox))
             crop_page(page, bbox)
@@ -364,6 +363,8 @@ def process_pdf(
             logger.debug(f"Processing page {i}")
 
             img, crop_bbox, scale = extract_page(page)
+            if ocr_data:
+                crop_bbox = ocr_crop_bounds(img, ocr_data[i])
             img = img.crop(crop_bbox)
             if img.mode != "1":
                 img = filter_algorithm_brute_force(img)
@@ -410,6 +411,9 @@ def process_pdf(
 
     if tmpf:
         tmpf.close()
+
+    logger.info(f"Finished processing {str(outf)}")
+    return outf
 
     logger.info(f"Finished processing {str(outf)}")
     return outf
