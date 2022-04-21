@@ -18,6 +18,7 @@ from tqdm import tqdm
 logger = logging.getLogger(__name__)
 
 Point = namedtuple("Point", ["x", "y"])
+Bbox = namedtuple("Bbox", ["ux", "uy", "lx", "ly"])
 
 if TYPE_CHECKING:
     from .query import UnscaledPageData
@@ -147,7 +148,7 @@ def prepare_img(img: Image.Image, threshold: int = 60) -> Image.Image:
     return img.point(lambda p: p > threshold and 255)
 
 
-def crop_bounds(img: Image.Image) -> Tuple:
+def crop_bounds(img: Image.Image) -> Bbox:
     """Get crop bounds for text on page.
 
     The algorithm:
@@ -183,10 +184,10 @@ def crop_bounds(img: Image.Image) -> Tuple:
     upper += x - 10
     right += x + 10
     lower += x + 10
-    return (left, upper, right, lower)
+    return Bbox(left, upper, right, lower)
 
 
-def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
+def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     """Get crop from Gallica's ocr data, looking for omitted pno."""
     if img.mode not in {"1", "L"}:
         img = ImageOps.grayscale(img)
@@ -229,9 +230,7 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
 
     down = down if peaked == 2 else 0
 
-    upper = Point(upper.x, upper.y - up)
-    lower = Point(lower.x, lower.y + down)
-    return upper, lower
+    return Bbox(upper.x, upper.y - up, lower.x, lower.y + down)
 
 
 def generate_filename(candidate: Path) -> Path:

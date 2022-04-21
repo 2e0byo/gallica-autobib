@@ -191,8 +191,8 @@ def test_ocr_crop():
     img = Image.open("tests/test_process/aug-000.jpg")
     img = ImageOps.grayscale(img)
     ocr_bounds = UnscaledPageData((20, 20), (100, 200), 300, 500)
-    upper, lower = ocr_crop_bounds(img, ocr_bounds)
-    assert upper.x == 63
-    assert upper.y == 63
-    assert lower.x == 307
-    assert lower.y == 657
+    bbox = ocr_crop_bounds(img, ocr_bounds)
+    assert bbox.ux == 63
+    assert bbox.uy == 63
+    assert bbox.lx == 307
+    assert bbox.ly == 657
