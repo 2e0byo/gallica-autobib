@@ -359,10 +359,9 @@ class DownloadableResource(Representation):
     def download_pdf_chunks(self, path: Path, blocksize: int, fetch_only: int):
         """Download pdf in chunks, saving to path."""
         fetch = fetch_only - 1 if fetch_only is not None else self.end_p
-        end_p = self.start_p + self.end_p
         partials = []
         for i, (start, length) in enumerate(
-            self._generate_blocks(self.start_p, end_p, blocksize)  # type: ignore
+            self._generate_blocks(self.start_p, self.end_p, blocksize)  # type: ignore
         ):
 
             fn = path.with_suffix(f".pdf.{i}")
