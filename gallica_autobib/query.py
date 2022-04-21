@@ -3,27 +3,19 @@ import logging
 import unicodedata
 from collections import namedtuple
 from functools import total_ordering
-from pathlib import Path
-from PIL import Image
 from io import BytesIO
+from pathlib import Path
 from re import search
 from time import sleep
 from traceback import print_exc
-from typing import (
-    TYPE_CHECKING,
-    Any,
-    Generator,
-    List,
-    Optional,
-    OrderedDict,
-    Tuple,
-    Union,
-)
+from typing import (TYPE_CHECKING, Any, Generator, List, Optional, OrderedDict,
+                    Tuple, Union)
 
 import sruthi
 from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
+from PIL import Image
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
