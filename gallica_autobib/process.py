@@ -186,7 +186,7 @@ def crop_bounds(img: Image.Image) -> Tuple:
     return (left, upper, right, lower)
 
 
-def get_crop_from_ocr(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
+def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
     """Get crop from Gallica's ocr data, looking for omitted pno."""
     if img.mode not in {"1", "L"}:
         img = ImageOps.grayscale(img)

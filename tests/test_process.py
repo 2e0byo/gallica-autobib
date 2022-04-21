@@ -5,7 +5,7 @@ import pytest
 from gallica_autobib.process import (ExtractionError, crop_bounds, deanomalise,
                                      detect_spine, extract_image,
                                      filter_algorithm_brute_force,
-                                     generate_filename, get_crop_from_ocr,
+                                     generate_filename, ocr_crop_bounds,
                                      prepare_img, process_pdf)
 from gallica_autobib.query import UnscaledPageData
 from PIL import Image, ImageOps
@@ -187,11 +187,11 @@ def test_generate_filename(tmp_path):
     assert outf == tmp_path / "augustin-0.pdf"
 
 
-def test_get_ocr_crop():
+def test_ocr_crop():
     img = Image.open("tests/test_process/aug-000.jpg")
     img = ImageOps.grayscale(img)
     ocr_bounds = UnscaledPageData((20, 20), (100, 200), 300, 500)
-    upper, lower = get_crop_from_ocr(img, ocr_bounds)
+    upper, lower = ocr_crop_bounds(img, ocr_bounds)
     assert upper.x == 63
     assert upper.y == 63
     assert lower.x == 307
