@@ -244,6 +244,13 @@ def generate_filename(candidate: Path) -> Path:
     return candidate
 
 
+def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
+    img, _ = extract_image(page)
+    scale = page.mediaBox.getWidth() / img.width
+    crop_bbox = crop_bounds(img)
+    return img, crop_bbox, scale
+
+
 def process_pdf(
     pdf: Path,
     outf: Path = None,
@@ -302,9 +309,7 @@ def process_pdf(
                 continue
             logger.debug(f"Processing page {i}")
 
-            img, _ = extract_image(page)
-            scale = page.mediaBox.getWidth() / img.width
-            _bbox = crop_bounds(img)
+            img, _bbox, scale = extract_page(page)
             # show(img, _bbox)
             bbox = [x * scale for x in _bbox]
             height = float(page.cropBox.getHeight())
@@ -332,9 +337,7 @@ def process_pdf(
                 continue
             logger.debug(f"Processing page {i}")
 
-            img, _ = extract_image(page)
-            scale = page.mediaBox.getWidth() / img.width
-            crop_bbox = crop_bounds(img)
+            img, crop_bbox, scale = extract_page(page)
             img = img.crop(crop_bbox)
             if img.mode != "1":
                 img = filter_algorithm_brute_force(img)
