@@ -216,14 +216,16 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     lower_bound = round(lower.y + search)
     upper_search = gradient[upper.y : upper_bound : -1]
     lower_search = gradient[lower.y : lower_bound]
-    lower_diff_thresh = gmean - 1.5 * gstd
-    upper_diff_thresh = gmean + 1.5 * gstd
+
+    thresh = 1.5
+    lower_diff_thresh = gmean - thresh * gstd
+    upper_diff_thresh = gmean + thresh * gstd
 
     peaked = 0
     for up, x in enumerate(upper_search):
         if not peaked and x >= upper_diff_thresh:
             peaked = 1
-        elif not peaked and x <= lower_diff_thresh:
+        elif peaked and x <= lower_diff_thresh:
             peaked = 2
             break
 
@@ -233,13 +235,21 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     for down, x in enumerate(lower_search):
         if not peaked and x <= lower_diff_thresh:
             peaked = 1
-        elif peaked and x >= upper_diff_thresh:
+        if peaked and x >= upper_diff_thresh:
             peaked = 2
             break
 
     down = down if peaked == 2 else 0
 
-    return Bbox(upper.x, upper.y - up, lower.x, lower.y + down)
+    GROW_PIXELS = 10
+    bbox = Bbox(
+        upper.x - GROW_PIXELS,
+        upper.y - up - GROW_PIXELS,
+        lower.x + GROW_PIXELS,
+        lower.y + down + GROW_PIXELS,
+    )
+    # show(img, [bbox, Bbox(upper.x, upper.y - search, lower.x, lower.y + search)])
+    return bbox
 
 
 def generate_filename(candidate: Path) -> Path:
