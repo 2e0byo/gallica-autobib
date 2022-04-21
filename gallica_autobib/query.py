@@ -11,6 +11,7 @@ from traceback import print_exc
 from typing import (TYPE_CHECKING, Any, Generator, List, Optional, OrderedDict,
                     Tuple, Union)
 
+import requests
 import sruthi
 from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
@@ -316,6 +317,11 @@ class DownloadableResource(Representation):
             raise either.value
         return either.value
 
+    @staticmethod
+    def pdf_unavailable(url: str) -> bool:
+        """Work out if we can get the pdf or need to fall back on the images."""
+        return requests.head(url).status_code == 451
+
     def download_pdf(
         self,
         path: Path,
@@ -333,8 +339,10 @@ class DownloadableResource(Representation):
             if not self.start_p or not self.end_p:
                 raise Exception("No pages.")
 
-            trial = self.resource.content_sync(self.start_p, 1)
-            if trial.is_left and "451" in trial.value.reason:
+            trial_url = self.resource.content_sync(
+                startview=self.start_p, nviews=1, url_only=True
+            )
+            if self.pdf_unavailable(trial_url):
                 self.logger.warn(
                     f"Failed to download with {trial.value}; falling back to image"
                 )
