@@ -94,7 +94,7 @@ def show(img, bounds: tuple):
                 bounds[3] - bounds[1],
                 edgecolor="red",
                 facecolor="none",
-                lw=2,
+                lw=0.5,
             )
         )
     plt.show()
