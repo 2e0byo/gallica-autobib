@@ -251,6 +251,21 @@ def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
     return img, crop_bbox, scale
 
 
+def scale_page(page: PageObject, max_width: int, max_height: int):
+    xdiff = (max_width - page.cropBox.getWidth()) / 2
+    ydiff = (max_height - page.cropBox.getHeight()) / 2
+    curr = page.cropBox.lowerLeft
+    page.cropBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
+    curr = page.cropBox.upperRight
+    page.cropBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+
+
+def crop_page(page: PageObject, bbox: Bbox):
+    height = float(page.cropBox.getHeight())
+    page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
+    page.cropBox.upperRight = (bbox[2], height - bbox[1])
+
+
 def process_pdf(
     pdf: Path,
     outf: Path = None,
@@ -311,22 +326,15 @@ def process_pdf(
 
             img, _bbox, scale = extract_page(page)
             # show(img, _bbox)
-            bbox = [x * scale for x in _bbox]
-            height = float(page.cropBox.getHeight())
-            page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
-            page.cropBox.upperRight = (bbox[2], height - bbox[1])
+            bbox = Bbox(*(x * scale for x in _bbox))
+            crop_page(page, bbox)
             max_width = max(max_width, page.cropBox.getWidth())
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
 
         if equal_size:
             for page in (writer.getPage(i) for i in range(writer.getNumPages())):
-                xdiff = (max_width - page.cropBox.getWidth()) / 2
-                ydiff = (max_height - page.cropBox.getHeight()) / 2
-                curr = page.cropBox.lowerLeft
-                page.cropBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
-                curr = page.cropBox.upperRight
-                page.cropBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+                scale_page(page, max_width, max_height)
     else:
         logger.info("Not preserving text; will process images.")
         imgs = []
