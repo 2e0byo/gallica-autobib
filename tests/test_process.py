@@ -8,6 +8,7 @@ from gallica_autobib.process import (ExtractionError, crop_bounds, deanomalise,
                                      generate_filename, ocr_crop_bounds,
                                      prepare_img, process_pdf)
 from gallica_autobib.query import UnscaledPageData
+from gallica_autobib.util import show
 from PIL import Image, ImageOps
 from PyPDF4 import PdfFileReader
 
