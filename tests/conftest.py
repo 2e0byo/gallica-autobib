@@ -4,8 +4,6 @@ from pathlib import Path
 
 import pytest
 from diff_pdf_visually import pdfdiff
-
-logging.basicConfig(level=logging.DEBUG)
 from gallica_autobib.models import Article, Journal
 from gallica_autobib.query import GallicaResource
 
