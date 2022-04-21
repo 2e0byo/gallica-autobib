@@ -1,4 +1,5 @@
-from typing import Union
+from itertools import cycle
+from typing import Iterable, Union
 
 import roman
 
@@ -79,20 +80,21 @@ def deprettify(rangestr: Union[str, int]) -> Union[list[int], int, None]:
     return pages if len(pages) > 1 else pages[0] if pages else None
 
 
-def show(img, bounds: tuple):
+def show(img, boxes: Iterable[tuple]):
     """Show an image with optional bounds drawn over it."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
 
     fig, ax = plt.subplots()
     plt.imshow(img)
-    if bounds:
+    colours = ("red", "green", "orange", "blue", "violet")
+    for bounds, colour in zip(boxes, cycle(colours)):
         box = ax.add_patch(
             Rectangle(
                 bounds[:2],
                 bounds[2] - bounds[0],
                 bounds[3] - bounds[1],
-                edgecolor="red",
+                edgecolor=colour,
                 facecolor="none",
                 lw=0.5,
             )
