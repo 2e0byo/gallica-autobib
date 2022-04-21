@@ -1,5 +1,5 @@
 [run]
-omit = *gallipy/*
+omit = *gallipy/*,*tests*
 
 [report]
 exclude_lines =
