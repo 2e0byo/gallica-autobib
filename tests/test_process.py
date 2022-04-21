@@ -2,8 +2,8 @@ from collections import namedtuple
 from pathlib import Path
 
 import pytest
-from gallica_autobib.process import (ExtractionError, crop_bounds, deanomalise,
-                                     detect_spine, extract_image,
+from gallica_autobib.process import (Bbox, ExtractionError, crop_bounds,
+                                     deanomalise, detect_spine, extract_image,
                                      filter_algorithm_brute_force,
                                      generate_filename, ocr_crop_bounds,
                                      prepare_img, process_pdf)
@@ -169,12 +169,46 @@ def test_generate_filename(tmp_path):
     assert outf == tmp_path / "augustin-0.pdf"
 
 
-def test_ocr_crop():
-    img = Image.open("tests/test_process/aug-000.jpg")
+ocr_data = (
+    UnscaledPageData(
+        upper=[187, 628], lower=[1637, 2766], total_width=1852, total_height=3088
+    ),
+    UnscaledPageData(
+        upper=[260, 443], lower=[1701, 2812], total_width=1868, total_height=3060
+    ),
+    UnscaledPageData(
+        upper=[135, 453], lower=[1584, 2767], total_width=1864, total_height=3088
+    ),
+)
+
+bboxes = (
+    Bbox(85, 308, 825, 1387),
+    Bbox(0, 0, 0, 0),
+    Bbox(0, 0, 0, 0),
+)
+
+
+@pytest.mark.parametrize(
+    "imgf, bounds, bbox", zip((f"aug-00{i}.jpg" for i in range(3)), ocr_data, bboxes)
+)
+def test_ocr_crop(imgf, bounds, bbox):
+    img = Image.open(f"tests/test_process/{imgf}")
     img = ImageOps.grayscale(img)
-    ocr_bounds = UnscaledPageData((20, 20), (100, 200), 300, 500)
-    bbox = ocr_crop_bounds(img, ocr_bounds)
-    assert bbox.ux == 63
-    assert bbox.uy == 63
-    assert bbox.lx == 307
-    assert bbox.ly == 657
+    ocr_bbox = ocr_crop_bounds(img, bounds)
+    assert pytest.approx(ocr_bbox) == bbox
+
+
+def test_process_pdf_ocr(file_regression, tmp_path, check_pdfs):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+
+    process_pdf(
+        inf,
+        tmp_path / "test1.pdf",
+        has_cover_page=True,
+        preserve_text=True,
+        ocr_data=ocr_data,
+    )
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
