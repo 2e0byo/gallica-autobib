@@ -176,8 +176,6 @@ class Query(
         if "publisher" in resp.keys():
             resp["publisher"] = self.get_at_str(resp["publisher"])
         resp["title"] = self.get_at_str(resp["title"])
-        # resp["publisher"] = resp["publisher"][0]
-        # resp["title"] = resp["title"][0]
         obj = GallicaBibObj.parse_obj(resp).convert()
         return obj  # type: ignore
 
@@ -371,9 +369,6 @@ class DownloadableResource(Representation):
             status = self._fetch_block(start, length, fn)
             if not status:
                 raise DownloadError("Failed to download.")
-            # with fn.open("rb") as f:
-            #     with Path("/tmp/test.pdf").open("wb") as o:
-            #         o.write(f.read())
             partials.append(fn)
         return partials
 
