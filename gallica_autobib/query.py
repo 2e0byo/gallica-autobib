@@ -191,10 +191,8 @@ class Query(
             candidate = self.resp_to_obj(resp)
             candidate = Match(self.target, candidate)
             matches.append(candidate)
-            for m in matches:  # use a real loop so as to update _score
-                if i < 3:
-                    break
-                if m.score > 0.7:
+            if i > 3:
+                if any(m.score > 0.7 for m in matches):
                     break
 
         if not matches:
