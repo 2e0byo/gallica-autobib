@@ -187,10 +187,10 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
 
 
 def get_crop_from_ocr(img: Image, ocr: "UnscaledPageData") -> Tuple[Point, Point]:
-    """Get crop from Gallica's ocr data, looking for omitted pno.
-
-    Image must be grayscale!
-    """
+    """Get crop from Gallica's ocr data, looking for omitted pno."""
+    if img.mode not in {"1", "L"}:
+        img = ImageOps.grayscale(img)
+        img = ImageOps.autocontrast(img)
     xscale = img.height / ocr.total_height
     yscale = img.width / ocr.total_width
     upper = Point(round(ocr.upper[0] * xscale), round(ocr.upper[1] * xscale))
