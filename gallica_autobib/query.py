@@ -189,8 +189,8 @@ class Query(
         matches = []
         for i, resp in enumerate(resps[:give_up]):
             candidate = self.resp_to_obj(resp)
-            match = Match(self.target, candidate)
-            matches.append(match)
+            candidate = Match(self.target, candidate)
+            matches.append(candidate)
             for m in matches:  # use a real loop so as to update _score
                 if i < 3:
                     break
@@ -201,9 +201,9 @@ class Query(
             self.logger.debug("Failed to match.")
             return None
 
-        match = max(matches)
-        self.logger.debug(f"Matched. {repr(match)}")
-        return match
+        candidate = max(matches)
+        self.logger.debug(f"Matched. {repr(candidate)}")
+        return candidate
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
