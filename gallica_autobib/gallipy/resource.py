@@ -288,7 +288,7 @@ class Resource:
         """
         urlparts = {"query": {"ark": self.ark.name}}
         url = h.build_service_url(urlparts, service_name="Toc")
-        return h.fetch_xml_html(url, "html.parser", self.timeout)
+        return h.fetch_xml_html(url, "xml", self.timeout)
 
     def content_sync(self, startview=1, nviews=None, mode="pdf", url_only=False):
         """Retrieves the content of a document.
