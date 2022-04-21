@@ -2,12 +2,11 @@ from collections import namedtuple
 from pathlib import Path
 
 import pytest
-from gallica_autobib.process import (ExtractionError, deanomalise,
+from gallica_autobib.process import (ExtractionError, crop_bounds, deanomalise,
                                      detect_spine, extract_image,
                                      filter_algorithm_brute_force,
-                                     generate_filename, get_crop_bounds,
-                                     get_crop_from_ocr, prepare_img,
-                                     process_pdf)
+                                     generate_filename, get_crop_from_ocr,
+                                     prepare_img, process_pdf)
 from gallica_autobib.query import UnscaledPageData
 from PIL import Image, ImageOps
 from PyPDF4 import PdfFileReader
@@ -90,7 +89,7 @@ def show(img, bounds):
 @pytest.mark.parametrize("f, bbox", bounds_tests)
 def test_get_crop_bounds(f, bbox):
     img = Image.open(f)
-    bounds = get_crop_bounds(img)
+    bounds = crop_bounds(img)
     # handy when setting up new testcases for test-driven
     # show(img, bounds)
     assert bounds == pytest.approx(bbox, rel=7)
@@ -114,7 +113,7 @@ filter_tests = [
 @pytest.mark.parametrize("inf", filter_tests)
 def test_filter_brute_force(inf, image_regression, tmp_path):
     img = Image.open(inf)
-    img = img.crop(get_crop_bounds(img))
+    img = img.crop(crop_bounds(img))
     if img.mode != "1":
         img = filter_algorithm_brute_force(img)
 

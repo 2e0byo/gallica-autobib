@@ -147,7 +147,7 @@ def prepare_img(img: Image.Image, threshold: int = 60) -> Image.Image:
     return img.point(lambda p: p > threshold and 255)
 
 
-def get_crop_bounds(img: Image.Image) -> Tuple:
+def crop_bounds(img: Image.Image) -> Tuple:
     """Get crop bounds for text on page.
 
     The algorithm:
@@ -305,7 +305,7 @@ def process_pdf(
 
             img, _ = extract_image(page)
             scale = page.mediaBox.getWidth() / img.width
-            _bbox = get_crop_bounds(img)
+            _bbox = crop_bounds(img)
             # show(img, _bbox)
             bbox = [x * scale for x in _bbox]
             height = float(page.cropBox.getHeight())
@@ -335,7 +335,7 @@ def process_pdf(
 
             img, _ = extract_image(page)
             scale = page.mediaBox.getWidth() / img.width
-            crop_bbox = get_crop_bounds(img)
+            crop_bbox = crop_bounds(img)
             img = img.crop(crop_bbox)
             if img.mode != "1":
                 img = filter_algorithm_brute_force(img)
