@@ -99,7 +99,9 @@ class Match(
                 elif isinstance(candidate_v, list):
                     vals[k] = 1 if v in candidate_v else 0
                 else:
-                    raise NotImplementedError(v, candidate_v)
+                    raise NotImplementedError(
+                        f"Unable to compare {v} of type {type(v)} with {candidate_v} of type {type(candidate_v)}"
+                    )
 
             if isinstance(v, list):
                 matches = []
