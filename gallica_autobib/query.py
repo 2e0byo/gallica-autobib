@@ -157,6 +157,7 @@ class Query(
         self.target = target._source()
         self.fetcher = GallicaSRU()
         self.logger = logging.getLogger(f"QU {target.name(short=6)}")
+        self.skip_match_score = 0.7
 
     @staticmethod
     def get_at_str(obj: Union[str, List[str]]) -> Optional[str]:
@@ -192,7 +193,7 @@ class Query(
             candidate = Match(self.target, candidate)
             matches.append(candidate)
             if i > 3:
-                if any(m.score > 0.7 for m in matches):
+                if any(m.score > self.skip_match_score for m in matches):
                     break
 
         if not matches:
