@@ -7,9 +7,16 @@ from io import BytesIO
 from pathlib import Path
 from re import search
 from time import sleep
-from traceback import print_exc
-from typing import (TYPE_CHECKING, Any, Generator, List, Optional, OrderedDict,
-                    Tuple, Union)
+from typing import (
+    TYPE_CHECKING,
+    Any,
+    Generator,
+    List,
+    Optional,
+    OrderedDict,
+    Tuple,
+    Union,
+)
 
 import requests
 import sruthi

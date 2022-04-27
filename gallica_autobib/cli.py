@@ -6,8 +6,8 @@ import typer
 
 from . import __version__
 from .pipeline import BibtexParser, RisParser
-from .query import DownloadableResource
 from .process import process_pdf
+from .query import DownloadableResource
 
 logger = logging.getLogger(__name__)
 
