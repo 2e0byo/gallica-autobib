@@ -5,6 +5,7 @@ from collections.abc import Collection
 from functools import partial
 from io import BytesIO
 from itertools import filterfalse
+from numbers import Number
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
 from typing import TYPE_CHECKING, Iterable, Tuple
@@ -12,7 +13,7 @@ from typing import TYPE_CHECKING, Iterable, Tuple
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
 from PyPDF4 import PdfFileReader, PdfFileWriter
-from PyPDF4.pdf import PageObject
+from PyPDF4.pdf import PageObject, RectangleObject
 from tqdm import tqdm
 
 # from util import show
@@ -277,25 +278,25 @@ def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
     return img, crop_bbox, scale
 
 
+def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number):
+    from devtools import debug
+
+    debug(box, xdiff, ydiff)
+    curr = box.lowerLeft
+    box.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
+    curr = box.upperRight
+    box.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+
+
 def scale_page(page: PageObject, max_width: int, max_height: int):
 
-    # resize physical medium
-    # TODO: DRY
     xdiff = max(0, (max_width - page.mediaBox.getWidth()) / 2)
     ydiff = max(0, (max_height - page.mediaBox.getHeight()) / 2)
-
-    curr = page.mediaBox.lowerLeft
-    page.mediaBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
-    curr = page.mediaBox.upperRight
-    page.mediaBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+    _setbox(page.mediaBox, xdiff, ydiff)
 
     xdiff = (max_width - page.cropBox.getWidth()) / 2
     ydiff = (max_height - page.cropBox.getHeight()) / 2
-
-    curr = page.cropBox.lowerLeft
-    page.cropBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
-    curr = page.cropBox.upperRight
-    page.cropBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+    _setbox(page.cropBox, xdiff, ydiff)
 
 
 def crop_page(page: PageObject, bbox: Bbox):
