@@ -15,14 +15,18 @@ def check_pdfs():
     yield check
 
 
-@pytest.fixture(scope="module")
+@pytest.fixture(scope="session")
 def fixed_tmp_path():
-    path = Path("/tmp/pytest-template-tmpdir/")
-    if path.exists():
-        raise Exception("tmpdir exists")
-    path.mkdir()
+    path = Path("/tmp/pytest-template-tmpdir")
+    made = False
+    try:
+        path.mkdir(exist_ok=False)
+        made = True
+    except FileExistsError:
+        pass
     yield path
-    shutil.rmtree(path)
+    if made:
+        shutil.rmtree(path)
 
 
 @pytest.fixture
