@@ -291,6 +291,13 @@ def crop_page(page: PageObject, bbox: Bbox):
     page.cropBox.upperRight = (bbox[2], height - bbox[1])
 
 
+def process_image(img: Image.Image, bbox: Bbox) -> Image.Image:
+    img = img.crop(bbox)
+    if img.mode != "1":
+        img = filter_algorithm_brute_force(img)
+    return img
+
+
 def process_pdf(
     pdf: Path,
     outf: Path = None,
@@ -361,10 +368,7 @@ def process_pdf(
         crop_bboxes.append(crop_bbox)
 
         if not preserve_text:
-            img = img.crop(crop_bbox)
-            if img.mode != "1":
-                img = filter_algorithm_brute_force(img)
-            imgs.append(img)
+            imgs.append(process_image(img, crop_bbox))
         else:
             bbox = Bbox(*(x * scale for x in crop_bbox))
             crop_page(page, bbox)
