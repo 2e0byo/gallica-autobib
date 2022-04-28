@@ -21,3 +21,5 @@ build/
 /tests/test_cli/auto/
 /.coverage.*
 *.pdf-view-restore
+/gallica_autobib/templates/auto/
+/auto/
