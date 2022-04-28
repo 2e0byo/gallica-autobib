@@ -344,8 +344,6 @@ def process_pdf(
       A Path() object pointing to the cropped pdf.
 
     """
-    tmpf = None
-
     if not outf:
         if skip_existing:
             outf = pdf.with_stem(f"processed-{pdf.stem}")
@@ -376,10 +374,10 @@ def process_pdf(
 
     interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
 
-    # crop pages
     max_width, max_height = 0, 0
     tmpfiles = []
 
+    # crop pages
     for pno, page in progressbar(interesting_pages):
 
         img, crop_bbox, scale = extract_page(page)
@@ -420,9 +418,6 @@ def process_pdf(
 
     with outf.open("wb") as f:
         writer.write(f)
-
-    if tmpf:
-        tmpf.close()
 
     for tmpf in tmpfiles:
         tmpf.close()
