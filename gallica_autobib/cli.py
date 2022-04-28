@@ -121,7 +121,8 @@ def fetch(
         logger.debug("Processing...")
         processed = process_pdf(
             outf,
-            has_cover_page=not suppress_cover_page,
+            has_cover_page=True,
+            suppress_pages=range(2) if suppress_cover_page else None,
             preserve_text=preserve_text,
         )
         if clean:
