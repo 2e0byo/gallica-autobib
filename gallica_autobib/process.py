@@ -425,6 +425,3 @@ def process_pdf(
 
     logger.info(f"Finished processing {str(outf)}")
     return outf
-
-    logger.info(f"Finished processing {str(outf)}")
-    return outf
