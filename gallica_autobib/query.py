@@ -229,6 +229,7 @@ class DownloadableResource(Representation):
         self.logger = logging.getLogger("DR")
         self.trials: int = 3
         self.suppress_cover_page: bool = False
+        self._backoff = 0
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
@@ -422,9 +423,13 @@ class DownloadableResource(Representation):
             )
             if status:
                 if imghdr.what(fn):
-                    print("We got ratelimited, sleeping for 5 minutes.")
-                    sleep(60 * 5)
+                    print("We got ratelimited, backing off")
+                    self._backoff += 1
+                    if self._backoff > 9:
+                        raise Exception("We got ratelimited.")
+                    sleep(2**self._backoff)
                 else:
+                    self._backoff = 0
                     return True
             sleep(2 ** (i + 1))
         return False
