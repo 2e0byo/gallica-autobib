@@ -376,11 +376,7 @@ def process_pdf(
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
 
-    if preserve_text:
-        if equal_size:
-            for page in (writer.getPage(i) for i in range(writer.getNumPages())):
-                scale_page(page, max_width, max_height)
-    else:
+    if not preserve_text:
         if has_cover_page:
             tmpf = SpooledTemporaryFile()
             imgs[0].save(
@@ -398,14 +394,18 @@ def process_pdf(
             )
             return outf
 
-    if equal_size and not preserve_text:
-        new_writer = PdfFileWriter()
-        logger.info("Scaling all pages to same size.")
-        for pno in tqdm(list(range(writer.getNumPages())), disable=not progress):
-            new_writer.addBlankPage(width=max_width, height=max_height)
-            # TODO: Centre page
-            new_writer.getPage(pno).mergePage(writer.getPage(pno))
-        writer = new_writer
+    if equal_size:
+        if preserve_text:
+            for page in (writer.getPage(i) for i in range(writer.getNumPages())):
+                scale_page(page, max_width, max_height)
+        else:
+            new_writer = PdfFileWriter()
+            logger.info("Scaling all pages to same size.")
+            for i in tqdm(list(range(writer.getNumPages())), disable=not progress):
+                new_writer.addBlankPage(width=max_width, height=max_height)
+                # TODO: Centre page
+                new_writer.getPage(i).mergePage(writer.getPage(i))
+            writer = new_writer
 
     if has_cover_page:
         scale_x = max_width / reader.getPage(0).mediaBox.getWidth()
