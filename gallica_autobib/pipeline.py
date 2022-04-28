@@ -62,6 +62,7 @@ class InputParser:
         clean: bool = True,
         fetch_only: Optional[int] = None,
         ignore_cache: bool = False,
+        ocr_bounds: bool = True,
     ):
         self.records: List[Record] = []
         self.raw: List[str] = []
@@ -80,6 +81,7 @@ class InputParser:
         self.executing: List[Future] = []
         self.ignore_cache = ignore_cache
         self.suppress_cover_page: bool = False
+        self.ocr_bounds = ocr_bounds
 
     @property
     def successful(self) -> int:
@@ -169,6 +171,7 @@ class InputParser:
                 download_args=self.download_args,
                 cache=not self.ignore_cache,
                 suppress_cover_page=self.suppress_cover_page,
+                ocr_bounds=self.ocr_bounds,
             )
             for record in self.records
         ]
@@ -203,6 +206,7 @@ class InputParser:
         download_args: Optional[dict] = None,
         cache: bool = True,
         suppress_cover_page: bool = False,
+        ocr_bounds: bool = False,
     ) -> Result:
         """
         Run pipeline on item, returning a Result() object.
@@ -250,6 +254,8 @@ class InputParser:
 
         if process:
             logger.debug("Processing...")
+            if ocr_bounds:
+                process_args["ocr_data"] = gallica_resource.ocr_bounds
             processed = process_pdf(
                 outf, has_cover_page=not suppress_cover_page, **process_args
             )
