@@ -221,7 +221,6 @@ class DownloadableResource(Representation):
     BASE_TIMEOUT = 60
 
     def __init__(self, **kwargs):
-        super().__init__(**kwargs)
         self._ark = None
         self._start_p = None
         self._end_p = None
