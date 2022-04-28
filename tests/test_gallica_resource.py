@@ -95,7 +95,7 @@ def test_invalid_ark():
 
 
 def test_repr(gallica_resource, data_regression):
-    data_regression.check(str(gallica_resource))
+    data_regression.check(repr(gallica_resource))
 
 
 candidates = [
