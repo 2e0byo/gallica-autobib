@@ -358,12 +358,12 @@ class DownloadableResource(Representation):
         assert partials
         return False
 
-    def download_pdf_chunks(self, path: Path, blocksize: int, fetch_only: int):
+    def download_pdf_chunks(self, path: Path, blocksize: int, fetch_only: int = None):
         """Download pdf in chunks, saving to path."""
-        fetch = fetch_only - 1 if fetch_only is not None else self.end_p
+        fetch = self.end_p + fetch_only - 1 if fetch_only is not None else self.end_p
         partials = []
         for i, (start, length) in enumerate(
-            self._generate_blocks(self.start_p, self.end_p, blocksize)  # type: ignore
+            self._generate_blocks(self.start_p, fetch, blocksize)  # type: ignore
         ):
 
             fn = path.with_suffix(f".pdf.{i}")
@@ -376,7 +376,7 @@ class DownloadableResource(Representation):
     def download_pdf_images(self, path: Path, fetch_only: int = None) -> bool:
         """Download a resource as a pdf using the iif image endpoint."""
         fetch = fetch_only - 1 if fetch_only is not None else self.end_p
-        end_p = self.start_p + self.end_p
+        end_p = self.start_p + fetch
         partials = []
 
         for pno in range(self.start_p, end_p + 1):
