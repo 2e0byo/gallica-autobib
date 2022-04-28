@@ -344,18 +344,22 @@ def process_pdf(
     else:
         logger.info("Not preserving text; will process images.")
 
+    crop_bboxes = []
+
     if not suppress_pages:
         suppress_pages = ()
 
-    for i, page in tqdm(
-        filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages)),
-        disable=not progress,
-    ):
+    interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
+
+    # crop pages
+    for pno, page in tqdm(interesting_pages, disable=not progress):
 
         img, crop_bbox, scale = extract_page(page)
         if ocr_data:
-            crop_bbox = ocr_crop_bounds(img, ocr_data[i])
-        # show(img, _bbox)
+            crop_bbox = ocr_crop_bounds(img, ocr_data[pno])
+
+        crop_bboxes.append(crop_bbox)
+
         if not preserve_text:
             img = img.crop(crop_bbox)
             if img.mode != "1":
@@ -393,10 +397,10 @@ def process_pdf(
     if equal_size and not preserve_text:
         new_writer = PdfFileWriter()
         logger.info("Scaling all pages to same size.")
-        for i in tqdm(list(range(writer.getNumPages())), disable=not progress):
+        for pno in tqdm(list(range(writer.getNumPages())), disable=not progress):
             new_writer.addBlankPage(width=max_width, height=max_height)
             # TODO: Centre page
-            new_writer.getPage(i).mergePage(writer.getPage(i))
+            new_writer.getPage(pno).mergePage(writer.getPage(pno))
         writer = new_writer
 
     if has_cover_page:
@@ -404,10 +408,10 @@ def process_pdf(
         scale_y = max_height / reader.getPage(0).mediaBox.getHeight()
         scale = min(scale_x, scale_y)
 
-        for i in range(2):
-            page = reader.getPage(i)
-            writer.insertBlankPage(width=max_width, height=max_height, index=i)
-            writer.getPage(i).mergeScaledPage(page, scale)
+        for pno in range(2):
+            page = reader.getPage(pno)
+            writer.insertBlankPage(width=max_width, height=max_height, index=pno)
+            writer.getPage(pno).mergeScaledPage(page, scale)
 
     with outf.open("wb") as f:
         writer.write(f)
