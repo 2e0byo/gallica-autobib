@@ -822,4 +822,4 @@ class GallicaResource(DownloadableResource):
         return self._end_p
 
     def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()  # type: ignore
+        return ((k, repr(v)) for k, v in self.__dict__.items())  # type: ignore
