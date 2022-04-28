@@ -278,7 +278,7 @@ def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
     return img, crop_bbox, scale
 
 
-def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number):
+def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number) -> None:
     from devtools import debug
 
     debug(box, xdiff, ydiff)
@@ -288,7 +288,7 @@ def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number):
     box.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
 
 
-def scale_page(page: PageObject, max_width: int, max_height: int):
+def scale_page(page: PageObject, max_width: int, max_height: int) -> None:
 
     xdiff = max(0, (max_width - page.mediaBox.getWidth()) / 2)
     ydiff = max(0, (max_height - page.mediaBox.getHeight()) / 2)
@@ -299,7 +299,7 @@ def scale_page(page: PageObject, max_width: int, max_height: int):
     _setbox(page.cropBox, xdiff, ydiff)
 
 
-def crop_page(page: PageObject, bbox: Bbox):
+def crop_page(page: PageObject, bbox: Bbox) -> None:
     height = float(page.cropBox.getHeight())
     page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
     page.cropBox.upperRight = (bbox[2], height - bbox[1])
@@ -372,7 +372,7 @@ def process_pdf(
     if not suppress_pages:
         suppress_pages = ()
 
-    interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
+    interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))  # type: ignore
 
     max_width, max_height = 0, 0
     tmpfiles = []

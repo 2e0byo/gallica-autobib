@@ -130,6 +130,8 @@ class Match(
         return self.score > other.score
 
     def __eq__(self, other: object) -> bool:
+        if not isinstance(other, Match):
+            return NotImplemented
         return self.score == other.score
 
     def __repr_args__(self) -> "ReprArgs":
@@ -197,8 +199,8 @@ class Query(
         matches = []
         for i, resp in enumerate(resps[:give_up]):
             candidate = self.resp_to_obj(resp)
-            candidate = Match(self.target, candidate)
-            matches.append(candidate)
+            candidate_match = Match(self.target, candidate)
+            matches.append(candidate_match)
             if i > 3:
                 if any(m.score > self.skip_match_score for m in matches):
                     break
@@ -207,9 +209,9 @@ class Query(
             self.logger.debug("Failed to match.")
             return None
 
-        candidate = max(matches)
-        self.logger.debug(f"Matched. {repr(candidate)}")
-        return candidate
+        candidate_match = max(matches)
+        self.logger.debug(f"Matched. {repr(candidate_match)}")
+        return candidate_match
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
@@ -220,10 +222,10 @@ class DownloadableResource(Representation):
 
     BASE_TIMEOUT = 60
 
-    def __init__(self, **kwargs):
-        self._ark = None
-        self._start_p = None
-        self._end_p = None
+    def __init__(self, **kwargs: dict[str, Any]) -> None:
+        self._ark: Optional[Union[str, Ark]] = None
+        self._start_p: Optional[int] = None
+        self._end_p: Optional[int] = None
         self._resource: Optional[Resource] = None  # so we can pass resource around
         self._pages: Optional[Pages] = None
         self.logger = logging.getLogger("DR")
@@ -250,7 +252,7 @@ class DownloadableResource(Representation):
         return self._ark
 
     @ark.setter
-    def ark(self, val) -> None:
+    def ark(self, val: str) -> None:
         res = Ark.parse(val)
         if res.is_left:
             raise res.value
@@ -271,7 +273,7 @@ class DownloadableResource(Representation):
         return self._start_p
 
     @start_p.setter
-    def start_p(self, val: int):
+    def start_p(self, val: int) -> None:
         self._start_p = val
 
     @property
@@ -281,7 +283,7 @@ class DownloadableResource(Representation):
         return self._end_p
 
     @end_p.setter
-    def end_p(self, val: int):
+    def end_p(self, val: int) -> None:
         self._end_p = val
 
     @property
@@ -344,7 +346,7 @@ class DownloadableResource(Representation):
             )
             if self.pdf_unavailable(trial_url):
                 self.logger.warn(
-                    f"Failed to download with {trial.value}; falling back to image"
+                    f"Failed to download with {trial_url}; falling back to image"
                 )
                 partials = self.download_pdf_images(path, fetch_only)
             else:
@@ -358,7 +360,9 @@ class DownloadableResource(Representation):
         assert partials
         return False
 
-    def download_pdf_chunks(self, path: Path, blocksize: int, fetch_only: int = None):
+    def download_pdf_chunks(
+        self, path: Path, blocksize: int, fetch_only: int = None
+    ) -> list[Path]:
         """Download pdf in chunks, saving to path."""
         fetch = self.end_p + fetch_only - 1 if fetch_only is not None else self.end_p
         partials = []
@@ -373,7 +377,7 @@ class DownloadableResource(Representation):
             partials.append(fn)
         return partials
 
-    def download_pdf_images(self, path: Path, fetch_only: int = None) -> bool:
+    def download_pdf_images(self, path: Path, fetch_only: int = None) -> list[Path]:
         """Download a resource as a pdf using the iif image endpoint."""
         fetch = fetch_only - 1 if fetch_only is not None else self.end_p
         end_p = self.start_p + fetch
@@ -443,7 +447,7 @@ class GallicaResource(DownloadableResource):
         target: Union[Article, Book, Collection, Journal],
         source: Union[Journal, Book, Collection],
         cache: bool = True,
-        **kwargs,
+        **kwargs: dict[str, Any],
     ):
         super().__init__(**kwargs)
         if any(isinstance(target, x) for x in (Book, Collection, Journal)):
@@ -468,7 +472,7 @@ class GallicaResource(DownloadableResource):
         self._desired_pages: Optional[List[int]] = None
         self._ocr_bounds = ocr_cache[self.key] if cache else None
 
-    @property
+    @DownloadableResource.ark.getter  # type: ignore
     def ark(self) -> Optional[Union[str, Ark]]:
         """Ark for the final target."""
         if not self._ark:
@@ -809,14 +813,14 @@ class GallicaResource(DownloadableResource):
                 break
         return p["ordre"]
 
-    @property
+    @DownloadableResource.start_p.getter  # type: ignore
     def start_p(self) -> Optional[int]:
         """Physical page we start on."""
         if not self._start_p:
             self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
         return self._start_p
 
-    @property
+    @DownloadableResource.end_p.getter  # type: ignore
     def end_p(self) -> Optional[int]:
         """Physical page we end on."""
         if not self._end_p:

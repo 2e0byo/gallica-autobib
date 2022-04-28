@@ -2,6 +2,7 @@ from itertools import cycle
 from typing import Iterable, Union
 
 import roman
+from PIL import Image
 
 
 def pretty_page_range(pages: list[str]) -> str:
@@ -80,7 +81,7 @@ def deprettify(rangestr: Union[str, int]) -> Union[list[int], int, None]:
     return pages if len(pages) > 1 else pages[0] if pages else None
 
 
-def show(img, boxes: Iterable[tuple] = None):
+def show(img: Image.Image, boxes: Iterable[tuple] = None) -> None:
     """Show an image with optional bounds drawn over it."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
