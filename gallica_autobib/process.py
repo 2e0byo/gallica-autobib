@@ -6,7 +6,7 @@ from io import BytesIO
 from itertools import filterfalse
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
-from typing import TYPE_CHECKING, Tuple
+from typing import TYPE_CHECKING, Iterable, Tuple
 
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
@@ -298,6 +298,12 @@ def process_image(img: Image.Image, bbox: Bbox) -> Image.Image:
     return img
 
 
+def iterpages(writer: PdfFileWriter) -> Iterable[PageObject]:
+    """Bizarrely `PdfFileWriter` objects are not iterable."""
+    for i in range(writer.getNumPages()):
+        yield writer.getPage(i)
+
+
 def process_pdf(
     pdf: Path,
     outf: Path = None,
@@ -396,7 +402,7 @@ def process_pdf(
 
     if equal_size:
         if preserve_text:
-            for page in (writer.getPage(i) for i in range(writer.getNumPages())):
+            for page in iterpages(writer):
                 scale_page(page, max_width, max_height)
         else:
             new_writer = PdfFileWriter()
