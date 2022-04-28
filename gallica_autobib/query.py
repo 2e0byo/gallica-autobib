@@ -227,7 +227,7 @@ class DownloadableResource(Representation):
         self._resource: Optional[Resource] = None  # so we can pass resource around
         self._pages: Optional[Pages] = None
         self.logger = logging.getLogger("DR")
-        self.trials: int = 3
+        self.trials: int = 7
         self.suppress_cover_page: bool = False
         self._backoff = 0
 
