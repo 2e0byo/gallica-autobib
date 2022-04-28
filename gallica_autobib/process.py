@@ -353,15 +353,10 @@ def process_pdf(
         if suppress_pages:
             suppress_pages = [x - 2 for x in suppress_pages]
 
-    max_width, max_height = 0, 0
-    imgs = []
-
     if preserve_text:
         logger.info("Preserving text so only cropping.")
     else:
         logger.info("Not preserving text; will process images.")
-
-    crop_bboxes = []
 
     if not suppress_pages:
         suppress_pages = ()
@@ -369,13 +364,14 @@ def process_pdf(
     interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
 
     # crop pages
+    max_width, max_height = 0, 0
+    imgs = []
+
     for pno, page in progressbar(interesting_pages):
 
         img, crop_bbox, scale = extract_page(page)
         if ocr_data:
             crop_bbox = ocr_crop_bounds(img, ocr_data[pno])
-
-        crop_bboxes.append(crop_bbox)
 
         if not preserve_text:
             imgs.append(process_image(img, crop_bbox))
