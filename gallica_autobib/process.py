@@ -2,6 +2,7 @@
 import logging
 from collections import namedtuple
 from collections.abc import Collection
+from functools import partial
 from io import BytesIO
 from itertools import filterfalse
 from pathlib import Path
@@ -340,6 +341,9 @@ def process_pdf(
     if outf.exists():
         logger.info("Skipping already processed file.")
         return outf
+
+    progressbar = partial(tqdm, disable=not progress)
+
     reader = PdfFileReader(str(pdf))
 
     pages = reader.pages
@@ -365,7 +369,7 @@ def process_pdf(
     interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
 
     # crop pages
-    for pno, page in tqdm(interesting_pages, disable=not progress):
+    for pno, page in progressbar(interesting_pages):
 
         img, crop_bbox, scale = extract_page(page)
         if ocr_data:
@@ -390,7 +394,7 @@ def process_pdf(
             )
             tmp_reader = PdfFileReader(tmpf)
             max_height, max_width = 0, 0
-            for page in tqdm(tmp_reader.pages, disable=not progress):
+            for page in progressbar(tmp_reader.pages):
                 max_width = max(max_width, page.cropBox.getWidth())
                 max_height = max(max_height, page.cropBox.getHeight())
                 writer.addPage(page)
@@ -407,7 +411,7 @@ def process_pdf(
         else:
             new_writer = PdfFileWriter()
             logger.info("Scaling all pages to same size.")
-            for i in tqdm(list(range(writer.getNumPages())), disable=not progress):
+            for i in progressbar(list(range(writer.getNumPages()))):
                 new_writer.addBlankPage(width=max_width, height=max_height)
                 # TODO: Centre page
                 new_writer.getPage(i).mergePage(writer.getPage(i))
