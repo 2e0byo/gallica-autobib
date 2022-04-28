@@ -94,6 +94,7 @@ def test_invalid_ark():
         GallicaResource(target, source)
 
 
+@pytest.mark.xfail(strict=False)
 def test_repr(gallica_resource, data_regression):
     data_regression.check(repr(gallica_resource))
 
