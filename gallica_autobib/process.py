@@ -278,8 +278,20 @@ def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
 
 
 def scale_page(page: PageObject, max_width: int, max_height: int):
+
+    # resize physical medium
+    # TODO: DRY
+    xdiff = max(0, (max_width - page.mediaBox.getWidth()) / 2)
+    ydiff = max(0, (max_height - page.mediaBox.getHeight()) / 2)
+
+    curr = page.mediaBox.lowerLeft
+    page.mediaBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
+    curr = page.mediaBox.upperRight
+    page.mediaBox.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+
     xdiff = (max_width - page.cropBox.getWidth()) / 2
     ydiff = (max_height - page.cropBox.getHeight()) / 2
+
     curr = page.cropBox.lowerLeft
     page.cropBox.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
     curr = page.cropBox.upperRight
@@ -365,7 +377,7 @@ def process_pdf(
 
     # crop pages
     max_width, max_height = 0, 0
-    imgs = []
+    tmpfiles = []
 
     for pno, page in progressbar(interesting_pages):
 
@@ -374,45 +386,27 @@ def process_pdf(
             crop_bbox = ocr_crop_bounds(img, ocr_data[pno])
 
         if not preserve_text:
-            imgs.append(process_image(img, crop_bbox))
+            img = process_image(img, crop_bbox)
+            tmpf = SpooledTemporaryFile()
+            tmpfiles.append(tmpf)
+            img.save(tmpf, "PDF", resolution=100.0)
+            tmp_reader = PdfFileReader(tmpf)
+            page = tmp_reader.getPage(0)
+            bbox = Bbox(*(float(x) for x in page.mediaBox))
         else:
             bbox = Bbox(*(x * scale for x in crop_bbox))
-            crop_page(page, bbox)
-            max_width = max(max_width, page.cropBox.getWidth())
-            max_height = max(max_height, page.cropBox.getHeight())
-            writer.addPage(page)
 
-    if not preserve_text:
-        if has_cover_page:
-            tmpf = SpooledTemporaryFile()
-            imgs[0].save(
-                tmpf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
-            )
-            tmp_reader = PdfFileReader(tmpf)
-            max_height, max_width = 0, 0
-            for page in progressbar(tmp_reader.pages):
-                max_width = max(max_width, page.cropBox.getWidth())
-                max_height = max(max_height, page.cropBox.getHeight())
-                writer.addPage(page)
-        else:
-            imgs[0].save(
-                outf, "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
-            )
-            return outf
+        crop_page(page, bbox)
+        writer.addPage(page)
+
+        max_width = max(max_width, page.cropBox.getWidth())
+        max_height = max(max_height, page.cropBox.getHeight())
 
     if equal_size:
-        if preserve_text:
-            for page in iterpages(writer):
-                scale_page(page, max_width, max_height)
-        else:
-            new_writer = PdfFileWriter()
-            logger.info("Scaling all pages to same size.")
-            for i in progressbar(list(range(writer.getNumPages()))):
-                new_writer.addBlankPage(width=max_width, height=max_height)
-                # TODO: Centre page
-                new_writer.getPage(i).mergePage(writer.getPage(i))
-            writer = new_writer
+        for page in iterpages(writer):
+            scale_page(page, max_width, max_height)
 
+    # insert cover page
     if has_cover_page:
         scale_x = max_width / reader.getPage(0).mediaBox.getWidth()
         scale_y = max_height / reader.getPage(0).mediaBox.getHeight()
@@ -427,6 +421,9 @@ def process_pdf(
         writer.write(f)
 
     if tmpf:
+        tmpf.close()
+
+    for tmpf in tmpfiles:
         tmpf.close()
 
     logger.info(f"Finished processing {str(outf)}")
