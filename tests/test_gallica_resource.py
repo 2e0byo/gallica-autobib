@@ -33,6 +33,7 @@ def test_resource(gallica_resource):
     assert isinstance(res, Resource)
 
 
+@pytest.mark.web
 def test_pnos(gallica_resource):
     assert 141 == gallica_resource.start_p
     assert 163 == gallica_resource.end_p
@@ -48,6 +49,8 @@ def test_generate_short_block(gallica_resource):
     assert res == expected
 
 
+@pytest.mark.web
+@pytest.mark.download
 def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
     gallica_resource.ark  # trigger search before we edit pages
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
@@ -91,8 +94,9 @@ def test_invalid_ark():
         GallicaResource(target, source)
 
 
+@pytest.mark.xfail(strict=False)
 def test_repr(gallica_resource, data_regression):
-    data_regression.check(str(gallica_resource))
+    data_regression.check(repr(gallica_resource))
 
 
 candidates = [
@@ -126,6 +130,7 @@ def get_ark(arkstr: Union[str, Ark]):
     return search(r".*(ark:/.*)", str(arkstr)).group(1)
 
 
+@pytest.mark.web
 @pytest.mark.parametrize("candidate, params", candidates)
 def test_real_queries_no_toc(candidate, params):
     source = Query(candidate).run().candidate
@@ -134,6 +139,7 @@ def test_real_queries_no_toc(candidate, params):
     assert get_ark(gallica_resource.ark) == get_ark(params["ark"])
 
 
+@pytest.mark.web
 @pytest.mark.parametrize("candidate, params", candidates)
 def test_real_queries_toc(candidate, params):
     source = Query(candidate).run().candidate
@@ -195,6 +201,13 @@ def test_physical_pno(gallica_resource, pages):
 def test_last_pno(gallica_resource, pages):
     resp = gallica_resource.get_last_pno(pages)
     assert resp == "676"
+
+
+def test_ocr_bounds(gallica_resource, data_regression):
+    gallica_resource.ark  # trigger search before we edit pages
+    gallica_resource.target.pages = gallica_resource.target.pages[:3]
+    bounds = gallica_resource.ocr_bounds
+    data_regression.check([x._asdict() for x in bounds])
 
 
 @pytest.mark.xfail

@@ -3,6 +3,7 @@ from gallica_autobib.models import Article
 from gallica_autobib.query import Query
 
 
+@pytest.mark.web
 def test_match_query():
     a = Article(
         journaltitle="La vie spirituelle",
@@ -32,6 +33,7 @@ candidates = [
 ]
 
 
+@pytest.mark.web
 @pytest.mark.parametrize("candidate,params", candidates)
 def test_queries(candidate, params):
     q = Query(candidate)

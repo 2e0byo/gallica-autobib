@@ -13,9 +13,7 @@ def tmp_cache():
 
 
 def test_cache(tmp_cache):
-    print(tmp_cache.cachedir)
     cache = tmp_cache("test")
-    print(cache.cachedir)
     assert not cache[7]
     cache[7] = "this"
     assert cache[7] == "this"

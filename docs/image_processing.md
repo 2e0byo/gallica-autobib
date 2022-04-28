@@ -126,3 +126,11 @@ image massively in the direction of a binary image.
 
 There is a good deal of scope for improvement with this algorithm: it was chosen
 because it is quick and easy.
+
+# Title Pages
+
+Gallica gives us one of those annoying title pages; we crop it to the maximum
+dimensions of the final pdf and stick it on the front, since we should probably
+keep it. It's easy enough to remove for e.g. booklet generation, (indeed there's
+an option to do so) but I'm not paying your legal fees if anyone comes after
+you.

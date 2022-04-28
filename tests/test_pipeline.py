@@ -57,7 +57,9 @@ test_bibliographies_bibtex = [
 
 ids = ["pour-lire-augustin"]
 
-# downloads 1 page
+
+@pytest.mark.web
+@pytest.mark.download
 @pytest.mark.parametrize("bibtex", test_bibliographies_bibtex, ids=ids)
 def test_bibtex_parser(bibtex, file_regression, tmp_path, check_pdfs):
     parser = BibtexParser(tmp_path, fetch_only=1, clean=False)
@@ -224,6 +226,8 @@ ris_ids = ["inconnue", "surnaturalisation"]
 from devtools import debug
 
 
+@pytest.mark.web
+@pytest.mark.download
 @pytest.mark.parametrize("ris, status", test_bibliographies_ris, ids=ris_ids)
 def test_ris_parser(ris, status, file_regression, tmp_path, check_pdfs):
     """Would download if any matched---but they don't.
@@ -252,8 +256,8 @@ def test_base_parser():
         parser.read("Inputstr")
 
 
-# downloads 1 page
-@pytest.mark.asyncio
+@pytest.mark.web
+@pytest.mark.download
 async def test_submit(mock_bibtex_parser, file_regression, check_pdfs):
     mock_bibtex_parser.process = False
     pool = ProcessPoolExecutor(1)

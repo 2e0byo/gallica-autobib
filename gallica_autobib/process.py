@@ -1,16 +1,30 @@
 """Fns to process.  These are wrapped in a class in pipeline, which is probably what you want."""
 import logging
 from collections import namedtuple
+from collections.abc import Collection
+from functools import partial
 from io import BytesIO
+from itertools import filterfalse
+from numbers import Number
 from pathlib import Path
-from typing import Tuple
+from tempfile import SpooledTemporaryFile
+from typing import TYPE_CHECKING, Iterable, Tuple
 
 import numpy as np
 from PIL import Image, ImageChops, ImageOps
 from PyPDF4 import PdfFileReader, PdfFileWriter
-from PyPDF4.pdf import PageObject
+from PyPDF4.pdf import PageObject, RectangleObject
+from tqdm import tqdm
+
+# from util import show
 
 logger = logging.getLogger(__name__)
+
+Point = namedtuple("Point", ["x", "y"])
+Bbox = namedtuple("Bbox", ["ux", "uy", "lx", "ly"])
+
+if TYPE_CHECKING:
+    from .query import UnscaledPageData
 
 
 class ExtractionError(Exception):
@@ -137,7 +151,7 @@ def prepare_img(img: Image.Image, threshold: int = 60) -> Image.Image:
     return img.point(lambda p: p > threshold and 255)
 
 
-def get_crop_bounds(img: Image.Image) -> Tuple:
+def crop_bounds(img: Image.Image) -> Bbox:
     """Get crop bounds for text on page.
 
     The algorithm:
@@ -161,19 +175,89 @@ def get_crop_bounds(img: Image.Image) -> Tuple:
     # res = detect_spine(img)
     # logger.debug(res.lh_page)
     # crop out corner errors
-    x = 40
-    img = img.crop((x, x, img.width - x, img.height - x))
+    MARGIN_PIXELS = 40
+    img = img.crop(
+        (
+            MARGIN_PIXELS,
+            MARGIN_PIXELS,
+            img.width - MARGIN_PIXELS,
+            img.height - MARGIN_PIXELS,
+        )
+    )
 
     # crop to border
     bg = Image.new(img.mode, img.size, 255)
     diff = ImageChops.difference(img, bg)
 
-    left, upper, right, lower = diff.getbbox()
-    left += x - 10
-    upper += x - 10
-    right += x + 10
-    lower += x + 10
-    return (left, upper, right, lower)
+    GROW_PIXELS = 10
+    bbox = diff.getbbox()
+    if bbox:
+        left, upper, right, lower = diff.getbbox()
+    else:
+        left, upper, right, lower = img.getbbox()
+
+    # show(img, [diff.getbbox()])
+    left += MARGIN_PIXELS - GROW_PIXELS
+    upper += MARGIN_PIXELS - GROW_PIXELS
+    right += MARGIN_PIXELS + GROW_PIXELS
+    lower += MARGIN_PIXELS + GROW_PIXELS
+    return Bbox(left, upper, right, lower)
+
+
+def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
+    """Get crop from Gallica's ocr data, looking for omitted pno."""
+    if img.mode not in {"1", "L"}:
+        img = ImageOps.grayscale(img)
+        img = ImageOps.autocontrast(img)
+    xscale = img.height / ocr.total_height
+    yscale = img.width / ocr.total_width
+    upper = Point(round(ocr.upper[0] * xscale), round(ocr.upper[1] * xscale))
+    lower = Point(round(ocr.lower[0] * yscale), round(ocr.lower[1] * yscale))
+    img_array = np.array(img)
+    mean = img_array.mean(axis=1)
+    gradient = np.gradient(mean)
+    gstd = np.std(gradient)
+    gmean = gradient.mean()
+
+    search = round(img.height * 0.05)
+    upper_bound = round(upper.y - search)
+    lower_bound = round(lower.y + search)
+    upper_search = gradient[upper.y : upper_bound : -1]
+    lower_search = gradient[lower.y : lower_bound]
+
+    thresh = 1.5
+    lower_diff_thresh = gmean - thresh * gstd
+    upper_diff_thresh = gmean + thresh * gstd
+
+    peaked = 0
+    for up, x in enumerate(upper_search):
+        if not peaked and x >= upper_diff_thresh:
+            peaked = 1
+        elif peaked and x <= lower_diff_thresh:
+            peaked = 2
+            break
+
+    up = up if peaked == 2 else 0
+
+    peaked = 0
+    for down, x in enumerate(lower_search):
+        if not peaked and x <= lower_diff_thresh:
+            peaked = 1
+        if peaked and x >= upper_diff_thresh:
+            peaked = 2
+            break
+
+    down = down if peaked == 2 else 0
+
+    GROW_PIXELS = 10
+    bbox = Bbox(
+        upper.x - GROW_PIXELS,
+        upper.y - up - GROW_PIXELS,
+        lower.x + GROW_PIXELS,
+        lower.y + down + GROW_PIXELS,
+    )
+    # show(img, [bbox, Bbox(upper.x, upper.y - search, lower.x, lower.y + search)])
+    return bbox
 
 
 def generate_filename(candidate: Path) -> Path:
@@ -187,6 +271,53 @@ def generate_filename(candidate: Path) -> Path:
     return candidate
 
 
+def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
+    img, _ = extract_image(page)
+    scale = page.mediaBox.getWidth() / img.width
+    crop_bbox = crop_bounds(img)
+    return img, crop_bbox, scale
+
+
+def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number):
+    from devtools import debug
+
+    debug(box, xdiff, ydiff)
+    curr = box.lowerLeft
+    box.lowerLeft = (curr[0] - xdiff, curr[1] - ydiff)
+    curr = box.upperRight
+    box.upperRight = (curr[0] + xdiff, curr[1] + ydiff)
+
+
+def scale_page(page: PageObject, max_width: int, max_height: int):
+
+    xdiff = max(0, (max_width - page.mediaBox.getWidth()) / 2)
+    ydiff = max(0, (max_height - page.mediaBox.getHeight()) / 2)
+    _setbox(page.mediaBox, xdiff, ydiff)
+
+    xdiff = (max_width - page.cropBox.getWidth()) / 2
+    ydiff = (max_height - page.cropBox.getHeight()) / 2
+    _setbox(page.cropBox, xdiff, ydiff)
+
+
+def crop_page(page: PageObject, bbox: Bbox):
+    height = float(page.cropBox.getHeight())
+    page.cropBox.lowerLeft = (bbox[0], height - bbox[3])
+    page.cropBox.upperRight = (bbox[2], height - bbox[1])
+
+
+def process_image(img: Image.Image, bbox: Bbox) -> Image.Image:
+    img = img.crop(bbox)
+    if img.mode != "1":
+        img = filter_algorithm_brute_force(img)
+    return img
+
+
+def iterpages(writer: PdfFileWriter) -> Iterable[PageObject]:
+    """Bizarrely `PdfFileWriter` objects are not iterable."""
+    for i in range(writer.getNumPages()):
+        yield writer.getPage(i)
+
+
 def process_pdf(
     pdf: Path,
     outf: Path = None,
@@ -194,11 +325,11 @@ def process_pdf(
     equal_size: bool = False,
     skip_existing: bool = False,
     has_cover_page: bool = False,
+    ocr_data: "UnscaledPageData" = None,
+    suppress_pages: Collection = None,
+    progress: bool = False,
 ) -> Path:
     """Process a pdf.
-
-    Note that currently preserve_text implies not editing the image, and
-    equal_size is unimplemented.
 
     Args:
       pdf: Path: The pdf file to crop.
@@ -206,15 +337,13 @@ def process_pdf(
       preserve_text: bool: Preserve OCRd text.  (Default value = False)
       equal_size: Make all pages equal sized.  (Default value = False)
       skip_existing: Whether to skip existing files.  (Default value = False)
-      has_cover_page: bool: Whether we have a cover page to resize (Default value=False.)
+      has_cover_page: bool: Whether we have a cover page to resize (Default value=False)
+      ocr_data: UnscaledPageData: ocr data for this page if available. (Default value = None)
 
     Returns:
       A Path() object pointing to the cropped pdf.
 
     """
-    if equal_size:
-        raise NotImplementedError("Equal sizes not yet implemented.")
-
     if not outf:
         if skip_existing:
             outf = pdf.with_stem(f"processed-{pdf.stem}")
@@ -223,38 +352,75 @@ def process_pdf(
     if outf.exists():
         logger.info("Skipping already processed file.")
         return outf
+
+    progressbar = partial(tqdm, disable=not progress)
+
     reader = PdfFileReader(str(pdf))
 
     pages = reader.pages
     writer = PdfFileWriter()
     if has_cover_page:
         pages = pages[2:]
+        if suppress_pages:
+            suppress_pages = [x - 2 for x in suppress_pages]
 
     if preserve_text:
-        logger.debug("Preserving text.")
-        for page in pages:
-            img, _ = extract_image(page)
-            bbox = get_crop_bounds(img)
-            scale = page.mediaBox.getWidth() / img.width
-            page.cropBox.lowerLeft = (bbox[0] * scale, bbox[1] * scale)
-            page.cropBox.upperRight = (bbox[2] * scale, bbox[3] * scale)
-            writer.addPage(page)
-        with outf.open("wb") as f:
-            writer.write(f)
+        logger.info("Preserving text so only cropping.")
     else:
-        logger.debug("Not preserving text.")
-        imgs = []
-        for i, page in enumerate(pages):
-            logger.debug(f"Processing page {i}")
-            img, _ = extract_image(page)
-            bbox = get_crop_bounds(img)
-            img = img.crop(bbox)
-            if img.mode != "1":
-                img = filter_algorithm_brute_force(img)
-            imgs.append(img)
-        imgs[0].save(
-            str(outf), "PDF", resolution=100.0, save_all=True, append_images=imgs[1:]
-        )
+        logger.info("Not preserving text; will process images.")
+
+    if not suppress_pages:
+        suppress_pages = ()
+
+    interesting_pages = filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages))
+
+    max_width, max_height = 0, 0
+    tmpfiles = []
+
+    # crop pages
+    for pno, page in progressbar(interesting_pages):
+
+        img, crop_bbox, scale = extract_page(page)
+        if ocr_data:
+            crop_bbox = ocr_crop_bounds(img, ocr_data[pno])
+
+        if not preserve_text:
+            img = process_image(img, crop_bbox)
+            tmpf = SpooledTemporaryFile()
+            tmpfiles.append(tmpf)
+            img.save(tmpf, "PDF", resolution=100.0)
+            tmp_reader = PdfFileReader(tmpf)
+            page = tmp_reader.getPage(0)
+            bbox = Bbox(*(float(x) for x in page.mediaBox))
+        else:
+            bbox = Bbox(*(x * scale for x in crop_bbox))
+
+        crop_page(page, bbox)
+        writer.addPage(page)
+
+        max_width = max(max_width, page.cropBox.getWidth())
+        max_height = max(max_height, page.cropBox.getHeight())
+
+    if equal_size:
+        for page in iterpages(writer):
+            scale_page(page, max_width, max_height)
+
+    # insert cover page
+    if has_cover_page:
+        scale_x = max_width / reader.getPage(0).mediaBox.getWidth()
+        scale_y = max_height / reader.getPage(0).mediaBox.getHeight()
+        scale = min(scale_x, scale_y)
+
+        for pno in range(2):
+            page = reader.getPage(pno)
+            writer.insertBlankPage(width=max_width, height=max_height, index=pno)
+            writer.getPage(pno).mergeScaledPage(page, scale)
+
+    with outf.open("wb") as f:
+        writer.write(f)
+
+    for tmpf in tmpfiles:
+        tmpf.close()
 
     logger.info(f"Finished processing {str(outf)}")
     return outf

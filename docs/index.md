@@ -27,7 +27,7 @@
 
 ## Overview
 
-`pygallica-autobib` will match your bibliographies against the French National
+`gallica_autobib` will match your bibliographies against the French National
 Library and download articles as pdfs if possible, optionally post-processing
 them.  Whilst it obviously cannot download articles which Gallica does not hold,
 it strives to achieve a 100% match rate. If you find an article it does not
@@ -38,6 +38,9 @@ Features:
 - Input in RIS or Bibtex format
 - Output report generated with a jinja template (templates for org-mode, html
   and plaintext supplied)
+  
+`gallica_autobib` is designed to automate otherwise tedious work.  In this
+respect it is subject to the well-known [laws of automation](https://xkcd.com/1319/).
 
 
 ## Online Demo

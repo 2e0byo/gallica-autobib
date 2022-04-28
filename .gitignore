@@ -20,3 +20,6 @@ build/
 .DS_Store
 /tests/test_cli/auto/
 /.coverage.*
+*.pdf-view-restore
+/gallica_autobib/templates/auto/
+/auto/

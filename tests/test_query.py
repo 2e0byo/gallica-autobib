@@ -52,11 +52,29 @@ def test_sort_match():
         journaltitle="La vie spirituelle, ascétique et mystique",
         year=list(range(1920, 1950)),
     )
+    d = Journal(
+        journaltitle="La vie spirituelle, ascétique et mystique",
+        year=1930,
+    )
+    e = Journal(journaltitle="La vie spirituelle", year=1931, number=2)
+    f = Journal(
+        journaltitle="La vie spirituelle, ascétique et mystique",
+        year=list(range(1940, 1950)),
+    )
     m1 = Match(a, b)
     m2 = Match(a, c)
     assert m1 == deepcopy(m1)
     assert m1 > m2
     assert m2 < m1
+    assert Match(b, a) < Match(b, d)
+    assert m1 > Match(a, f)
+
+
+def test_equal_ignore_extra_data():
+    a = Journal(journaltitle="La vie spirituelle", year=1930)
+    c = Journal(journaltitle="La vie spirituelle", year=1931)
+    e = Journal(journaltitle="La vie spirituelle", year=1931, number=2)
+    assert Match(a, e) == Match(a, c)
 
 
 def test_missing_editor():

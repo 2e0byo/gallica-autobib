@@ -1,11 +1,12 @@
 import imghdr
 import logging
 import unicodedata
+from collections import namedtuple
 from functools import total_ordering
+from io import BytesIO
 from pathlib import Path
 from re import search
 from time import sleep
-from traceback import print_exc
 from typing import (
     TYPE_CHECKING,
     Any,
@@ -17,10 +18,12 @@ from typing import (
     Union,
 )
 
+import requests
 import sruthi
 from bs4 import BeautifulSoup
 from fuzzysearch import find_near_matches
 from fuzzywuzzy import fuzz
+from PIL import Image
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
@@ -37,6 +40,10 @@ if TYPE_CHECKING:  # pragma: nocover
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 ark_cache = Cached("ark")
 source_match_cache = Cached("source_match")
+ocr_cache = Cached("ocr_bounds")
+UnscaledPageData = namedtuple(
+    "UnscaledPageData", ["upper", "lower", "total_width", "total_height"]
+)
 
 
 class MatchingError(Exception):
@@ -99,7 +106,9 @@ class Match(
                 elif isinstance(candidate_v, list):
                     vals[k] = 1 if v in candidate_v else 0
                 else:
-                    raise NotImplementedError(v, candidate_v)
+                    raise NotImplementedError(
+                        f"Unable to compare {v} of type {type(v)} with {candidate_v} of type {type(candidate_v)}"
+                    )
 
             if isinstance(v, list):
                 matches = []
@@ -121,8 +130,6 @@ class Match(
         return self.score > other.score
 
     def __eq__(self, other: object) -> bool:
-        if not isinstance(other, Match):
-            return NotImplemented
         return self.score == other.score
 
     def __repr_args__(self) -> "ReprArgs":
@@ -157,6 +164,7 @@ class Query(
         self.target = target._source()
         self.fetcher = GallicaSRU()
         self.logger = logging.getLogger(f"QU {target.name(short=6)}")
+        self.skip_match_score = 0.7
 
     @staticmethod
     def get_at_str(obj: Union[str, List[str]]) -> Optional[str]:
@@ -176,8 +184,6 @@ class Query(
         if "publisher" in resp.keys():
             resp["publisher"] = self.get_at_str(resp["publisher"])
         resp["title"] = self.get_at_str(resp["title"])
-        # resp["publisher"] = resp["publisher"][0]
-        # resp["title"] = resp["title"][0]
         obj = GallicaBibObj.parse_obj(resp).convert()
         return obj  # type: ignore
 
@@ -185,47 +191,261 @@ class Query(
         """Try to get best match."""
         self.logger.debug("Generting query")
         query = self.target.generate_query()
-        try:
-            self.logger.debug("Fetching query")
-            resps = self.fetcher.fetch_query(query)
-        except Exception:
-            print_exc()
-            return None
+        self.logger.debug("Fetching query")
+        resps = self.fetcher.fetch_query(query)
         self.logger.debug(f"Got {len(list(resps))} candidates.")
         matches = []
         for i, resp in enumerate(resps[:give_up]):
             candidate = self.resp_to_obj(resp)
-            match = Match(self.target, candidate)
-            matches.append(match)
-            for m in matches:  # use a real loop so as to update _score
-                if i < 3:
-                    break
-                if m.score > 0.7:
+            candidate = Match(self.target, candidate)
+            matches.append(candidate)
+            if i > 3:
+                if any(m.score > self.skip_match_score for m in matches):
                     break
 
         if not matches:
             self.logger.debug("Failed to match.")
             return None
 
-        match = max(matches)
-        self.logger.debug(f"Matched. {repr(match)}")
-        return match
+        candidate = max(matches)
+        self.logger.debug(f"Matched. {repr(candidate)}")
+        return candidate
 
     def __repr_args__(self) -> "ReprArgs":
         return self.__dict__.items()  # type: ignore
 
 
-class GallicaResource(Representation):
-    """A resource on Gallica."""
+class DownloadableResource(Representation):
+    """A downloadable resouce on Gallica."""
 
     BASE_TIMEOUT = 60
+
+    def __init__(self, **kwargs):
+        self._ark = None
+        self._start_p = None
+        self._end_p = None
+        self._resource: Optional[Resource] = None  # so we can pass resource around
+        self._pages: Optional[Pages] = None
+        self.logger = logging.getLogger("DR")
+        self.trials: int = 7
+        self.suppress_cover_page: bool = False
+        self._backoff = 0
+
+    def __repr_args__(self) -> "ReprArgs":
+        return self.__dict__.items()  # type: ignore
+
+    def set_max_pages(self) -> None:
+        """Set maximum page range to download all pages."""
+        either = self.resource.pagination_sync()
+        if either.is_left:
+            raise either.value
+
+        res = either.value
+        pages = int(res["livre"]["structure"]["nbVueImages"])
+        self.start_p = 1
+        self.end_p = pages
+
+    @property
+    def ark(self) -> Optional[Union[str, Ark]]:
+        return self._ark
+
+    @ark.setter
+    def ark(self, val) -> None:
+        res = Ark.parse(val)
+        if res.is_left:
+            raise res.value
+        self._ark = res.value
+
+    @property
+    def resource(self) -> Resource:
+        """Resource()"""
+        if not self._resource:
+            self._resource = Resource(self.ark)
+            self._resource.timeout = self.BASE_TIMEOUT
+        return self._resource
+
+    @property
+    def start_p(self) -> int:
+        if not self._start_p:
+            raise ValueError("Start page not set")
+        return self._start_p
+
+    @start_p.setter
+    def start_p(self, val: int):
+        self._start_p = val
+
+    @property
+    def end_p(self) -> int:
+        if not self._end_p:
+            raise ValueError("Start page not set")
+        return self._end_p
+
+    @end_p.setter
+    def end_p(self, val: int):
+        self._end_p = val
+
+    @property
+    def pages(self) -> Optional[Pages]:
+        """Physical pages in volume."""
+        if not self._pages:
+            either = self.resource.pagination_sync()
+            if either.is_left:
+                raise either.value
+            self._pages = either.value
+        return self._pages
+
+    def get_physical_pno(self, logical_pno: str, pages: Pages = None) -> int:
+        """Get the physical pno for a logical pno."""
+        if not pages:
+            pages = self.pages
+        pnos = pages["livre"]["pages"]["page"]  # type: ignore
+        # sadly we have to do it ourselves
+        for p in pnos:
+            if p["numero"] == logical_pno:
+                break
+        return p["ordre"]
+
+    @classmethod
+    def fetch_image(cls, resource: Resource, pno: int) -> bytes:
+        """Fetch image from resource as bytes.
+
+        This method is used as a fallback where we can't get the data any other
+        way.
+        """
+        either = resource.iiif_data_sync(view=pno)
+        if either.is_left:
+            raise either.value
+        return either.value
+
+    @staticmethod
+    def pdf_unavailable(url: str) -> bool:
+        """Work out if we can get the pdf or need to fall back on the images."""
+        return requests.head(url).status_code == 451
+
+    def download_pdf(
+        self,
+        path: Path,
+        blocksize: int = 100,
+        fetch_only: int = None,
+    ) -> bool:
+        """Download a resource as a pdf in blocks to avoid timeout.
+
+        If http 451 is encountered, fall back on the image api (ignoring blocks)."""
+        partials = []
+
+        if path.exists():
+            return True
+        try:
+            if not self.start_p or not self.end_p:
+                raise Exception("No pages.")
+
+            trial_url = self.resource.content_sync(
+                startview=self.start_p, nviews=1, url_only=True
+            )
+            if self.pdf_unavailable(trial_url):
+                self.logger.warn(
+                    f"Failed to download with {trial.value}; falling back to image"
+                )
+                partials = self.download_pdf_images(path, fetch_only)
+            else:
+                self.logger.debug("Getting pdf with pdf chunk downloader.")
+                partials = self.download_pdf_chunks(path, blocksize, fetch_only)
+
+            self._merge_partials(path, partials)
+        finally:
+            for fn in partials:
+                fn.unlink()
+        assert partials
+        return False
+
+    def download_pdf_chunks(self, path: Path, blocksize: int, fetch_only: int = None):
+        """Download pdf in chunks, saving to path."""
+        fetch = self.end_p + fetch_only - 1 if fetch_only is not None else self.end_p
+        partials = []
+        for i, (start, length) in enumerate(
+            self._generate_blocks(self.start_p, fetch, blocksize)  # type: ignore
+        ):
+
+            fn = path.with_suffix(f".pdf.{i}")
+            status = self._fetch_block(start, length, fn)
+            if not status:
+                raise DownloadError("Failed to download.")
+            partials.append(fn)
+        return partials
+
+    def download_pdf_images(self, path: Path, fetch_only: int = None) -> bool:
+        """Download a resource as a pdf using the iif image endpoint."""
+        fetch = fetch_only - 1 if fetch_only is not None else self.end_p
+        end_p = self.start_p + fetch
+        partials = []
+
+        for pno in range(self.start_p, end_p + 1):
+            self.logger.debug(f"Fetching page {pno} as image")
+            data = self.fetch_image(self.resource, pno)
+            # load img
+            fn = path.parent / f"pg{pno}.pdf"
+            img = Image.open(BytesIO(data))
+            img.save(fn, "PDF")
+            partials.append(fn)
+
+        return partials
+
+    @staticmethod
+    def _generate_blocks(start: int, end: int, size: int) -> Generator:
+        """Generate Blocks"""
+        beginnings = range(start, end + 1, size)
+        for i in beginnings:
+            length = end - i + 1 if i + size > end else size  # truncate last block
+            yield (i, length)
+
+    def _merge_partials(self, path: Path, partials: List[Path]) -> None:
+        """Merge partial files"""
+        merger = PdfFileMerger()
+        for i, fn in enumerate(partials):
+            if self.suppress_cover_page:
+                args = {"pages": PageRange("2:")}  # if i else {}
+            else:
+                args = {"pages": PageRange("2:")} if i else {}
+            merger.append(str(fn.resolve()), **args)
+        with path.open("wb") as f:
+            merger.write(f)
+
+    def _fetch_block(self, startview: int, nviews: int, fn: Path) -> bool:
+        """Fetch block."""
+        url = self.resource.content_sync(
+            startview=startview, nviews=nviews, url_only=True
+        )
+        for i in range(self.trials):
+            status = downloader.download(
+                url,
+                download_file=str(fn.resolve()),
+                timeout=120,
+            )
+            if status:
+                if imghdr.what(fn):
+                    print("We got ratelimited, backing off")
+                    self._backoff += 1
+                    if self._backoff > 9:
+                        raise Exception("We got ratelimited.")
+                    sleep(2**self._backoff)
+                else:
+                    self._backoff = 0
+                    return True
+            sleep(2 ** (i + 1))
+        return False
+
+
+class GallicaResource(DownloadableResource):
+    """A matched resource on gallica."""
 
     def __init__(
         self,
         target: Union[Article, Book, Collection, Journal],
         source: Union[Journal, Book, Collection],
         cache: bool = True,
+        **kwargs,
     ):
+        super().__init__(**kwargs)
         if any(isinstance(target, x) for x in (Book, Collection, Journal)):
             raise NotImplementedError("We only handle article for now")
         if any(isinstance(source, x) for x in (Book, Collection)):
@@ -241,15 +461,12 @@ class GallicaResource(Representation):
         self.series_ark = a.value
         self._ark = ark_cache[self.key] if cache else None
         self.logger.debug(f"Ark is {self._ark}, {self.key}")
-        self._resource: Optional[Resource] = None  # so we can pass resource around
-        self._start_p = None
-        self._end_p = None
-        self._pages: Optional[Pages] = None
         self.consider_toc = True
         self.source_match = source_match_cache[self.key] if cache else None
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
-        self.suppress_cover_page: bool = False
+        self._desired_pages: Optional[List[int]] = None
+        self._ocr_bounds = ocr_cache[self.key] if cache else None
 
     @property
     def ark(self) -> Optional[Union[str, Ark]]:
@@ -526,12 +743,53 @@ class GallicaResource(Representation):
         return None
 
     @property
-    def resource(self) -> Resource:
-        """Resource()"""
-        if not self._resource:
-            self._resource = Resource(self.ark)
-            self._resource.timeout = self.BASE_TIMEOUT
-        return self._resource
+    def desired_pages(self) -> List[int]:
+        """The pages we want to get from the target, as views (physical pnos)."""
+        if not self._desired_pages:
+            if hasattr(self.target, "pages"):
+                self._desired_pages = [
+                    self.get_physical_pno(p) for p in self.target.pages  # type: ignore
+                ]
+            else:
+                pages = self.pages
+                pnos = pages["livre"]["pages"]["page"]  # type: ignore
+                self._desired_pages = [int(p["ordre"]) for p in pages]  # type: ignore
+
+        return self._desired_pages
+
+    @property
+    def ocr_bounds(self) -> List[UnscaledPageData]:
+        """Text box from Gallica's ocr for every page."""
+        if not self._ocr_bounds:
+            bounds = []
+            for pno in self.desired_pages:  # type: ignore
+                soup = self.get_ocr_data(pno)
+                page = soup.find("Page")
+                height, width = int(page.get("HEIGHT")), int(page.get("WIDTH"))
+                printspace = soup.find("PrintSpace")
+                text_height = int(printspace.get("HEIGHT"))
+                text_width = int(printspace.get("WIDTH"))
+                vpos = int(printspace.get("VPOS"))
+                hpos = int(printspace.get("HPOS"))
+                bounds.append(
+                    UnscaledPageData(
+                        (hpos, vpos),
+                        (hpos + text_width, vpos + text_height),
+                        width,
+                        height,
+                    )
+                )
+            self._ocr_bounds = bounds
+        return self._ocr_bounds
+
+    def get_ocr_data(self, pno: int) -> BeautifulSoup:
+        """Get ocr data from Gallica for pno."""
+        self.logger.debug(f"Getting ocr data for page {pno}")
+        for _ in range(self.trials):
+            either = self.resource.ocr_data_sync(view=pno)
+            if not either.is_left:
+                return BeautifulSoup(either.value.decode(), "xml")
+        raise DownloadError(f"Failed to fetch ocr data for p {pno}")
 
     @property
     def timeout(self) -> int:
@@ -541,26 +799,6 @@ class GallicaResource(Representation):
     @timeout.setter
     def timeout(self, val: int) -> None:
         self.resource.timeout = val
-
-    @property
-    def pages(self) -> Optional[Pages]:
-        if not self._pages:
-            either = self.resource.pagination_sync()
-            if either.is_left:
-                raise either.value
-            self._pages = either.value
-        return self._pages
-
-    def get_physical_pno(self, logical_pno: str, pages: Pages = None) -> int:
-        """Get the physical pno for a logical pno."""
-        if not pages:
-            pages = self.pages
-        pnos = pages["livre"]["pages"]["page"]  # type: ignore
-        # sadly we have to do it ourselves
-        for p in pnos:
-            if p["numero"] == logical_pno:
-                break
-        return p["ordre"]
 
     @staticmethod
     def get_last_pno(pages: Pages) -> str:
@@ -588,78 +826,5 @@ class GallicaResource(Representation):
                 pass
         return self._end_p
 
-    def download_pdf(
-        self, path: Path, blocksize: int = 100, trials: int = 3, fetch_only: int = None
-    ) -> bool:
-        """Download a resource as a pdf in blocks to avoid timeout."""
-        partials = []
-
-        if path.exists():
-            return True
-        try:
-            if not self.start_p or not self.end_p:
-                raise Exception("No pages.")
-            end_p = (
-                self.start_p + fetch_only - 1 if fetch_only is not None else self.end_p
-            )
-            for i, (start, length) in enumerate(
-                self._generate_blocks(self.start_p, end_p, blocksize)  # type: ignore
-            ):
-
-                fn = path.with_suffix(f".pdf.{i}")
-                status = self._fetch_block(start, length, trials, fn)
-                if not status:
-                    raise DownloadError("Failed to download.")
-                with fn.open("rb") as f:
-                    with Path("/tmp/test.pdf").open("wb") as o:
-                        o.write(f.read())
-                partials.append(fn)
-            self._merge_partials(path, partials)
-        finally:
-            for fn in partials:
-                fn.unlink()
-        assert partials
-        return False
-
-    @staticmethod
-    def _generate_blocks(start: int, end: int, size: int) -> Generator:
-        """Generate Blocks"""
-        beginnings = range(start, end + 1, size)
-        for i in beginnings:
-            length = end - i + 1 if i + size > end else size  # truncate last block
-            yield (i, length)
-
-    def _merge_partials(self, path: Path, partials: List[Path]) -> None:
-        """Merge partial files"""
-        merger = PdfFileMerger()
-        for i, fn in enumerate(partials):
-            if self.suppress_cover_page:
-                args = {"pages": PageRange("2:")}  # if i else {}
-            else:
-                args = {"pages": PageRange("2:")} if i else {}
-            merger.append(str(fn.resolve()), **args)
-        with path.open("wb") as f:
-            merger.write(f)
-
-    def _fetch_block(self, startview: int, nviews: int, trials: int, fn: Path) -> bool:
-        """Fetch block."""
-        url = self.resource.content_sync(
-            startview=startview, nviews=nviews, url_only=True
-        )
-        for i in range(trials):
-            status = downloader.download(
-                url,
-                download_file=str(fn.resolve()),
-                timeout=120,
-            )
-            if status:
-                if imghdr.what(fn):
-                    print("We got ratelimited, sleeping for 5 minutes.")
-                    sleep(60 * 5)
-                else:
-                    return True
-            sleep(2 ** (i + 1))
-        return False
-
     def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()  # type: ignore
+        return ((k, repr(v)) for k, v in self.__dict__.items())  # type: ignore

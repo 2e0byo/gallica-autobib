@@ -3,17 +3,20 @@ from pathlib import Path
 
 import pytest
 from gallica_autobib.process import (
+    Bbox,
     ExtractionError,
+    crop_bounds,
     deanomalise,
     detect_spine,
     extract_image,
     filter_algorithm_brute_force,
     generate_filename,
-    get_crop_bounds,
+    ocr_crop_bounds,
     prepare_img,
     process_pdf,
 )
-from PIL import Image
+from gallica_autobib.query import UnscaledPageData
+from PIL import Image, ImageOps
 from PyPDF4 import PdfFileReader
 
 
@@ -44,7 +47,7 @@ def test_extract_image(img_test, image_regression, tmp_path):
     outf = tmp_path / f"test.{type_}"
     img.save(str(outf))
     with outf.open("rb") as f:
-        image_regression.check(f.read())
+        image_regression.check(f.read(), diff_threshold=0.2)
 
 
 def test_deanomalise():
@@ -64,22 +67,21 @@ def test_detect_spine():
     assert not detect_spine(img).lh_page
 
 
-def test_crop_bounds_lh():
-    inf = "tests/test_process/lh.jpg"
-    img = Image.open(inf)
-    bbox = (46, 116, 841, 1393)
-    res = get_crop_bounds(img)
-    for i, val in enumerate(bbox):
-        assert abs(res[i] - val) < 7
+bounds_tests = [
+    ("tests/test_process/test_get_bounds2.jpg", (769, 55, 1954, 1916)),
+    ("tests/test_process/rh.jpg", (161, 158, 899, 1394)),
+    ("tests/test_process/lh.jpg", (46, 116, 841, 1393)),
+    ("tests/test_process/test_get_bounds.jpg", (558, 32, 2034, 2008)),
+]
 
 
-def test_crop_bounds_rh():
-    inf = "tests/test_process/rh.jpg"
-    img = Image.open(inf)
-    bbox = (161, 158, 899, 1394)
-    res = get_crop_bounds(img)
-    for i, val in enumerate(bbox):
-        assert abs(res[i] - val) < 7
+@pytest.mark.parametrize("f, bbox", bounds_tests)
+def test_get_crop_bounds(f, bbox):
+    img = Image.open(f)
+    bounds = crop_bounds(img)
+    # handy when setting up new testcases for test-driven
+    # show(img, (bounds, bbox))
+    assert bounds == pytest.approx(bbox)
 
 
 filter_tests = [
@@ -100,13 +102,13 @@ filter_tests = [
 @pytest.mark.parametrize("inf", filter_tests)
 def test_filter_brute_force(inf, image_regression, tmp_path):
     img = Image.open(inf)
-    img = img.crop(get_crop_bounds(img))
+    img = img.crop(crop_bounds(img))
     if img.mode != "1":
         img = filter_algorithm_brute_force(img)
 
     img.save(f"{tmp_path}/test.jpg")
     with (tmp_path / f"test.jpg").open("rb") as f:
-        image_regression.check(f.read())
+        image_regression.check(f.read(), diff_threshold=0.2)
 
 
 def test_process_pdf_no_preserve(file_regression, tmp_path, check_pdfs):
@@ -131,10 +133,24 @@ def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
         )
 
 
-@pytest.mark.xfail
 def test_process_pdf_equal_size(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
     process_pdf(inf, tmp_path / "test1.pdf", equal_size=True, has_cover_page=True)
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
+
+
+def test_process_pdf_equal_size_preserve(file_regression, tmp_path, check_pdfs):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+    process_pdf(
+        inf,
+        tmp_path / "test1.pdf",
+        equal_size=True,
+        has_cover_page=True,
+        preserve_text=True,
+    )
     with (tmp_path / "test1.pdf").open("rb") as f:
         file_regression.check(
             f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
@@ -158,3 +174,48 @@ def test_generate_filename(tmp_path):
         f.write("=")
     outf = generate_filename(start)
     assert outf == tmp_path / "augustin-0.pdf"
+
+
+ocr_data = (
+    UnscaledPageData(
+        upper=[187, 628], lower=[1637, 2766], total_width=1852, total_height=3088
+    ),
+    UnscaledPageData(
+        upper=[260, 443], lower=[1701, 2812], total_width=1868, total_height=3060
+    ),
+    UnscaledPageData(
+        upper=[135, 453], lower=[1584, 2767], total_width=1864, total_height=3088
+    ),
+)
+
+bboxes = (
+    Bbox(85, 308, 825, 1387),
+    Bbox(121, 155, 864, 1422),
+    Bbox(57, 159, 799, 1388),
+)
+
+
+@pytest.mark.parametrize(
+    "imgf, bounds, bbox", zip((f"aug-00{i}.jpg" for i in range(3)), ocr_data, bboxes)
+)
+def test_ocr_crop(imgf, bounds, bbox):
+    img = Image.open(f"tests/test_process/{imgf}")
+    img = ImageOps.grayscale(img)
+    ocr_bbox = ocr_crop_bounds(img, bounds)
+    assert pytest.approx(ocr_bbox) == bbox
+
+
+def test_process_pdf_ocr(file_regression, tmp_path, check_pdfs):
+    inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
+
+    process_pdf(
+        inf,
+        tmp_path / "test1.pdf",
+        has_cover_page=True,
+        preserve_text=True,
+        ocr_data=ocr_data,
+    )
+    with (tmp_path / "test1.pdf").open("rb") as f:
+        file_regression.check(
+            f.read(), extension=".pdf", binary=True, check_fn=check_pdfs
+        )
