@@ -62,7 +62,7 @@ class InputParser:
         clean: bool = True,
         fetch_only: Optional[int] = None,
         ignore_cache: bool = False,
-        ocr_bounds: bool = True,
+        ocr_bounds: bool = False,
     ):
         self.records: List[Record] = []
         self.raw: List[str] = []
