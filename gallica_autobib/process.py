@@ -187,7 +187,12 @@ def crop_bounds(img: Image.Image) -> Bbox:
     diff = ImageChops.difference(img, bg)
 
     GROW_PIXELS = 10
-    left, upper, right, lower = diff.getbbox()
+    bbox = diff.getbbox()
+    if bbox:
+        left, upper, right, lower = diff.getbbox()
+    else:
+        left, upper, right, lower = img.getbbox()
+
     # show(img, [diff.getbbox()])
     left += MARGIN_PIXELS - GROW_PIXELS
     upper += MARGIN_PIXELS - GROW_PIXELS
