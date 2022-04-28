@@ -3,6 +3,7 @@ import logging
 from collections import namedtuple
 from collections.abc import Collection
 from io import BytesIO
+from itertools import filterfalse
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
 from typing import TYPE_CHECKING, Tuple
@@ -343,11 +344,13 @@ def process_pdf(
     else:
         logger.info("Not preserving text; will process images.")
 
-    for i, page in enumerate(tqdm(pages, disable=not progress)):
-        if suppress_pages and i in suppress_pages:
-            logger.info(f"Skipping page {i}")
-            continue
-        logger.debug(f"Processing page {i}")
+    if not suppress_pages:
+        suppress_pages = ()
+
+    for i, page in tqdm(
+        filterfalse(lambda x: x[0] in suppress_pages, enumerate(pages)),
+        disable=not progress,
+    ):
 
         img, crop_bbox, scale = extract_page(page)
         if ocr_data:
