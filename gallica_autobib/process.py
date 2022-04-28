@@ -336,45 +336,40 @@ def process_pdf(
             suppress_pages = [x - 2 for x in suppress_pages]
 
     max_width, max_height = 0, 0
+    imgs = []
 
     if preserve_text:
         logger.info("Preserving text so only cropping.")
-        for i, page in enumerate(tqdm(pages, disable=not progress)):
-            if suppress_pages and i in suppress_pages:
-                logger.info(f"Skipping page {i}")
-                continue
-            logger.debug(f"Processing page {i}")
+    else:
+        logger.info("Not preserving text; will process images.")
 
-            img, _bbox, scale = extract_page(page)
-            if ocr_data:
-                _bbox = ocr_crop_bounds(img, ocr_data[i])
-            # show(img, _bbox)
-            bbox = Bbox(*(x * scale for x in _bbox))
+    for i, page in enumerate(tqdm(pages, disable=not progress)):
+        if suppress_pages and i in suppress_pages:
+            logger.info(f"Skipping page {i}")
+            continue
+        logger.debug(f"Processing page {i}")
+
+        img, crop_bbox, scale = extract_page(page)
+        if ocr_data:
+            crop_bbox = ocr_crop_bounds(img, ocr_data[i])
+        # show(img, _bbox)
+        if not preserve_text:
+            img = img.crop(crop_bbox)
+            if img.mode != "1":
+                img = filter_algorithm_brute_force(img)
+            imgs.append(img)
+        else:
+            bbox = Bbox(*(x * scale for x in crop_bbox))
             crop_page(page, bbox)
             max_width = max(max_width, page.cropBox.getWidth())
             max_height = max(max_height, page.cropBox.getHeight())
             writer.addPage(page)
 
+    if preserve_text:
         if equal_size:
             for page in (writer.getPage(i) for i in range(writer.getNumPages())):
                 scale_page(page, max_width, max_height)
     else:
-        logger.info("Not preserving text; will process images.")
-        imgs = []
-        for i, page in enumerate(tqdm(pages, disable=not progress)):
-            if suppress_pages and i in suppress_pages:
-                logger.info(f"Skipping page {i}")
-                continue
-            logger.debug(f"Processing page {i}")
-
-            img, crop_bbox, scale = extract_page(page)
-            if ocr_data:
-                crop_bbox = ocr_crop_bounds(img, ocr_data[i])
-            img = img.crop(crop_bbox)
-            if img.mode != "1":
-                img = filter_algorithm_brute_force(img)
-            imgs.append(img)
-
         if has_cover_page:
             tmpf = SpooledTemporaryFile()
             imgs[0].save(
