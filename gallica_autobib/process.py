@@ -5,7 +5,7 @@ from collections.abc import Collection
 from functools import partial
 from io import BytesIO
 from itertools import filterfalse
-from numbers import Number
+from numbers import Real
 from pathlib import Path
 from tempfile import SpooledTemporaryFile
 from typing import TYPE_CHECKING, Iterable, Tuple
@@ -278,7 +278,7 @@ def extract_page(page: PageObject) -> Tuple[Image.Image, Bbox, float]:
     return img, crop_bbox, scale
 
 
-def _setbox(box: RectangleObject, xdiff: Number, ydiff: Number) -> None:
+def _setbox(box: RectangleObject, xdiff: Real, ydiff: Real) -> None:
     from devtools import debug
 
     debug(box, xdiff, ydiff)
