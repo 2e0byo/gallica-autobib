@@ -35,7 +35,7 @@ class Cached:
     def __init__(self, cachename: str) -> None:
         """A resource in the cache, stored in a separate table."""
         self.tablename = cachename
-        self.cachedir.mkdir(exist_ok=True)
+        self.cachedir.mkdir(exist_ok=True, parents=True)
         cache = self.cachedir / self.CACHEFN
         logger.debug(f"Cache: {cache}")
         self.con = sqlite3.connect(cache)
