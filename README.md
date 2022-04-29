@@ -5,14 +5,14 @@
 </p>
 
 <p align="center">
-<a href="https://github.com/2e0byo/pygallica-autobib/actions?query=workflow%3ATest" target="_blank">
-    <img src="https://github.com/2e0byo/pygallica-autobib/workflows/Test/badge.svg" alt="Test">
+<a href="https://github.com/2e0byo/gallica-autobib/actions?query=workflow%3ATest" target="_blank">
+    <img src="https://github.com/2e0byo/gallica-autobib/workflows/Test/badge.svg" alt="Test">
 </a>
-<a href="https://github.com/2e0byo/pygallica-autobib/actions?query=workflow%3APublish" target="_blank">
-    <img src="https://github.com/2e0byo/pygalln=dependabot" alt="Dependabot Enabled">
+<a href="https://github.com/2e0byo/gallica-autobib/actions?query=workflow%3APublish" target="_blank">
+    <img src="https://github.com/2e0byo/galln=dependabot" alt="Dependabot Enabled">
 </a>
-<a href="https://codecov.io/gh/2e0byo/pygallica-autobib" target="_blank">
-    <img src="https://img.shields.io/codecov/c/github/2e0byo/pygallica-autobib?color=%2334D058" alt="Coverage">
+<a href="https://codecov.io/gh/2e0byo/gallica-autobib" target="_blank">
+    <img src="https://img.shields.io/codecov/c/github/2e0byo/gallica-autobib?color=%2334D058" alt="Coverage">
 </a>
 <a href="https://pypi.org/project/gallica-autobib" target="_blank">
     <img src="https://img.shields.io/pypi/v/gallica-autobib?color=%2334D058&label=pypi%20package" alt="Package version">
