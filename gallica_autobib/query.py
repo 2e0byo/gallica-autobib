@@ -38,8 +38,7 @@ if TYPE_CHECKING:  # pragma: nocover
     from pydantic.typing import ReprArgs  # pragma: nocover
 
 
-gallipy.helpers.fetch_xml_html = response_cache(gallipy.helpers.fetch_xml_html)
-gallipy.helpers.fetch_json = response_cache(gallipy.helpers.fetch_json)
+gallipy.helpers.fetch = response_cache(gallipy.helpers.fetch)
 
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
