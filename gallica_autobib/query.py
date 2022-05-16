@@ -6,6 +6,7 @@ from functools import total_ordering
 from io import BytesIO
 from pathlib import Path
 from re import search
+from tempfile import TemporaryDirectory
 from time import sleep
 from typing import (
     TYPE_CHECKING,
@@ -26,11 +27,10 @@ from fuzzywuzzy import fuzz
 from PIL import Image
 from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
-from requests_downloader import downloader
 from sruthi.response import SearchRetrieveResponse
 
 from . import gallipy
-from .cache import Cached, response_cache
+from .cache import Cached, download, img_data_cache, response_cache
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
@@ -313,8 +313,9 @@ class DownloadableResource(Representation):
                 break
         return p["ordre"]
 
-    @classmethod
-    def fetch_image(cls, resource: Resource, pno: int) -> bytes:
+    @img_data_cache
+    @staticmethod
+    def fetch_image(resource: Resource, pno: int) -> bytes:
         """Fetch image from resource as bytes.
 
         This method is used as a fallback where we can't get the data any other
@@ -426,7 +427,7 @@ class DownloadableResource(Representation):
             startview=startview, nviews=nviews, url_only=True
         )
         for i in range(self.trials):
-            status = downloader.download(
+            status = download(
                 url,
                 download_file=str(fn.resolve()),
                 timeout=120,

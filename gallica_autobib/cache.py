@@ -11,6 +11,7 @@ from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, Optional
 
 import jsonpickle
+from requests_downloader import downloader
 from xdg import xdg_cache_home
 
 if TYPE_CHECKING:  # pragma: nocover
@@ -67,34 +68,52 @@ class Cached(UserDict):
             self.write_lock.release()
 
 
-_cached_response = Cached("responses")
+def cache_factory(cachename: str, enabled: bool) -> callable:
+    _cache = Cached(cachename)
+
+    def decorator(fn: callable):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            if enabled:
+                key = jsonpickle.dumps(
+                    (*args, sorted(kwargs.items())), unpicklable=False
+                )
+                resp = _cache.get(key)
+                if not resp:
+                    resp = fn(*args, **kwargs)
+                    _cache[key] = resp
+                return resp
+            else:
+                return fn(*args, **kwargs)
+
+        return wrapper
+
+    return decorator
+
 
 response_cache_enabled = bool(getenv("RESPONSE_CACHE", False))
+response_cache = cache_factory("responses", response_cache_enabled)
+
+data_cache_enabled = bool(getenv("DATA_CACHE", False))
+_data_cache = Cached("data")
+img_data_cache = cache_factory("img_data", data_cache_enabled)
 
 
-def response_cache(fn: callable):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        if response_cache_enabled:
-            key = jsonpickle.dumps((*args, sorted(kwargs.items())), unpicklable=False)
-            resp = _cached_response.get(key)
-            if not resp:
-                resp = fn(*args, **kwargs)
-                _cached_response[key] = resp
-            return resp
-        else:
-            return fn(*args, **kwargs)
-
-    return wrapper
-
-
-_pdfs_cache = Cached("pdfs")
-
-
-def pdf_cache(fn: callable):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        if pdf_cache_enabled:
-            key = jsonpickle.dumps((*args, sorted(kwargs.items())), unpicklable=False)
-            if not _pdf_cache.get(key):
-                fn(*args, **kwargs)
+def download(url, **kwargs):
+    outdir = Path(kwargs.get("download_dir", "."))
+    if data_cache_enabled:
+        data = _data_cache.get(url)
+        if not data:
+            with TemporaryDirectory() as tmpdir:
+                kwargs["download_dir"] = tmpdir
+                fn = downloader.download(url, **kwargs)
+                assert fn
+                with (Path(tmpdir) / fn).open("rb") as f:
+                    data = f.read()
+                _data_cache[url] = data
+        outf = outdir / kwargs["download_file"]
+        with outf.open("wb") as f:
+            f.write(data)
+        return str(outf)
+    else:
+        return downloader.download(url, **kwargs)
