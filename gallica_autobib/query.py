@@ -463,14 +463,14 @@ class GallicaResource(DownloadableResource):
         if a.is_left:
             raise a.value
         self.series_ark = a.value
-        self._ark = ark_cache[self.key] if cache else None
+        self._ark = ark_cache.get(self.key) if cache else None
         self.logger.debug(f"Ark is {self._ark}, {self.key}")
         self.consider_toc = True
-        self.source_match = source_match_cache[self.key] if cache else None
+        self.source_match = source_match_cache.get(self.key) if cache else None
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
         self._desired_pages: Optional[List[int]] = None
-        self._ocr_bounds = ocr_cache[self.key] if cache else None
+        self._ocr_bounds = ocr_cache.get(self.key) if cache else None
 
     @DownloadableResource.ark.getter  # type: ignore
     def ark(self) -> Optional[Union[str, Ark]]:

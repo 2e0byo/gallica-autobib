@@ -214,7 +214,7 @@ class InputParser:
         """
 
         key = record.target.key()
-        match = source_match_cache[key] if cache else None
+        match = source_match_cache.get(key) if cache else None
         if not match:
             query = Query(record.target)
             match = query.run()

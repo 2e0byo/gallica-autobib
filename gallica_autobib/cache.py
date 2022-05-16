@@ -1,6 +1,8 @@
 """Handle our internal cache, which we use to avoid hammering Gallica's
 servers, and to make our life easier when re-running."""
 import sqlite3
+from collections import UserDict
+from functools import wraps
 from logging import getLogger
 from multiprocessing import Lock
 from os import getenv
@@ -25,14 +27,14 @@ else:
     cachedir = xdg_cache_home() / "gallica_autobib"  # TODO what happens if not on unix?
 
 
-class Cached:
+class Cached(UserDict):
     """Cached resource."""
 
     CACHEFN = "cache.db"
     cachedir = cachedir
     write_lock = Lock()
 
-    def __init__(self, cachename: str) -> None:
+    def __init__(self, cachename: str, *args, **kwargs) -> None:
         """A resource in the cache, stored in a separate table."""
         self.tablename = cachename
         self.cachedir.mkdir(exist_ok=True, parents=True)
@@ -42,6 +44,7 @@ class Cached:
         MAKE_TABLE = f'CREATE TABLE IF NOT EXISTS "{cachename}" (key TEXT PRIMARY KEY, value BLOB)'
         self.con.execute(MAKE_TABLE)
         self.con.commit()
+        super().__init__(*args, **kwargs)
 
     def __del__(self) -> None:
         self.con.close()
@@ -52,7 +55,7 @@ class Cached:
         if item:
             return jsonpickle.loads(item[0])
         else:
-            return None
+            raise KeyError(key)
 
     def __setitem__(self, key: str, val: Any) -> None:
         self.write_lock.acquire()

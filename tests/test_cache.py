@@ -14,7 +14,8 @@ def tmp_cache():
 
 def test_cache(tmp_cache):
     cache = tmp_cache("test")
-    assert not cache[7]
+    with pytest.raises(KeyError):
+        cache[7]
     cache[7] = "this"
     assert cache[7] == "this"
     cache[7] = dict(seven=7)
@@ -22,3 +23,6 @@ def test_cache(tmp_cache):
     del cache
     cache = tmp_cache("test")
     assert cache[7] == dict(seven=7)
+    # test that we're dict-like
+    assert cache.get(7) == dict(seven=7)
+    assert cache.get(9, "oops") == "oops"
