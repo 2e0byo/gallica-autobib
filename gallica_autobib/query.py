@@ -364,7 +364,7 @@ class DownloadableResource(Representation):
                     else self.end_p
                 )
                 partials = self.download_pdf_chunks(
-                    path, blocksize, self._start_p, fetch
+                    path, blocksize, self.start_p, fetch
                 )
 
             self._merge_partials(path, partials)

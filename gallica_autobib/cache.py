@@ -8,7 +8,7 @@ from multiprocessing import Lock
 from os import getenv
 from pathlib import Path
 from tempfile import TemporaryDirectory
-from typing import TYPE_CHECKING, Any, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import jsonpickle
 from requests_downloader import downloader
@@ -35,7 +35,7 @@ class Cached(UserDict):
     cachedir = cachedir
     write_lock = Lock()
 
-    def __init__(self, cachename: str, *args, **kwargs) -> None:
+    def __init__(self, cachename: str, *args: Any, **kwargs: Any) -> None:
         """A resource in the cache, stored in a separate table."""
         self.tablename = cachename
         self.cachedir.mkdir(exist_ok=True, parents=True)
@@ -68,12 +68,12 @@ class Cached(UserDict):
             self.write_lock.release()
 
 
-def cache_factory(cachename: str, enabled: bool) -> callable:
+def cache_factory(cachename: str, enabled: bool) -> Callable:
     _cache = Cached(cachename)
 
-    def decorator(fn: callable):
+    def decorator(fn: Callable) -> Callable:
         @wraps(fn)
-        def wrapper(*args, **kwargs):
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
             if enabled:
                 key = jsonpickle.dumps(
                     (*args, sorted(kwargs.items())), unpicklable=False
@@ -99,7 +99,7 @@ _data_cache = Cached("data")
 img_data_cache = cache_factory("img_data", data_cache_enabled)
 
 
-def download(url, **kwargs):
+def download(url: str, **kwargs: Any) -> Optional[str]:
     outdir = Path(kwargs.get("download_dir", "."))
     if data_cache_enabled:
         data = _data_cache.get(url)
