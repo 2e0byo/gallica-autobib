@@ -29,12 +29,17 @@ from PyPDF4 import PageRange, PdfFileMerger
 from requests_downloader import downloader
 from sruthi.response import SearchRetrieveResponse
 
-from .cache import Cached
+from . import gallipy
+from .cache import Cached, response_cache
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
 if TYPE_CHECKING:  # pragma: nocover
     from pydantic.typing import ReprArgs  # pragma: nocover
+
+
+gallipy.helpers.fetch_xml_html = response_cache(gallipy.helpers.fetch_xml_html)
+gallipy.helpers.fetch_json = response_cache(gallipy.helpers.fetch_json)
 
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
@@ -148,6 +153,7 @@ class GallicaSRU(
     def __init__(self) -> None:
         self.client = sruthi.Client(url=self.URL, record_schema="dublincore")
 
+    @response_cache
     def fetch_query(self, query: str) -> SearchRetrieveResponse:
         return self.client.searchretrieve(query)
 

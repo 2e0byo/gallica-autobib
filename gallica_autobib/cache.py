@@ -65,3 +65,36 @@ class Cached(UserDict):
             self.con.commit()
         finally:
             self.write_lock.release()
+
+
+_cached_response = Cached("responses")
+
+response_cache_enabled = bool(getenv("RESPONSE_CACHE", False))
+
+
+def response_cache(fn: callable):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if response_cache_enabled:
+            key = jsonpickle.dumps((*args, sorted(kwargs.items())), unpicklable=False)
+            resp = _cached_response.get(key)
+            if not resp:
+                resp = fn(*args, **kwargs)
+                _cached_response[key] = resp
+            return resp
+        else:
+            return fn(*args, **kwargs)
+
+    return wrapper
+
+
+_pdfs_cache = Cached("pdfs")
+
+
+def pdf_cache(fn: callable):
+    @wraps(fn)
+    def wrapper(*args, **kwargs):
+        if pdf_cache_enabled:
+            key = jsonpickle.dumps((*args, sorted(kwargs.items())), unpicklable=False)
+            if not _pdf_cache.get(key):
+                fn(*args, **kwargs)
