@@ -354,10 +354,18 @@ class DownloadableResource(Representation):
                 self.logger.warn(
                     f"Failed to download with {trial_url}; falling back to image"
                 )
+
                 partials = self.download_pdf_images(path, fetch_only)
             else:
                 self.logger.debug("Getting pdf with pdf chunk downloader.")
-                partials = self.download_pdf_chunks(path, blocksize, fetch_only)
+                fetch = (
+                    self.end_p + fetch_only - 1
+                    if fetch_only is not None
+                    else self.end_p
+                )
+                partials = self.download_pdf_chunks(
+                    path, blocksize, self._start_p, fetch
+                )
 
             self._merge_partials(path, partials)
         finally:
@@ -366,14 +374,17 @@ class DownloadableResource(Representation):
         assert partials
         return False
 
+    @staticmethod
+    def get_pdf_url(outf: Path, blocksize: int, fetch_only: int = None) -> bool:
+        pass
+
     def download_pdf_chunks(
-        self, path: Path, blocksize: int, fetch_only: int = None
+        self, path: Path, blocksize: int, start_p: int, fetch: int
     ) -> list[Path]:
         """Download pdf in chunks, saving to path."""
-        fetch = self.end_p + fetch_only - 1 if fetch_only is not None else self.end_p
         partials = []
         for i, (start, length) in enumerate(
-            self._generate_blocks(self.start_p, fetch, blocksize)  # type: ignore
+            self._generate_blocks(start_p, fetch, blocksize)  # type: ignore
         ):
 
             fn = path.with_suffix(f".pdf.{i}")
