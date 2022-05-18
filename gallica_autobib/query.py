@@ -521,7 +521,8 @@ class GallicaResource(DownloadableResource):
 
         """
         if not self.source_match:
-            self.ark  # skipcq: PYL-W0104
+            if not self.ark:
+                raise MatchingError("Target has no ark!")
             source_match_cache[self.key] = self.source_match
         return self.source_match
 
