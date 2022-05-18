@@ -122,9 +122,8 @@ def test_process_pdf_no_preserve(file_regression, tmp_path, check_pdfs):
 
 def test_process_pdf_preserve(file_regression, tmp_path, check_pdfs):
     inf = Path("tests/test_gallica_resource/test_download_pdf.pdf")
-    with inf.open("rb") as i:
-        with (tmp_path / "test.pdf").open("wb") as f:
-            f.write(i.read())
+    with inf.open("rb") as i, (tmp_path / "test.pdf").open("wb") as f:
+        f.write(i.read())
     inf = tmp_path / "test.pdf"
     process_pdf(inf, preserve_text=True, has_cover_page=True)
     with (tmp_path / "processed-test.pdf").open("rb") as f:

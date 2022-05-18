@@ -16,9 +16,8 @@ def bibtex_parser():
 
 
 def mock_download_pdf(self, path, blocksize=100, trials=3, fetch_only=None):
-    with (Path("tests/test_pdfs") / path.name).open("rb") as f:
-        with path.open("wb") as o:
-            o.write(f.read())
+    with (Path("tests/test_pdfs") / path.name).open("rb") as f, path.open("wb") as o:
+        o.write(f.read())
     return True
 
 
