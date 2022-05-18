@@ -58,7 +58,8 @@ def test_generate_short_block(gallica_resource):
 @pytest.mark.web
 @pytest.mark.download
 def test_download_pdf(gallica_resource, file_regression, tmp_path, check_pdfs):
-    gallica_resource.ark  # trigger search before we edit pages
+    ark = gallica_resource.ark  # skipcq: PYL-W0104
+    assert ark
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
 
     outf = tmp_path / "test.pdf"
@@ -210,7 +211,8 @@ def test_last_pno(gallica_resource, pages):
 
 
 def test_ocr_bounds(gallica_resource, data_regression):
-    gallica_resource.ark  # trigger search before we edit pages
+    ark = gallica_resource.ark  # skipcq: PYL-W0104
+    assert ark
     gallica_resource.target.pages = gallica_resource.target.pages[:3]
     bounds = gallica_resource.ocr_bounds
     data_regression.check([x._asdict() for x in bounds])

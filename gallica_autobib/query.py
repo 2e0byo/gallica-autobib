@@ -519,7 +519,7 @@ class GallicaResource(DownloadableResource):
 
         """
         if not self.source_match:
-            self.ark
+            self.ark  # skipcq: PYL-W0104
             source_match_cache[self.key] = self.source_match
         return self.source_match
 
