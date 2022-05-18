@@ -55,10 +55,9 @@ def prettify(pages: list[int], arabic: bool) -> str:
         if len(start) == len(end):
             end = "".join(end[i] for i in range(len(end)) if end[i] != start[i])
         return f"{start}--{end}"
-    else:
-        # for now we don't do anything clever with roman numerals, although
-        # combining is possible.
-        return f"{roman.toRoman(pages[0]).lower()}--{roman.toRoman(pages[-1]).lower()}"
+    # for now we don't do anything clever with roman numerals, although
+    # combining is possible.
+    return f"{roman.toRoman(pages[0]).lower()}--{roman.toRoman(pages[-1]).lower()}"
 
 
 def deprettify(rangestr: Union[str, int]) -> Union[list[int], int, None]:
