@@ -773,7 +773,6 @@ class GallicaResource(DownloadableResource):
                 ]
             else:
                 pages = self.pages
-                pnos = pages["livre"]["pages"]["page"]  # type: ignore
                 self._desired_pages = [int(p["ordre"]) for p in pages]  # type: ignore
 
         return self._desired_pages

@@ -56,7 +56,6 @@ def test_sort_match():
         journaltitle="La vie spirituelle, ascétique et mystique",
         year=1930,
     )
-    e = Journal(journaltitle="La vie spirituelle", year=1931, number=2)
     f = Journal(
         journaltitle="La vie spirituelle, ascétique et mystique",
         year=list(range(1940, 1950)),
