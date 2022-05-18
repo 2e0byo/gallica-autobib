@@ -234,7 +234,7 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
             peaked = 2
             break
 
-    up = up if peaked == 2 else 0
+    up = up if peaked == 2 else 0  # skipcq: PYL-W0631
 
     peaked = 0
     for down, x in enumerate(lower_search):
@@ -244,7 +244,7 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
             peaked = 2
             break
 
-    down = down if peaked == 2 else 0
+    down = down if peaked == 2 else 0  # skipcq: PYL-W0631
 
     GROW_PIXELS = 10
     bbox = Bbox(
