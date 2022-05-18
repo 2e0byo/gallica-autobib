@@ -568,8 +568,7 @@ class GallicaResource(DownloadableResource):
                 end_v = end[k]
                 if not end_v or v == end_v:
                     continue
-                else:
-                    start[k] = list(range(v, end_v + 1))
+                start[k] = list(range(v, end_v + 1))
             return start
         resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
         resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
