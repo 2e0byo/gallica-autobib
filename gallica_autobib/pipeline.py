@@ -218,7 +218,7 @@ class InputParser:
         if not match:
             query = Query(record.target)
             match = query.run()
-        args = dict(record=record)  # type: ignore
+        args = dict(record=record)
         if not process_args:
             process_args = {}
         if not download_args:

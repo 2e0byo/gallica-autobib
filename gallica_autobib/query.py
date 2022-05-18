@@ -384,7 +384,7 @@ class DownloadableResource(Representation):
         """Download pdf in chunks, saving to path."""
         partials = []
         for i, (start, length) in enumerate(
-            self._generate_blocks(start_p, fetch, blocksize)  # type: ignore
+            self._generate_blocks(start_p, fetch, blocksize)
         ):
 
             fn = path.with_suffix(f".pdf.{i}")
@@ -782,7 +782,7 @@ class GallicaResource(DownloadableResource):
         """Text box from Gallica's ocr for every page."""
         if not self._ocr_bounds:
             bounds = []
-            for pno in self.desired_pages:  # type: ignore
+            for pno in self.desired_pages:
                 soup = self.get_ocr_data(pno)
                 page = soup.find("Page")
                 height, width = int(page.get("HEIGHT")), int(page.get("WIDTH"))

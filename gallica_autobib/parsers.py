@@ -24,7 +24,7 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[st
             rawlines = bibtex.split("\n")
         else:
             db = bibtexparser.load(bibtex, parser=parser)
-            bibtex.seek(0)  # type: ignore
+            bibtex.seek(0)
             rawlines = (x.strip("\n") for x in bibtex.readlines())  # type: ignore
     except Exception:
         raise ParsingError("Unable to parse")
@@ -82,7 +82,7 @@ def parse_ris(ris: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[str]]:
             rawlines = ris.split("\n")
         else:
             db = rispy.load(ris)
-            ris.seek(0)  # type: ignore
+            ris.seek(0)
             rawlines = (x.strip("\n") for x in ris.readlines())  # type: ignore
     except Exception:
         raise ParsingError("Unable to parse")
