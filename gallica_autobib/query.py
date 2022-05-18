@@ -305,6 +305,8 @@ class DownloadableResource(Representation):
         if not pages:
             pages = self.pages
         pnos = pages["livre"]["pages"]["page"]  # type: ignore
+        if not pnos:
+            raise ValueError("No page numbers present.")
         # sadly we have to do it ourselves
         for p in pnos:
             if p["numero"] == logical_pno:
@@ -822,6 +824,8 @@ class GallicaResource(DownloadableResource):
     def get_last_pno(pages: Pages) -> str:
         """Get last page number of internal volume."""
         pnos = pages["livre"]["pages"]["page"]
+        if not pnos:
+            raise ValueError("No page numbers present.")
         for p in reversed(pnos):
             if p["pagination_type"] == "A":
                 break
