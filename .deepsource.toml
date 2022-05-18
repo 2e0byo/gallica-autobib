@@ -4,6 +4,10 @@ test_patterns = [
   "test_*.py"
 ]
 
+exclude_patterns = [
+  "gallica_autobib/gallipy/**"
+]
+
 [[analyzers]]
 name = "shell"
 enabled = true
