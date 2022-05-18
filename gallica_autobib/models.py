@@ -75,7 +75,9 @@ class BibBase(BaseModel):
         return hash(repr(self))
 
     def key(self) -> str:
-        return sha1(repr(self).encode(), usedforsecurity=False).hexdigest()
+        return sha1(
+            repr(self).encode(), usedforsecurity=False
+        ).hexdigest()  # skipcq: PTC-71003
 
     @staticmethod
     def assemble_query(**kwargs: dict) -> str:
