@@ -92,8 +92,7 @@ class BibBase(BaseModel):
     def format_query_item(item: Union[list, str]) -> str:
         if isinstance(item, list):
             return " ".join(str(x) for x in item)
-        else:
-            return item
+        return item
 
     def generate_query(self) -> str:
         """Get query str"""
@@ -144,8 +143,7 @@ class AuthorTitleMixin:
             n = f"{self.title[:short]} ({self.author[:short]})"  # type: ignore
         if slug:
             return slugify(n)
-        else:
-            return n
+        return n
 
 
 class HasPublisher(HasTitle):
@@ -199,8 +197,7 @@ class Journal(BibBase):
         n += f" n. {self.number}" if self.number else ""
         if slug:
             return slugify(n)
-        else:
-            return n
+        return n
 
 
 class Article(HasTitle, AuthorTitleMixin):

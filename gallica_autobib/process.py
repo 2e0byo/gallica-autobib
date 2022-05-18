@@ -77,8 +77,7 @@ def extract_image(page: PageObject) -> Tuple[Image.Image, str]:
         assert type_
         logger.debug(f"Extracted image of kind {type_}.")
         return data, type_
-    else:
-        raise ExtractionError("No image found.")
+    raise ExtractionError("No image found.")
 
 
 def filter_point(point: int) -> int:
@@ -91,8 +90,7 @@ def filter_point(point: int) -> int:
     """
     if point < 160:
         return round(point / 1.2)
-    else:
-        return round(point * 2)
+    return round(point * 2)
 
 
 _results = namedtuple("_results", ("lh_page", "crop", "bbox"))
@@ -140,9 +138,8 @@ def detect_spine(img: Image.Image) -> _results:
     if first_left < first_right:
         crop = first_left + 10
         return _results(True, crop, (crop, 0, img.width, img.height))
-    else:
-        crop = first_right - 10
-        return _results(False, crop, (0, 0, img.width - crop, img.height))
+    crop = first_right - 10
+    return _results(False, crop, (0, 0, img.width - crop, img.height))
 
 
 def prepare_img(img: Image.Image, threshold: int = 60) -> Image.Image:

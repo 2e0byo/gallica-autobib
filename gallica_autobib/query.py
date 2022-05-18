@@ -179,8 +179,7 @@ class Query(
             return None
         if isinstance(obj, str):
             return obj
-        else:
-            return obj[0]
+        return obj[0]
 
     def resp_to_obj(self, resp: dict) -> GallicaBibObj:
         """Convert resp to GallicaBibObj"""
@@ -568,12 +567,11 @@ class GallicaResource(DownloadableResource):
                 else:
                     start[k] = list(range(v, end_v + 1))
             return start
-        else:
-            resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
-            resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
-            resp["number"] = search(r"N([0-9]+)", desc)  # type: ignore
-            resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
-            return resp
+        resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
+        resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
+        resp["number"] = search(r"N([0-9]+)", desc)  # type: ignore
+        resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
+        return resp
 
     def ocr_find_article_in_journal(
         self, journal: Resource, pages: OrderedDict
@@ -758,8 +756,7 @@ class GallicaResource(DownloadableResource):
             if not either.is_left:
                 self._resource = res
                 return match
-            else:
-                self.logger.debug(f"Skipping unavailable match {match.candidate}")
+            self.logger.debug(f"Skipping unavailable match {match.candidate}")
 
         return None
 

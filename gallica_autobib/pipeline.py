@@ -266,10 +266,8 @@ class InputParser:
             else:
                 args["unprocessed"] = outf  # type: ignore
             return Result.parse_obj(args)
-
-        else:
-            args["unprocessed"] = outf  # type: ignore
-            return Result.parse_obj(args)
+        args["unprocessed"] = outf  # type: ignore
+        return Result.parse_obj(args)
 
 
 class BibtexParser(InputParser):

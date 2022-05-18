@@ -55,8 +55,7 @@ class Cached(UserDict):
         item = self.con.execute(GET_ITEM, (key,)).fetchone()
         if item:
             return jsonpickle.loads(item[0])
-        else:
-            raise KeyError(key)
+        raise KeyError(key)
 
     def __setitem__(self, key: str, val: Any) -> None:
         self.write_lock.acquire()
@@ -83,8 +82,7 @@ def cache_factory(cachename: str, enabled: bool) -> Callable:
                     resp = fn(*args, **kwargs)
                     _cache[key] = resp
                 return resp
-            else:
-                return fn(*args, **kwargs)
+            return fn(*args, **kwargs)
 
         return wrapper
 
@@ -115,5 +113,4 @@ def download(url: str, **kwargs: Any) -> Optional[str]:
         with outf.open("wb") as f:
             f.write(data)
         return str(outf)
-    else:
-        return downloader.download(url, **kwargs)
+    return downloader.download(url, **kwargs)
