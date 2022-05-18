@@ -1,14 +1,15 @@
-from bs4 import BeautifulSoup
+from collections import namedtuple
+from io import BytesIO
+
+import matplotlib.pyplot as plt
 import numpy as np
+from bs4 import BeautifulSoup
+from matplotlib.patches import Rectangle
 from PIL import ImageOps
+from PyPDF4 import PdfFileReader
+
 from gallica_autobib.gallipy import Resource
 from gallica_autobib.process import extract_image
-from PyPDF4 import PdfFileReader
-from io import BytesIO
-import matplotlib.pyplot as plt
-import matplotlib.image as mpimg
-from matplotlib.patches import Rectangle
-from collections import namedtuple
 
 Point = namedtuple("Point", ["x", "y"])
 Box = namedtuple("Box", ["upper", "lower"])
