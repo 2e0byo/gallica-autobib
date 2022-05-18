@@ -496,7 +496,7 @@ class GallicaResource(DownloadableResource):
             self.get_ark()
         return self._ark
 
-    def get_ark(self):
+    def get_ark(self) -> None:
         if isinstance(self.source, Journal):
             self.logger.debug("No ark, Finding best match.")
             self.source_match = self.get_best_article_match()
