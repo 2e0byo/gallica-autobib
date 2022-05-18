@@ -75,7 +75,7 @@ class BibBase(BaseModel):
         return hash(repr(self))
 
     def key(self) -> str:
-        return sha1(repr(self).encode()).hexdigest()
+        return sha1(repr(self).encode(), usedforsecurity=False).hexdigest()
 
     @staticmethod
     def assemble_query(**kwargs: dict) -> str:
