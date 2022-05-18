@@ -40,7 +40,13 @@ def test_pnos(gallica_resource):
 
 
 def test_generate_blocks(gallica_resource):
-    list(gallica_resource._generate_blocks(0, 20, 5))
+    assert list(gallica_resource._generate_blocks(0, 20, 5)) == [
+        (0, 5),
+        (5, 5),
+        (10, 5),
+        (15, 5),
+        (20, 1),
+    ]
 
 
 def test_generate_short_block(gallica_resource):
