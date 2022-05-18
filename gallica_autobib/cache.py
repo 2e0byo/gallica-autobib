@@ -51,7 +51,9 @@ class Cached(UserDict):
         self.con.close()
 
     def __getitem__(self, key: str) -> Optional[Any]:
-        GET_ITEM = f'SELECT value FROM "{self.tablename}" WHERE key = (?)'
+        GET_ITEM = (
+            f'SELECT value FROM "{self.tablename}" WHERE key = (?)'  # skipcq: BAN-B608
+        )
         item = self.con.execute(GET_ITEM, (key,)).fetchone()
         if item:
             return jsonpickle.loads(item[0])
