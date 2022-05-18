@@ -6,7 +6,6 @@ from functools import total_ordering
 from io import BytesIO
 from pathlib import Path
 from re import search
-from tempfile import TemporaryDirectory
 from time import sleep
 from typing import (
     TYPE_CHECKING,
