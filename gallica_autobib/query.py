@@ -494,20 +494,22 @@ class GallicaResource(DownloadableResource):
     def ark(self) -> Optional[Union[str, Ark]]:
         """Ark for the final target."""
         if not self._ark:
-            if isinstance(self.source, Journal):
-                self.logger.debug("No ark, Finding best match.")
-                self.source_match = self.get_best_article_match()
-                source_match_cache[self.key] = self.source_match
-                if self.source_match:
-                    self._ark = self.source_match.candidate.ark
-                else:
-                    raise MatchingError("Unable to match.")
-            else:
-                self._ark = self.source.ark
-            ark_cache[self.key] = self._ark
-            self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
-
+            self.get_ark()
         return self._ark
+
+    def get_ark(self):
+        if isinstance(self.source, Journal):
+            self.logger.debug("No ark, Finding best match.")
+            self.source_match = self.get_best_article_match()
+            source_match_cache[self.key] = self.source_match
+            if self.source_match:
+                self._ark = self.source_match.candidate.ark
+            else:
+                raise MatchingError("Unable to match.")
+        else:
+            self._ark = self.source.ark
+        ark_cache[self.key] = self._ark
+        self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
 
     @property
     def match(self) -> Optional[Match]:
