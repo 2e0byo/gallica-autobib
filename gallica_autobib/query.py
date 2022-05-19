@@ -270,6 +270,15 @@ class DownloadableResource(Representation):
         return self._resource
 
     @property
+    def timeout(self) -> int:
+        "Timeout in url requests."
+        return self._resource.timeout
+
+    @timeout.setter
+    def timeout(self, val: int) -> None:
+        self._resource.timeout = val
+
+    @property
     def start_p(self) -> int:
         if not self._start_p:
             raise ValueError("Start page not set")
@@ -818,15 +827,6 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin):
             if not either.is_left:
                 return BeautifulSoup(either.value.decode(), "xml")
         raise DownloadError(f"Failed to fetch ocr data for p {pno}")
-
-    @property
-    def timeout(self) -> int:
-        "Timeout in url requests."
-        return self.resource.timeout
-
-    @timeout.setter
-    def timeout(self, val: int) -> None:
-        self.resource.timeout = val
 
     @staticmethod
     def get_last_pno(pages: Pages) -> str:
