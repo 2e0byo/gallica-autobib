@@ -789,7 +789,7 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
         return self._ark
 
     @ark.setter
-    def ark(self, val: str | Ark):
+    def ark(self, val: Union[str, Ark]):
         self._ark = val
 
     @property
