@@ -10,6 +10,7 @@ from time import sleep
 from typing import (
     TYPE_CHECKING,
     Any,
+    Callable,
     Generator,
     List,
     Optional,
@@ -273,11 +274,11 @@ class DownloadableResource(Representation):
     @property
     def timeout(self) -> int:
         "Timeout in url requests."
-        return self._resource.timeout
+        return self.resource.timeout
 
     @timeout.setter
     def timeout(self, val: int) -> None:
-        self._resource.timeout = val
+        self.resource.timeout = val
 
     @property
     def start_p(self) -> int:
@@ -480,11 +481,11 @@ class Matcheable:
         super().__init__(*args, **kwargs)
         self._ark_matchers = {}
 
-    def register_ark_matcher(self, target_t: str, source_t: str, fn: callable) -> None:
+    def register_ark_matcher(self, target_t: str, source_t: str, fn: Callable) -> None:
         self._ark_matchers[(source_t, target_t)] = fn
 
     @staticmethod
-    def _type(obj: any):
+    def _type(obj: Any):
         return type(obj).__name__
 
     @property
@@ -500,7 +501,7 @@ class GallicaArticleMixin(Matcheable):
         self.consider_toc = True
         self.register_ark_matcher("Article", "Journal", self.matcher)
 
-    def matcher(self):
+    def matcher(self) -> None:
         self.logger.debug("No ark, Finding best match.")
         self.source_match = self.get_best_article_match()
         source_match_cache[self.key] = self.source_match
