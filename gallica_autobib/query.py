@@ -465,8 +465,25 @@ class DownloadableResource(Representation):
         return False
 
 
-class GallicaJournalMixin:
-    """A journal on Gallica."""
+class MatcheableMixin:
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self._ark_matchers = {}
+
+    def register_ark_matcher(self, target_t: str, source_t: str, fn: callable) -> None:
+        self._ark_matchers[(source_t, target_t)] = fn
+
+    @staticmethod
+    def _type(obj: any):
+        return str(type(obj)).split(".")[-1]
+
+    @property
+    def ark_matcher(self):
+        return self._ark_matcher[(self._type(self.source), self._type(self.target))]
+
+
+class GallicaArticleMixin(MatcheableMixin):
+    """An article on Gallica, contained in a journal."""
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -504,24 +521,6 @@ class GallicaJournalMixin:
             else:
                 details.append(detail)
         return details
-
-    @classmethod
-    def parse_description(cls, desc: str) -> dict:
-        """Parse a dublincore description as retrieved from galllica."""
-        resp = dict(year=None, volume=None, number=None)
-        if "-" in desc:
-            start, end = [cls.parse_description(x) for x in desc.split("-")]
-            for k, v in start.items():
-                end_v = end[k]
-                if not end_v or v == end_v:
-                    continue
-                start[k] = list(range(v, end_v + 1))
-            return start
-        resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
-        resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
-        resp["number"] = search(r"N([0-9]+)", desc)  # type: ignore
-        resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
-        return resp
 
     def get_ark(self) -> None:
         if isinstance(self.target, Article) and isinstance(self.source, Journal):
@@ -626,27 +625,6 @@ class GallicaJournalMixin:
 
         return articles
 
-    @staticmethod
-    def parse_gallica_toc(xml: str) -> List[Tuple[str, str]]:
-        """Parse Gallica' toc xml.  There are, needless to say, *several* forms."""
-        soup = BeautifulSoup(xml, "xml")
-        toc = []
-        if soup.find("row"):
-            for row in soup.find_all("row"):
-                title = pno = None
-                if seg := row.find("seg"):
-                    title = seg.text.strip()
-                if xref := row.find("xref"):
-                    pno = xref.text.strip()
-                if title and pno:
-                    toc.append((pno, title))
-        else:
-            for item in soup.find_all("item"):
-                if not item.find("seg"):
-                    continue
-                toc.append((item.xref.text.strip(), item.seg.text.strip()))
-        return toc
-
     def get_article_candidates(self) -> List[Match]:
         """Generate match objs for each article in the corresponding issues.
 
@@ -716,7 +694,50 @@ class GallicaJournalMixin:
         return None
 
 
-class GallicaResource(DownloadableResource, GallicaJournalMixin):
+class GallicaJournalMixin(MatcheableMixin):
+    """A journal on Gallica."""
+
+    @classmethod
+    def parse_description(cls, desc: str) -> dict:
+        """Parse a dublincore description as retrieved from galllica."""
+        resp = dict(year=None, volume=None, number=None)
+        if "-" in desc:
+            start, end = [cls.parse_description(x) for x in desc.split("-")]
+            for k, v in start.items():
+                end_v = end[k]
+                if not end_v or v == end_v:
+                    continue
+                start[k] = list(range(v, end_v + 1))
+            return start
+        resp["year"] = search(r"([0-9][0-9][0-9][0-9])", desc)  # type: ignore
+        resp["volume"] = search(r"T([0-9]+)", desc)  # type: ignore
+        resp["number"] = search(r"N([0-9]+)", desc)  # type: ignore
+        resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
+        return resp
+
+    @staticmethod
+    def parse_gallica_toc(xml: str) -> List[Tuple[str, str]]:
+        """Parse Gallica' toc xml.  There are, needless to say, *several* forms."""
+        soup = BeautifulSoup(xml, "xml")
+        toc = []
+        if soup.find("row"):
+            for row in soup.find_all("row"):
+                title = pno = None
+                if seg := row.find("seg"):
+                    title = seg.text.strip()
+                if xref := row.find("xref"):
+                    pno = xref.text.strip()
+                if title and pno:
+                    toc.append((pno, title))
+        else:
+            for item in soup.find_all("item"):
+                if not item.find("seg"):
+                    continue
+                toc.append((item.xref.text.strip(), item.seg.text.strip()))
+        return toc
+
+
+class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleMixin):
     """A matched resource on gallica."""
 
     def __init__(
