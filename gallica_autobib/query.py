@@ -336,6 +336,15 @@ class DownloadableResource(Representation):
         return either.value
 
     @staticmethod
+    def fetch_text(resource: Resource, pno: int) -> str:
+        """Fetch text from resource as str."""
+        either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
+        if either.is_left:
+            raise either.value
+        soup = BeautifulSoup(either.value, "xml")
+        return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
+
+    @staticmethod
     def pdf_unavailable(url: str) -> bool:
         """Work out if we can get the pdf or need to fall back on the images."""
         return requests.head(url).status_code == 451
@@ -796,15 +805,6 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
                 raise MatchingError("Target has no ark!")
             source_match_cache[self.key] = self.source_match
         return self.source_match
-
-    @classmethod
-    def fetch_text(cls, resource: Resource, pno: int) -> str:
-        """Fetch text from resource as str."""
-        either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
-        if either.is_left:
-            raise either.value
-        soup = BeautifulSoup(either.value, "xml")
-        return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
 
     @property
     def desired_pages(self) -> List[int]:
