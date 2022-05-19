@@ -468,6 +468,10 @@ class DownloadableResource(Representation):
 class GallicaJournalMixin:
     """A journal on Gallica."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.consider_toc = True
+
     def get_possible_issues(self) -> List[OrderedDict]:
         """Get possible issues.
 
@@ -738,7 +742,6 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin):
         self.series_ark = a.value
         self._ark = ark_cache.get(self.key) if cache else None
         self.logger.debug(f"Ark is {self._ark}, {self.key}")
-        self.consider_toc = True
         self.source_match = source_match_cache.get(self.key) if cache else None
         self.logger.debug(f"Source match is {self.source_match}")
         self.minimum_confidence = 0.5
