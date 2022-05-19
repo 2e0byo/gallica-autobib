@@ -225,7 +225,8 @@ class DownloadableResource(Representation):
 
     BASE_TIMEOUT = 60
 
-    def __init__(self, **kwargs: dict[str, Any]) -> None:
+    def __init__(self, *args, **kwargs: dict[str, Any]) -> None:
+        super().__init__(*args, **kwargs)
         self._ark: Optional[Union[str, Ark]] = None
         self._start_p: Optional[int] = None
         self._end_p: Optional[int] = None
@@ -475,11 +476,11 @@ class MatcheableMixin:
 
     @staticmethod
     def _type(obj: any):
-        return str(type(obj)).split(".")[-1]
+        return type(obj).__name__
 
     @property
     def ark_matcher(self):
-        return self._ark_matcher[(self._type(self.source), self._type(self.target))]
+        return self._ark_matchers[(self._type(self.source), self._type(self.target))]
 
 
 class GallicaArticleMixin(MatcheableMixin):
@@ -488,6 +489,16 @@ class GallicaArticleMixin(MatcheableMixin):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.consider_toc = True
+        self.register_ark_matcher("Article", "Journal", self.matcher)
+
+    def matcher(self):
+        self.logger.debug("No ark, Finding best match.")
+        self.source_match = self.get_best_article_match()
+        source_match_cache[self.key] = self.source_match
+        if self.source_match:
+            self._ark = self.source_match.candidate.ark
+        else:
+            raise MatchingError("Unable to match.")
 
     def get_possible_issues(self) -> List[OrderedDict]:
         """Get possible issues.
@@ -521,20 +532,6 @@ class GallicaArticleMixin(MatcheableMixin):
             else:
                 details.append(detail)
         return details
-
-    def get_ark(self) -> None:
-        if isinstance(self.target, Article) and isinstance(self.source, Journal):
-            self.logger.debug("No ark, Finding best match.")
-            self.source_match = self.get_best_article_match()
-            source_match_cache[self.key] = self.source_match
-            if self.source_match:
-                self._ark = self.source_match.candidate.ark
-            else:
-                raise MatchingError("Unable to match.")
-        else:
-            self._ark = self.source.ark
-        ark_cache[self.key] = self._ark
-        self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
 
     def ocr_find_article_in_journal(
         self, journal: Resource, pages: OrderedDict
@@ -697,6 +694,9 @@ class GallicaArticleMixin(MatcheableMixin):
 class GallicaJournalMixin(MatcheableMixin):
     """A journal on Gallica."""
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
     @classmethod
     def parse_description(cls, desc: str) -> dict:
         """Parse a dublincore description as retrieved from galllica."""
@@ -773,7 +773,9 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
     def ark(self) -> Optional[Union[str, Ark]]:
         """Ark for the final target."""
         if not self._ark:
-            self.get_ark()
+            self.ark_matcher()
+            ark_cache[self.key] = self._ark
+            self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
         return self._ark
 
     @ark.setter
