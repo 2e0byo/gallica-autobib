@@ -76,10 +76,12 @@ def test_book():
     GallicaResource(book, book)
 
 
-@pytest.mark.xfail
 def test_journal():
-    journal = Journal(journaltitle="j", year="1930")
-    GallicaResource(journal, journal)
+    target = Journal(journaltitle="La vie spirituelle", year="1930")
+    source = Journal(
+        journaltitle="La vie spirituelle", year="1930", ark="ark:/12148/cb34406663m"
+    )
+    GallicaResource(target, source)
 
 
 @pytest.mark.xfail

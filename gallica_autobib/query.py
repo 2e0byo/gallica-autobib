@@ -467,7 +467,7 @@ class GallicaResource(DownloadableResource):
         **kwargs: dict[str, Any],
     ):
         super().__init__(**kwargs)
-        if any(isinstance(target, x) for x in (Book, Collection, Journal)):
+        if any(isinstance(target, x) for x in (Book, Collection)):
             raise NotImplementedError("We only handle article for now")
         if any(isinstance(source, x) for x in (Book, Collection)):
             raise NotImplementedError("We only handle fetching from journals")
@@ -497,7 +497,7 @@ class GallicaResource(DownloadableResource):
         return self._ark
 
     def get_ark(self) -> None:
-        if isinstance(self.source, Journal):
+        if isinstance(self.target, Article) and isinstance(self.source, Journal):
             self.logger.debug("No ark, Finding best match.")
             self.source_match = self.get_best_article_match()
             source_match_cache[self.key] = self.source_match
