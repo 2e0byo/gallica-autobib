@@ -456,74 +456,8 @@ class DownloadableResource(Representation):
         return False
 
 
-class GallicaResource(DownloadableResource):
-    """A matched resource on gallica."""
-
-    def __init__(
-        self,
-        target: Union[Article, Book, Collection, Journal],
-        source: Union[Journal, Book, Collection],
-        cache: bool = True,
-        **kwargs: dict[str, Any],
-    ):
-        super().__init__(**kwargs)
-        if any(isinstance(target, x) for x in (Book, Collection)):
-            raise NotImplementedError("We only handle article for now")
-        if any(isinstance(source, x) for x in (Book, Collection)):
-            raise NotImplementedError("We only handle fetching from journals")
-        self.logger = logging.getLogger(f"GR {target.name(short=6)}")
-
-        self.target = target
-        self.key = target.key()
-        self.source = source
-        a = Ark.parse(source.ark)
-        if a.is_left:
-            raise a.value
-        self.series_ark = a.value
-        self._ark = ark_cache.get(self.key) if cache else None
-        self.logger.debug(f"Ark is {self._ark}, {self.key}")
-        self.consider_toc = True
-        self.source_match = source_match_cache.get(self.key) if cache else None
-        self.logger.debug(f"Source match is {self.source_match}")
-        self.minimum_confidence = 0.5
-        self._desired_pages: Optional[List[int]] = None
-        self._ocr_bounds = ocr_cache.get(self.key) if cache else None
-
-    @DownloadableResource.ark.getter  # type: ignore
-    def ark(self) -> Optional[Union[str, Ark]]:
-        """Ark for the final target."""
-        if not self._ark:
-            self.get_ark()
-        return self._ark
-
-    def get_ark(self) -> None:
-        if isinstance(self.target, Article) and isinstance(self.source, Journal):
-            self.logger.debug("No ark, Finding best match.")
-            self.source_match = self.get_best_article_match()
-            source_match_cache[self.key] = self.source_match
-            if self.source_match:
-                self._ark = self.source_match.candidate.ark
-            else:
-                raise MatchingError("Unable to match.")
-        else:
-            self._ark = self.source.ark
-        ark_cache[self.key] = self._ark
-        self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
-
-    @property
-    def match(self) -> Optional[Match]:
-        """The Match() object representing our choice.
-
-        This will trigger a match even if we use a cached download. (However if
-        we have a cached match and have not disabled caching, we will use
-        that.)
-
-        """
-        if not self.source_match:
-            if not self.ark:
-                raise MatchingError("Target has no ark!")
-            source_match_cache[self.key] = self.source_match
-        return self.source_match
+class GallicaJournalMixin:
+    """A journal on Gallica."""
 
     def get_possible_issues(self) -> List[OrderedDict]:
         """Get possible issues.
@@ -576,6 +510,20 @@ class GallicaResource(DownloadableResource):
         resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
         return resp
 
+    def get_ark(self) -> None:
+        if isinstance(self.target, Article) and isinstance(self.source, Journal):
+            self.logger.debug("No ark, Finding best match.")
+            self.source_match = self.get_best_article_match()
+            source_match_cache[self.key] = self.source_match
+            if self.source_match:
+                self._ark = self.source_match.candidate.ark
+            else:
+                raise MatchingError("Unable to match.")
+        else:
+            self._ark = self.source.ark
+        ark_cache[self.key] = self._ark
+        self.logger.debug(f"Saving ark {self.key} = {ark_cache[self.key]}")
+
     def ocr_find_article_in_journal(
         self, journal: Resource, pages: OrderedDict
     ) -> bool:
@@ -617,15 +565,6 @@ class GallicaResource(DownloadableResource):
                 return True
         self.logger.debug("Failed to find author on last page.")
         return False
-
-    @classmethod
-    def fetch_text(cls, resource: Resource, pno: int) -> str:
-        """Fetch text from resource as str."""
-        either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
-        if either.is_left:
-            raise either.value
-        soup = BeautifulSoup(either.value, "xml")
-        return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
 
     def toc_find_article_in_journal(
         self, journal: Resource, toc: str, pages: Pages, data: dict
@@ -762,6 +701,75 @@ class GallicaResource(DownloadableResource):
             self.logger.debug(f"Skipping unavailable match {match.candidate}")
 
         return None
+
+
+class GallicaResource(DownloadableResource, GallicaJournalMixin):
+    """A matched resource on gallica."""
+
+    def __init__(
+        self,
+        target: Union[Article, Book, Collection, Journal],
+        source: Union[Journal, Book, Collection],
+        cache: bool = True,
+        **kwargs: dict[str, Any],
+    ):
+        super().__init__(**kwargs)
+        if any(isinstance(target, x) for x in (Book, Collection)):
+            raise NotImplementedError("We only handle article for now")
+        if any(isinstance(source, x) for x in (Book, Collection)):
+            raise NotImplementedError("We only handle fetching from journals")
+        self.logger = logging.getLogger(f"GR {target.name(short=6)}")
+
+        self.target = target
+        self.key = target.key()
+        self.source = source
+        a = Ark.parse(source.ark)
+        if a.is_left:
+            raise a.value
+        self.series_ark = a.value
+        self._ark = ark_cache.get(self.key) if cache else None
+        self.logger.debug(f"Ark is {self._ark}, {self.key}")
+        self.consider_toc = True
+        self.source_match = source_match_cache.get(self.key) if cache else None
+        self.logger.debug(f"Source match is {self.source_match}")
+        self.minimum_confidence = 0.5
+        self._desired_pages: Optional[List[int]] = None
+        self._ocr_bounds = ocr_cache.get(self.key) if cache else None
+
+    @property
+    def ark(self) -> Optional[Union[str, Ark]]:
+        """Ark for the final target."""
+        if not self._ark:
+            self.get_ark()
+        return self._ark
+
+    @ark.setter
+    def ark(self, val: str | Ark):
+        self._ark = val
+
+    @property
+    def match(self) -> Optional[Match]:
+        """The Match() object representing our choice.
+
+        This will trigger a match even if we use a cached download. (However if
+        we have a cached match and have not disabled caching, we will use
+        that.)
+
+        """
+        if not self.source_match:
+            if not self.ark:
+                raise MatchingError("Target has no ark!")
+            source_match_cache[self.key] = self.source_match
+        return self.source_match
+
+    @classmethod
+    def fetch_text(cls, resource: Resource, pno: int) -> str:
+        """Fetch text from resource as str."""
+        either = resource.content_sync(startview=pno, nviews=1, mode="texteBrut")
+        if either.is_left:
+            raise either.value
+        soup = BeautifulSoup(either.value, "xml")
+        return " ".join(x.text for x in soup.hr.next_siblings if not x.name == "hr")
 
     @property
     def desired_pages(self) -> List[int]:
