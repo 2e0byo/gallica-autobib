@@ -237,7 +237,7 @@ class DownloadableResource(Representation):
         self._backoff = 0
 
     def __repr_args__(self) -> "ReprArgs":
-        return self.__dict__.items()  # type: ignore
+        return ((k, repr(v)) for k, v in self.__dict__.items())  # type: ignore
 
     def set_max_pages(self) -> None:
         """Set maximum page range to download all pages."""
@@ -847,6 +847,3 @@ class GallicaResource(DownloadableResource):
             except AttributeError:
                 pass
         return self._end_p
-
-    def __repr_args__(self) -> "ReprArgs":
-        return ((k, repr(v)) for k, v in self.__dict__.items())  # type: ignore
