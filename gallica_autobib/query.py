@@ -466,7 +466,7 @@ class DownloadableResource(Representation):
         return False
 
 
-class MatcheableMixin:
+class Matcheable:
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self._ark_matchers = {}
@@ -483,7 +483,7 @@ class MatcheableMixin:
         return self._ark_matchers[(self._type(self.source), self._type(self.target))]
 
 
-class GallicaArticleMixin(MatcheableMixin):
+class GallicaArticleMixin(Matcheable):
     """An article on Gallica, contained in a journal."""
 
     def __init__(self, *args, **kwargs):
@@ -691,7 +691,7 @@ class GallicaArticleMixin(MatcheableMixin):
         return None
 
 
-class GallicaJournalMixin(MatcheableMixin):
+class GallicaJournalMixin(Matcheable):
     """A journal on Gallica."""
 
     def __init__(self, *args, **kwargs):
