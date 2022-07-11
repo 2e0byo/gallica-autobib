@@ -85,14 +85,17 @@ class InputParser:
 
     @property
     def successful(self) -> int:
+        """Get number of successful matches."""
         return len([x for x in self.results if x])
 
     @property
     def total(self) -> int:
+        """Get total number of matches."""
         return len(self.results)
 
     @property
     def results(self) -> List[Union[Path, None, bool]]:
+        """Get results."""
         for x in self.executing:
             if x.done():
                 res = x.result()
@@ -102,10 +105,12 @@ class InputParser:
 
     @property
     def output_template(self) -> Template:
+        """Get output template."""
         return self._output_template
 
     @output_template.setter
     def output_template(self, output_template: Union[str, Path] = None) -> None:
+        """Set output template."""
         if isinstance(output_template, str):
             self._output_template = env.get_template(f"output.{output_template}")
         elif isinstance(output_template, Path):
@@ -125,7 +130,7 @@ class InputParser:
         raise NotImplementedError
 
     def generate_outf(self, result: RecordTypes) -> Path:
-
+        """Generate the output path."""
         outf = self.outdir / (slugify(f"{result.name()}") + ".pdf")
         i = 0
         while outf in self._outfs:
@@ -145,12 +150,12 @@ class InputParser:
         return self._pool  # type: ignore
 
     def run(self) -> str:
-        """Run query, blocking until finished.
+        """
+        Run query, blocking until finished.
 
         Returns:
-          Rendered report.
+            Rendered report.
         """
-
         logger.debug("Generating tasks.")
         self.executing = self._send_records()
         while self.progress < 1:  # type: ignore
