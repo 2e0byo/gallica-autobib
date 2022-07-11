@@ -11,6 +11,7 @@ from jinja2 import Template
 from pydantic import BaseModel
 from slugify import slugify
 
+from .debug import debug
 from .models import RecordTypes
 from .parsers import parse_bibtex, parse_ris
 from .process import process_pdf

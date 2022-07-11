@@ -14,6 +14,8 @@ import jsonpickle
 from requests_downloader import downloader
 from xdg import xdg_cache_home
 
+from .debug import debug
+
 if TYPE_CHECKING:  # pragma: nocover
     from .gallipy import Ark  # pragma: nocover
 
