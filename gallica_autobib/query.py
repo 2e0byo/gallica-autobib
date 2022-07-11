@@ -29,8 +29,8 @@ from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from sruthi.response import SearchRetrieveResponse
 
-from .cache import Cached, download, img_data_cache, response_cache
 from . import as_string, gallipy
+from .cache import SQLCached, data_cache, download, img_data_cache, response_cache
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
@@ -42,9 +42,9 @@ gallipy.helpers.fetch = response_cache(gallipy.helpers.fetch)
 
 
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
-ark_cache = Cached("ark")
-source_match_cache = Cached("source_match")
-ocr_cache = Cached("ocr_bounds")
+ark_cache = SQLCached("ark")
+source_match_cache = SQLCached("source_match")
+ocr_cache = SQLCached("ocr_bounds")
 UnscaledPageData = namedtuple(
     "UnscaledPageData", ["upper", "lower", "total_width", "total_height"]
 )
@@ -464,6 +464,8 @@ class DownloadableResource(Representation):
             )
             if status:
                 if imghdr.what(fn):
+                    if data_cache.enabled:
+                        del data_cache[url]
                     print("We got ratelimited, backing off")
                     self._backoff += 1
                     if self._backoff > 9:
