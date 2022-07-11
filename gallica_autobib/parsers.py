@@ -30,9 +30,11 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[st
         raise ParsingError("Unable to parse")
     parsed = []
     for record in db.entries:
-        pages = record["pages"]
+        pages = record.get("pages")
+        if not pages:
+            raise NotImplementedError("Finding pages is not implemented.")
 
-        if not isinstance(pages, list):
+        if pages and not isinstance(pages, list):
             roman = "i" in pages.lower()
             lower = "i" in pages
             try:
