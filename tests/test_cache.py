@@ -8,8 +8,8 @@ from gallica_autobib import cache
 @pytest.fixture
 def tmp_cache():
     with TemporaryDirectory() as tmp_path:
-        cache.Cached.cachedir = Path(tmp_path) / "cache"
-        yield cache.Cached
+        cache.SQLCached.cachedir = Path(tmp_path) / "cache"
+        yield cache.SQLCached
 
 
 def test_cache(tmp_cache):
