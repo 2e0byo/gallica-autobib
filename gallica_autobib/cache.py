@@ -49,10 +49,10 @@ class Cached(UserDict):
                 key = jsonpickle.dumps(
                     (*args, sorted(kwargs.items())), unpicklable=False
                 )
-                resp = self.cache.get(key)
+                resp = self.get(key)
                 if not resp:
                     resp = fn(*args, **kwargs)
-                    self.cache[key] = resp
+                    self[key] = resp
                 return resp
             return fn(*args, **kwargs)
 
