@@ -471,11 +471,15 @@ class DownloadableResource(Representation):
                     self._backoff += 1
                     if self._backoff > 9:
                         raise Exception("We got ratelimited.")
-                    sleep(2**self._backoff)
+                    period = 2**self._backoff
+                    print("sleeping for", period)
+                    sleep(period)
                 else:
                     self._backoff = 0
                     return True
-            sleep(2 ** (i + 1))
+            period = 2 ** (i + 1)
+            print("waiting for", period, "before retrial")
+            sleep(period)
         return False
 
 
