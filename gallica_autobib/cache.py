@@ -3,6 +3,7 @@ servers, and to make our life easier when re-running."""
 import sqlite3
 from collections import UserDict
 from functools import wraps
+from hashlib import sha256
 from logging import getLogger
 from multiprocessing import Lock
 from os import getenv
@@ -31,14 +32,47 @@ else:
 
 
 class Cached(UserDict):
-    """Cached resource."""
+    """A cached resource."""
+
+    def __init__(self, *args, enabled: bool = True, **kwargs):
+        """Initialise a cached resource, cached in ram."""
+        self.enabled = enabled
+        debug(args, kwargs)
+        super().__init__(*args, **kwargs)
+
+    def __call__(self, fn: Callable) -> Callable:
+        """Wrap a resource and optionally look it up in a cache."""
+
+        @wraps(fn)
+        def wrapper(*args: Any, **kwargs: Any) -> Any:
+            if self.enabled:
+                key = jsonpickle.dumps(
+                    (*args, sorted(kwargs.items())), unpicklable=False
+                )
+                resp = self.cache.get(key)
+                if not resp:
+                    resp = fn(*args, **kwargs)
+                    self.cache[key] = resp
+                return resp
+            return fn(*args, **kwargs)
+
+        return wrapper
+
+
+class FSMixin:
+    cachedir = cachedir
+
+
+class SQLCached(Cached, FSMixin):
+    """A Cached resource in an sql table."""
 
     CACHEFN = "cache.db"
-    cachedir = cachedir
     write_lock = Lock()
 
     def __init__(self, cachename: str, *args: Any, **kwargs: Any) -> None:
-        """A resource in the cache, stored in a separate table."""
+        """Initialise a resource in the cache, stored in a separate table."""
+        debug(args, kwargs)
+        super().__init__(*args, **kwargs)
         self.tablename = cachename
         self.cachedir.mkdir(exist_ok=True, parents=True)
         cache = self.cachedir / self.CACHEFN
@@ -47,12 +81,19 @@ class Cached(UserDict):
         MAKE_TABLE = f'CREATE TABLE IF NOT EXISTS "{cachename}" (key TEXT PRIMARY KEY, value BLOB)'
         self.con.execute(MAKE_TABLE)
         self.con.commit()
-        super().__init__(*args, **kwargs)
 
     def __del__(self) -> None:
+        """Cleanup."""
         self.con.close()
 
+    def __delitem__(self, key: str):
+        """Remove an item from the cache."""
+        self.write_lock.acquire()
+        DELETE = f'DELETE FROM "{self.tablename}" WHERE key = (?)'  # skipcq: BAN-B608
+        self.con.execute(DELETE, (key,))
+
     def __getitem__(self, key: str) -> Optional[Any]:
+        """Get an item from the cache."""
         GET_ITEM = (
             f'SELECT value FROM "{self.tablename}" WHERE key = (?)'  # skipcq: BAN-B608
         )
@@ -62,6 +103,7 @@ class Cached(UserDict):
         raise KeyError(key)
 
     def __setitem__(self, key: str, val: Any) -> None:
+        """Put an item in the cache."""
         self.write_lock.acquire()
         try:
             SET = f'REPLACE INTO "{self.tablename}" (key, value) VALUES (?,?)'
@@ -71,40 +113,52 @@ class Cached(UserDict):
             self.write_lock.release()
 
 
-def cache_factory(cachename: str, enabled: bool) -> Callable:
-    _cache = Cached(cachename)
+class FSCached(Cached, FSMixin):
+    """A cache in the file system."""
 
-    def decorator(fn: Callable) -> Callable:
-        @wraps(fn)
-        def wrapper(*args: Any, **kwargs: Any) -> Any:
-            if enabled:
-                key = jsonpickle.dumps(
-                    (*args, sorted(kwargs.items())), unpicklable=False
-                )
-                resp = _cache.get(key)
-                if not resp:
-                    resp = fn(*args, **kwargs)
-                    _cache[key] = resp
-                return resp
-            return fn(*args, **kwargs)
+    def __init__(self, cachename: str, *args, **kwargs):
+        """Initialise a new file system cache."""
+        self.wdir = self.cachedir / cachename
+        self.wdir.mkdir(parents=True, exist_ok=True)
+        debug(args, kwargs)
+        super().__init__(*args, **kwargs)
 
-        return wrapper
+    def _fn(self, key: str) -> Path:
+        return self.wdir / sha256(key.encode()).hexdigest()
 
-    return decorator
+    def __delitem__(self, key: str):
+        """Remove an item from the cache."""
+        try:
+            self._fn(key).unlink()
+        except FileNotFoundError:
+            raise KeyError(key)
+
+    def __getitem__(self, key: str):
+        """Get an item from the cache."""
+        try:
+            return self._fn(key).read_bytes()
+        except FileNotFoundError:
+            raise KeyError(key)
+
+    def __setitem__(self, key: str, val: bytes):
+        """Put an item in the cache."""
+        self._fn(key).write_bytes(val)
 
 
 response_cache_enabled = bool(getenv("RESPONSE_CACHE", False))
-response_cache = cache_factory("responses", response_cache_enabled)
+response_cache = SQLCached("responses", enabled=response_cache_enabled)
 
 data_cache_enabled = bool(getenv("DATA_CACHE", False))
-_data_cache = Cached("data")
-img_data_cache = cache_factory("img_data", data_cache_enabled)
+data_cache = FSCached("data", enabled=data_cache_enabled)
+img_data_cache = FSCached("img_data", enabled=data_cache_enabled)
 
 
 def download(url: str, **kwargs: Any) -> Optional[str]:
+    """Download a resource, storing it in the cache if we are caching."""
     outdir = Path(kwargs.get("download_dir", "."))
     if data_cache_enabled:
-        data = _data_cache.get(url)
+        debug("getting data")
+        data = data_cache.get(url)
         if not data:
             with TemporaryDirectory() as tmpdir:
                 kwargs["download_dir"] = tmpdir
@@ -112,7 +166,8 @@ def download(url: str, **kwargs: Any) -> Optional[str]:
                 assert fn
                 with (Path(tmpdir) / fn).open("rb") as f:
                     data = f.read()
-                _data_cache[url] = data
+                debug("setting data")
+                data_cache[url] = data
         outf = outdir / kwargs["download_file"]
         with outf.open("wb") as f:
             f.write(data)
