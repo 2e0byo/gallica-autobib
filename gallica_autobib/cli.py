@@ -27,7 +27,7 @@ def version_callback(value: bool) -> None:
 
 
 @app.command()
-def process_bibliograpy(
+def process(
     bibfile: Path = typer.Argument(..., help="Bibliographic file to read."),
     outdir: Path = typer.Argument(..., help="Output directory."),
     version: Optional[bool] = typer.Option(
@@ -55,10 +55,7 @@ def process_bibliograpy(
         False, help="Suppress Gallica's cover page."
     ),
 ) -> None:
-    """
-    Process a bibliography file.
-
-    """
+    """Process a bibliography file."""
     process_args = {"preserve_text": preserve_text}
     download_args: Dict[str, bool] = {}
     logging.basicConfig(level=log_level[verbosity])
