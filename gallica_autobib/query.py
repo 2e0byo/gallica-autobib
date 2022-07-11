@@ -31,6 +31,7 @@ from sruthi.response import SearchRetrieveResponse
 
 from . import as_string, gallipy
 from .cache import SQLCached, data_cache, download, img_data_cache, response_cache
+from .debug import debug
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
