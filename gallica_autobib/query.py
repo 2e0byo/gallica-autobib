@@ -29,8 +29,8 @@ from pydantic.utils import Representation
 from PyPDF4 import PageRange, PdfFileMerger
 from sruthi.response import SearchRetrieveResponse
 
-from . import gallipy
 from .cache import Cached, download, img_data_cache, response_cache
+from . import as_string, gallipy
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
 
@@ -654,8 +654,8 @@ class GallicaArticleMixin(Matcheable):
             dublin = oai["results"]["notice"]["record"]["metadata"]["oai_dc:dc"]
             description = dublin["dc:description"][1]
             data.update(self.parse_description(description))
-            data["journaltitle"] = dublin["dc:title"]
-            data["publisher"] = dublin["dc:publisher"]
+            data["journaltitle"] = as_string(dublin["dc:title"])
+            data["publisher"] = as_string(dublin["dc:publisher"])
             data["ark"] = dublin["dc:identifier"]
 
             either = issue.pagination_sync()
