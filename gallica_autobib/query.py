@@ -466,6 +466,7 @@ class DownloadableResource(Representation):
                 if imghdr.what(fn):
                     if data_cache.enabled:
                         del data_cache[url]
+                    fn.unlink()
                     print("We got ratelimited, backing off")
                     self._backoff += 1
                     if self._backoff > 9:
