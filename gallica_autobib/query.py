@@ -887,7 +887,7 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
         for _ in range(self.trials):
             either = self.resource.ocr_data_sync(view=pno)
             if not either.is_left:
-                return BeautifulSoup(either.value.decode(), "xml")
+                return BeautifulSoup(either.value, "xml")
         raise DownloadError(f"Failed to fetch ocr data for p {pno}")
 
     @staticmethod

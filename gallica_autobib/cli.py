@@ -34,6 +34,9 @@ def process(
         None, "--version", callback=version_callback
     ),
     post_process: bool = typer.Option(True, help="Post-process download."),
+    ocr_bounds: bool = typer.Option(
+        True, help="Use galllica ocr bounds for cropping if possible (best)."
+    ),
     preserve_text: bool = typer.Option(True, help="Preserve text in post processing."),
     processes: int = typer.Option(
         6,
@@ -71,6 +74,7 @@ def process(
         clean=clean,
         output_template=template if template else template_format,
         ignore_cache=ignore_cache,
+        ocr_bounds=ocr_bounds,
     )
     if bibfile.suffix == ".bib":
         logger.debug("Detected bibtex.")
