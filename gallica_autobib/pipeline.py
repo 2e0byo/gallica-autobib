@@ -146,7 +146,8 @@ class InputParser:
             if self._pool:
                 self.pool.shutdown(wait=True)  # type: ignore
             self._pool = pool
-        elif not pool:
+        elif not self._pool:
+            logger.debug(f"Creating process pool with {self.processes} workers.")
             self._pool = ProcessPoolExecutor(self.processes)
         return self._pool  # type: ignore
 
