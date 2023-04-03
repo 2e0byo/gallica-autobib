@@ -92,7 +92,15 @@ class Match(
         """Calculate the score for a given match."""
         vals = {}
         candidate = self.candidate
-        for k, v in self.target.dict().items():
+        IGNORE = {
+            "publicationdate",  # Gallica's publicationdate SRU is broken:
+            # sometimes it's just the first year of
+            # publication.  Since we query explicitly for
+            # the year we want we can probably just ignore
+            # it (assuming the query isn't broken).
+        }
+        target_vals = {k: v for k, v in self.target.dict().items() if k not in IGNORE}
+        for k, v in target_vals.items():
             candidate_v = getattr(candidate, k)
             if v and not candidate_v:
                 vals[k] = 0.5
