@@ -754,8 +754,8 @@ class GallicaJournalMixin(Matcheable):
         """Parse Gallica' toc xml.  There are, needless to say, *several* forms."""
         soup = BeautifulSoup(xml, "xml")
         toc = []
-        if soup.find("row"):
-            for row in soup.find_all("row"):
+        if rows := soup.find_all("row"):
+            for row in rows:
                 title = pno = None
                 if seg := row.find("seg"):
                     title = seg.text.strip()
@@ -763,11 +763,22 @@ class GallicaJournalMixin(Matcheable):
                     pno = xref.text.strip()
                 if title and pno:
                     toc.append((pno, title))
-        else:
-            for item in soup.find_all("item"):
+        elif items := soup.find_all("item"):
+            for item in items:
                 if not item.find("seg"):
                     continue
                 toc.append((item.xref.text.strip(), item.seg.text.strip()))
+        elif trs := soup.find_all("tr"):
+            for row in trs:
+                tds = row.find_all("td")
+                if len(tds) != 2:
+                    continue
+                title = tds[0].text.strip()
+                pno = tds[1].text.strip()
+                toc.append((pno, title))
+        else:
+            raise Exception("Unable to parse provided toc.")
+
         return toc
 
 
