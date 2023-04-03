@@ -98,10 +98,16 @@ class Match(
                 vals[k] = 0.5
 
             if isinstance(v, str):
-                vals[k] = (
-                    fuzz.ratio(make_string_boring(v), make_string_boring(candidate_v))
-                    / 100
-                )
+                # skip short matches in long
+                if abs(len(v) - len(candidate_v)) > 2 * len(min((v, candidate_v))):
+                    vals[k] = 0
+                else:
+                    vals[k] = (
+                        fuzz.ratio(
+                            make_string_boring(v), make_string_boring(candidate_v)
+                        )
+                        / 100
+                    )
             if isinstance(v, int):
                 if not candidate_v:
                     vals[k] = 0.5
