@@ -19,12 +19,15 @@ https://github.com/GeoHistoricalData/gallipy
 """
 import json
 import urllib.parse
+from time import sleep
 
+import httpx
 from bs4 import BeautifulSoup
 
 from .monadic import Either, Left
 
 _BASE_PARTS = {"scheme": "https", "netloc": "gallica.bnf.fr"}
+USER_AGENT = "gallica-autobib/0.1"
 
 
 def fetch(url, timeout=30):
@@ -41,10 +44,17 @@ def fetch(url, timeout=30):
             and Exception otherwise.
     """
     try:
-        with urllib.request.urlopen(url, timeout=timeout) as res:
-            content = res.read()
-            if content:
-                return Either.pure(content)
+        res = httpx.get(url, headers={"user-agent": USER_AGENT}, timeout=timeout)
+        if res.status_code == 429:
+            print("Got 429, sleeping...")
+            print(res.headers)
+            print(res.text)
+            sleep(res.headers.get("wait-until", 150))
+            return fetch(url, timeout)
+        res.raise_for_status()
+        if res.text:
+            return Either.pure(res.text)
+        else:
             raise Exception("Empty response from {}".format(url))
     except Exception as ex:
         pattern = "Error while fetching URL {}\n{}"
