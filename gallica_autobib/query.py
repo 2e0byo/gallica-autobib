@@ -212,7 +212,7 @@ class Query(
         """Try to get best match."""
         self.logger.debug("Generting query")
         query = self.target.generate_query()
-        self.logger.debug("Fetching query")
+        self.logger.debug(f"Fetching query: {query}")
         resps = self.fetcher.fetch_query(query)
         self.logger.debug(f"Got {len(list(resps))} candidates.")
         matches = []
