@@ -39,6 +39,9 @@ def process(
         6,
         help="Number of processes to run.  We are largely network bound so > nproc might make sense.",
     ),
+    one_thread: bool = typer.Option(
+        False, help="Run everything in main thread for debugging."
+    ),
     clean: bool = typer.Option(True, help="Clean up intermediate files."),
     template: Path = typer.Option(None, help="Path to output template to use."),
     template_format: str = typer.Option(
@@ -82,7 +85,11 @@ def process(
     parser.suppress_cover_page = suppress_cover_page
     with bibfile.open() as f:
         parser.read(f)
-    report = parser.run()
+    if one_thread:
+        print("Ignoring process count and running everything in main thread...")
+        report = parser.sync_run()
+    else:
+        report = parser.run()
     if out:
         with out.open("w") as f:
             f.write(report)

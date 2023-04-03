@@ -164,6 +164,25 @@ class InputParser:
             sleep(1)
         return self.report()
 
+    def sync_run(self) -> str:
+        # Normally this is assembled from the futures in self.executing
+        self._results = [
+            self.process_record(
+                record,
+                self.generate_outf(record.target),
+                self.process,
+                self.clean,
+                fetch_only=self.fetch_only,
+                process_args=self.process_args,
+                download_args=self.download_args,
+                cache=not self.ignore_cache,
+                suppress_cover_page=self.suppress_cover_page,
+                ocr_bounds=self.ocr_bounds,
+            )
+            for record in self.records
+        ]
+        return self.report()
+
     def _send_records(self) -> List[Future]:
         """Send records to pool."""
         return [
