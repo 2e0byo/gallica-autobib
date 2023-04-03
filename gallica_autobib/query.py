@@ -687,12 +687,14 @@ class GallicaArticleMixin(Matcheable):
 
             articles = []
             if self.consider_toc and not (either := issue.toc_sync()).is_left:
+                self.logger.debug("Considering toc")
                 articles = self.toc_find_article_in_journal(
                     issue, either.value, pages, data
                 )
                 matches += [Match(self.target, a) for a in articles]
             if not articles:
                 if self.ocr_find_article_in_journal(issue, pages):
+                    self.logger.debug("Considering ocr")
                     args = dict(self.target)
                     args.update(data)
                     matches.append(Match(self.target, Article.parse_obj(args)))
