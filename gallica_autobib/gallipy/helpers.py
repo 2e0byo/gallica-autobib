@@ -18,6 +18,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 https://github.com/GeoHistoricalData/gallipy
 """
 import json
+import re
 import urllib.parse
 from time import sleep
 
@@ -78,7 +79,11 @@ def fetch_xml_html(url, parser="xml", timeout=30):
         otherwise.
     """
     try:
-        return fetch(url, timeout).map(lambda res: str(BeautifulSoup(res, parser)))
+        return (
+            fetch(url, timeout)
+            .map(lambda res: re.sub('encoding=".+?"', 'encoding="utf8"', res))
+            .map(lambda res: str(BeautifulSoup(res, parser, from_encoding="utf-8")))
+        )
     except urllib.error.URLError as ex:
         pattern = "Error while fetching XML from {}\n{}"
         err = urllib.error.URLError(pattern.format(url, str(ex)))
