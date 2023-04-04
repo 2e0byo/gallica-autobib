@@ -25,14 +25,15 @@ class Parser(ABC):
         self.logger = getLogger(self.__class__.__qualname__)
 
     def concat(self, tags: list[Tag]) -> str:
-        return ",".join(x.text.strip() for x in tags)
+        return ", ".join(t for x in tags if (t := x.text.strip()))
 
     @abstractmethod
     def parse_soup(self) -> Iterable[TocLine]:
         pass
 
     def parse(self) -> list[TocLine]:
-        return list(self.parse_soup())
+        l = list(self.parse_soup())
+        return l
 
     def parse_pages(self, s: str) -> tuple[list[int], list[int]]:
         components = re.split("[,;&]|et", s)
@@ -75,20 +76,32 @@ class Parser(ABC):
         return combined, combined
 
 
-class CellSegParser(Parser):
-    """Parser for the table/row/cell/seg format."""
+class TitleXrefPersnameParser(Parser):
+    """Parser for the <container>/../{seg/{xref, title},xref} format."""
 
     def matches(self) -> bool:
-        return bool(self.soup.find_all("row"))
+        return all(
+            (
+                self.soup.find("xref"),
+                self.soup.find("persName"),
+                self.soup.find("title"),
+            )
+        )
 
     def parse_soup(self) -> Iterable[TocLine]:
-        for row in self.soup.find_all("row"):
-            titles = row.find_all("title")
-            persNames = row.find_all("persName")
-            xrefs = row.find_all("xref")
+        done = set()
+        for title in self.soup.find_all("title"):
+            container = title.parent.parent
+            # may have multiple titles in same container
+            if container in done:
+                continue
+            titles = container.find_all("title")
+            persNames = container.find_all("persName")
+            xrefs = container.find_all("xref")
             if not titles or not xrefs or not persNames:
                 continue
             start_pages, end_pages = self.parse_pages(self.concat(xrefs))
+            done.add(container)
             yield TocLine(
                 author=self.concat(persNames),
                 title=self.concat(titles),
@@ -161,7 +174,7 @@ for d in {"row", "item", "tr"}:
 # TODO use a better dispatcher once we don't need to log
 def parse_xml_toc(xml: str) -> list[TocLine]:
     soup = BeautifulSoup(xml, "xml")
-    parser = CellSegParser(soup)
+    parser = TitleXrefPersnameParser(soup)
     if parser.matches():
         c["row"] += 1
         Path(outdir, "row", f"{c['row']:04}.xml").write_text(soup.prettify())

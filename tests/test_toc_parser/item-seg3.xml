@@ -1,0 +1,3024 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI.2 xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://bibnum.bnf.fr/ns/tdmNum.xsd">
+ <text id="tdm.6555304">
+  <body>
+   <div0>
+    <div1 type="Index">
+     <head>
+      SOMMAIRE
+     </head>
+     <div2>
+      <list>
+       <item>
+        <seg n="int.000001">
+         LE CENTRE DE PASTORALE LITURGIQUE.
+         <hi rend="italic">
+          A nos amis
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000017.TIF)" n="lie.000001" type="image">
+         7
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000002">
+         <persName>
+          Dom GRÉA
+         </persName>
+         .
+         <title>
+          Du service de Dieu
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000021.TIF)" n="lie.000002" type="image">
+         11
+        </xref>
+       </item>
+       <item>
+        Nous devons à la piété filiale des chanoines réguliers de l'Immaculée-Conception de pouvoir publier un extrait du testament de leur fondateur. Dom Gréa fut un saint prophète de la piété de l'Église.
+       </item>
+       <item>
+        <seg n="int.000003">
+         <persName>
+          C. CHARLIER
+         </persName>
+         , Moine de Maredsous.
+         <title>
+          La lecture sapientielle de la Bible
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000024.TIF)" n="lie.000003" type="image">
+         14
+        </xref>
+       </item>
+       <item>
+        Mouvement liturgique, renouveau biblique et renaissance patristique sont solidaires. Ils ne se développeront que si l'on rend ses droits à un certain type d'exégèse qu'il est malaisé de désigner d'une manière pleinement satisfaisante, - on dit le plus souvent: "exégèse spirituelle", - mais dont presque tous, à l'heure actuelle, sentent impérieusement la nécessité.
+       </item>
+       <item>
+        L'auteur apporte ici des précisions capitales.
+       </item>
+       <item>
+        <seg n="int.000004">
+         M.
+         <persName>
+          -D. CHENU
+         </persName>
+         , O.P.
+         <title>
+          Anthropologie et liturgie
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000063.TIF)" n="lie.000004" type="image">
+         53
+        </xref>
+       </item>
+       <item>
+        Nous n'en sommes plus, après cinq ans d'efforts, àrassurer ceux qui ne voulaient, obligeamment, voir dans le mouvement liturgique qu'un divertissement. C'est lavie de l'Église qui est en question. C'est aussi une certaine vision du monde et de l'homme, de l'homme dans le monde. Un de nos maîtres les plus chers, particulièrement sensible à la connexion des problèmes posés à notre génération, nous aide à mesurer l'importance du travail engagé.
+       </item>
+       <item>
+        <seg n="int.000005">
+         <persName>
+          F. BOULARD
+         </persName>
+         , et
+         <persName>
+          A.-M. ROGUET
+         </persName>
+         , O. P. Aumônier national adjoint de la J.A.C.
+         <title>
+          La discipline des sacrements
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000076.TIF)" n="lie.000005" type="image">
+         66
+        </xref>
+       </item>
+       <item>
+        La mise au point d'un problème particulièrement délicat qui réclame l'alliance de la sagesse théologique et du réalisme pastoral.
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       LA PREDICATION LITURGIQUE
+      </head>
+      <div3>
+       <head>
+        Nous achevons la publication des rapports donnés à la session du C.P.L. de septembre 1946 (voir notre numéro 10, pp. 146-176) destinée aux prédicateurs liturgiques.
+       </head>
+       <list>
+        <item>
+         <seg n="int.000006">
+          <persName>
+           R. PIERRET
+          </persName>
+          , Moine de Clervaux.
+          <title>
+           La bibliothèque du prédicateur liturgigique
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000083.TIF)" n="lie.000006" type="image">
+          73
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000007">
+          <persName>
+           J. SERVEL
+          </persName>
+          , O. M. I.
+          <title>
+           Quelques remarques sur les cantiques populaires
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000096.TIF)" n="lie.000007" type="image">
+          86
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000008">
+          <persName>
+           U. SÉRÈS
+          </persName>
+          , Moine d'En-Calcat.
+          <title>
+           Ce que tout prédicateur liturgique doit Savoir en matière de chant grégorien
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000102.TIF)" n="lie.000008" type="image">
+          92
+         </xref>
+        </item>
+       </list>
+      </div3>
+      <div3>
+       <head>
+        Quelques expériences récentes.
+       </head>
+       <list>
+        <item>
+         <seg n="int.000009">
+          <persName>
+           H.-CH. CHÉRY
+          </persName>
+          , O. P.
+          <title>
+           Liturgie et prédication de carême
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000114.TIF)" n="lie.000009" type="image">
+          104
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000010">
+          <persName>
+           R. DE MONTVALON
+          </persName>
+          .
+          <title>
+           La "route des saintes huiles" dans le diocèse de Meaux
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000119.TIF)" n="lie.000010" type="image">
+          109
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000011">
+          <persName>
+           C. AUBERTIN
+          </persName>
+          .
+          <title>
+           Prédication liturgique sur l'Ordination
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000132.TIF)" n="lie.000011" type="image">
+          122
+         </xref>
+        </item>
+       </list>
+      </div3>
+     </div2>
+     <div2>
+      <head>
+       QUESTIONS DISPUTÉES
+      </head>
+      <list>
+       <item>
+        <seg n="int.000012">
+         <persName>
+          H.-R. PHILIPEAU
+         </persName>
+         , vicaire à St-Louis d'Antin (Paris)
+         <title>
+          Les intentions de messe
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000134.TIF)" n="lie.000012" type="image">
+         124
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000013">
+         H. D.
+         <hi rend="italic">
+          Messes privées ou messe conventuelle?
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000138.TIF)" n="lie.000013" type="image">
+         128
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000014">
+         <hi rend="italic">
+          M.-D. C.
+         </hi>
+         "
+         <hi rend="italic">
+          Sauver les principes
+         </hi>
+         "
+        </seg>
+        <xref from="FOREIGN (6555304/000147.TIF)" n="lie.000014" type="image">
+         137
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000015">
+         <persName>
+          G. DUPONT
+         </persName>
+         .
+         <title>
+          Les honneurs funèbres
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000142.TIF)" n="lie.000015" type="image">
+         132
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000016">
+         <persName>
+          Y. CONGAR
+         </persName>
+         , O. P.
+         <hi rend="italic">
+          Les honneurs funèbres
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000143.TIF)" n="lie.000016" type="image">
+         133
+        </xref>
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       NECROLOGIE
+      </head>
+      <list>
+       <item>
+        <seg n="int.000017">
+         <persName>
+          A. BUGNINI
+         </persName>
+         , Prêtre de la Mission.
+         <title>
+          Monseigneur Charles Respighi
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000145.TIF)" n="lie.000017" type="image">
+         135
+        </xref>
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       BIBLIOGRAPHIE
+      </head>
+      <div3>
+       <head>
+        I COMPTES RENDUS
+       </head>
+       <list>
+        <item>
+         <seg n="int.000018">
+          <persName>
+           D. J. FROGER
+          </persName>
+          :
+          <title>
+           Les Origines de Prime
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000147.TIF)" n="lie.000018" type="image">
+          137
+         </xref>
+         .
+        </item>
+        <item>
+         <seg n="int.000019">
+          <persName>
+           D. J. FROGER
+          </persName>
+          <title>
+           Lauda Jerusalem Dominum!
+          </title>
+         </seg>
+         <xref from="FOREIGN (6555304/000148.TIF)" n="lie.000019" type="image">
+          138
+         </xref>
+         <seg n="int.000019">
+          (
+          <persName>
+           I.-M. DALMAIS
+          </persName>
+          ).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000020">
+          -
+          <persName>
+           FR. FLORAND
+          </persName>
+          :
+          <title>
+           J.-S. Bach. L'OEuvre d'Orgue
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000152.TIF)" n="lie.000020" type="image">
+          142
+         </xref>
+         <seg n="int.000020">
+          (R. V.).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000021">
+          -
+          <persName>
+           J. TRAVERS
+          </persName>
+          :
+          <title>
+           Valeur sociale de la Liturgie d'après saint Thomas d'Aquin
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000156.TIF)" n="lie.000021" type="image">
+          146
+         </xref>
+         <seg n="int.000021">
+          (
+          <persName>
+           J. LECLERCQ
+          </persName>
+          ).
+         </seg>
+        </item>
+       </list>
+      </div3>
+      <div3>
+       <head>
+        II BULLETIN BIBLIOGRAPHIQUE
+       </head>
+       <list>
+        <item>
+         <seg n="int.000022">
+          <persName>
+           G. BRINKTRINE
+          </persName>
+          :
+          <title>
+           Il Breviario romano
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000163.TIF)" n="lie.000022" type="image">
+          153
+         </xref>
+         <seg n="int.000022">
+          (
+          <persName>
+           I.-M. DALMAIS
+          </persName>
+          ).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000023">
+          -
+          <persName>
+           B. CAPELLE
+          </persName>
+          :
+          <title>
+           Pour une meilleure intelligence de la Messe
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000163.TIF)" n="lie.000023" type="image">
+          153
+         </xref>
+         <seg n="int.000023">
+          (
+          <persName>
+           A.-G. MARTIMORT
+          </persName>
+          ).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000024">
+          -
+          <persName>
+           E. BERNARDET
+          </persName>
+          :
+          <title>
+           Les plus beaux textes de la Liturgie romaine
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000165.TIF)" n="lie.000024" type="image">
+          155
+         </xref>
+         .
+        </item>
+        <item>
+         <seg n="int.000025">
+          -
+          <persName>
+           TH. DEMAN
+          </persName>
+          :
+          <title>
+           La Spiritualité de la Messe
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000166.TIF)" n="lie.000025" type="image">
+          156
+         </xref>
+         .
+        </item>
+        <item>
+         <seg n="int.000026">
+          -
+          <persName>
+           F.-M. BRAUN
+          </persName>
+          :
+          <title>
+           Les Origines de la Messe
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000167.TIF)" n="lie.000026" type="image">
+          157
+         </xref>
+         .
+        </item>
+        <item>
+         - M.-M. PHILIPON:
+         <hi rend="italic">
+          Les Sacrements dans la vie chrétienne.
+         </hi>
+        </item>
+        <item>
+         <seg n="int.000027">
+          - M.
+          <persName>
+           VLOBERG
+          </persName>
+          :
+          <title>
+           L'Eucharistie dans l'Art
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000168.TIF)" n="lie.000027" type="image">
+          158
+         </xref>
+         .
+        </item>
+        <item>
+         - P. HERBIN: Les Vêpres du Dimanche.
+        </item>
+        <item>
+         - P. HERBIN: Le Mariage: le Sacrement, la Messe (A.-M. R.).
+        </item>
+        <item>
+         <seg n="int.000028">
+          -
+          <persName>
+           JEAN MOSCHUS
+          </persName>
+          :
+          <title>
+           Le Pré spirituel
+          </title>
+          (Intr. et trad.
+          <persName>
+           ROUËT DE JOURNEL
+          </persName>
+          ),
+         </seg>
+         <xref from="FOREIGN (6555304/000169.TIF)" n="lie.000028" type="image">
+          159
+         </xref>
+         (I.-M. DALMAIS).
+        </item>
+        <item>
+         <seg n="int.000029">
+          -
+          <persName>
+           A. VONIER
+          </persName>
+          :
+          <hi rend="italic">
+           Christianus
+          </hi>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000170.TIF)" n="lie.000029" type="image">
+          160
+         </xref>
+         .
+        </item>
+        <item>
+         - CH. MAURON:
+         <hi rend="italic">
+          Sagesse de l'Eau.
+         </hi>
+        </item>
+        <item>
+         <seg n="int.000030">
+          -
+          <persName>
+           E. OSTY
+          </persName>
+          :
+          <title>
+           Les Épîtres de saint Paul
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000171.TIF)" n="lie.000030" type="image">
+          161
+         </xref>
+         .
+        </item>
+        <item>
+         - Dom R. HAMEL: La Vie liturgique,
+        </item>
+        <item>
+         - A. RAVONNEAUX:
+         <hi rend="italic">
+          Reflets eucharistiques.
+         </hi>
+        </item>
+        <item>
+         - DUFF COOPER: Le Roi David.
+        </item>
+        <item>
+         <seg n="int.000031">
+          -
+          <persName>
+           J. LAUTRAM
+          </persName>
+          :
+          <title>
+           Petit Missel des Paroisses
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000172.TIF)" n="lie.000031" type="image">
+          162
+         </xref>
+         <seg n="int.000031">
+          (A. -M. R.).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000032">
+          -
+          <persName>
+           J. STEINMANN
+          </persName>
+          :
+          <title>
+           Job
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000173.TIF)" n="lie.000032" type="image">
+          163
+         </xref>
+         <seg n="int.000032">
+          (J. T.).
+         </seg>
+        </item>
+        <item>
+         <seg n="int.000033">
+          -
+          <persName>
+           C. BORDET
+          </persName>
+          :
+          <title>
+           Usages et Cérémonies de l'Église catholique
+          </title>
+          ,
+         </seg>
+         <xref from="FOREIGN (6555304/000173.TIF)" n="lie.000033" type="image">
+          163
+         </xref>
+         <seg n="int.000033">
+          (A. -M. R.).
+         </seg>
+        </item>
+       </list>
+      </div3>
+     </div2>
+     <div2>
+      <list>
+       <item>
+        <seg n="int.000034">
+         <persName>
+          L. KAMMERER
+         </persName>
+         , Aumônier du Lycée de Mulhouse.
+         <title>
+          Les Missels à l'usage des fidèles. - II. Les Missels dominicaux
+         </title>
+        </seg>
+        <xref from="FOREIGN (6555304/000174.TIF)" n="lie.000034" type="image">
+         164
+        </xref>
+       </item>
+       <item>
+        L'auteur poursuit une étude dont les conséquences peuvent être capitales pour ordonner les efforts des éditeurs et des pasteurs.
+       </item>
+       <item>
+        <seg n="int.000035">
+         <hi rend="italic">
+          Ouvrages envoyés à la rédaction
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000180.TIF)" n="lie.000035" type="image">
+         170
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000036">
+         <hi rend="italic">
+          Le chant de la Passion en français
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000182.TIF)" n="lie.000036" type="image">
+         172
+        </xref>
+       </item>
+       <item>
+        Une initiative du C.P.L.
+       </item>
+       <item>
+        <seg n="int.000037">
+         <hi rend="italic">
+          Tables de l'année
+         </hi>
+        </seg>
+        <xref from="FOREIGN (6555304/000183.TIF)" n="lie.000037" type="image">
+         173
+        </xref>
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       NOTES DE LA REDACTION
+      </head>
+      <list>
+       <item>
+        En raison des difficultés qui ont entravé la circulation du courrier, les épreuves de ce fascicule n'ont pu être revues par les auteurs. On voudra bien nous en excuser.
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       CONGRES DE LYON
+      </head>
+      <list>
+       <item>
+        Un compte rendu du congrès paraîtra dans le cahier 13.
+       </item>
+       <item>
+        Le texte intégral des rapports et conférences constituera un volume spécial publié aux éditions Robert Laf-font, à Paris, sous le titre Le Jour du Seigneur.
+       </item>
+      </list>
+     </div2>
+    </div1>
+    <div1 type="Index">
+     <head>
+      TABLE DES ARTICLES PAR ORDRE ALPHABÉTIQUE DES AUTEURS
+     </head>
+     <div2>
+      <list>
+       <item>
+        <seg n="int.000038">
+         <persName>
+          AUBERTIN (G.)
+         </persName>
+         :
+         <title>
+          Prédication liturgique sur l'ordination
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000132.TIF)" n="lie.000038" to="FOREIGN (6555304/000133.TIF)" type="image">
+         122-123
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000039">
+         <persName>
+          BEAUDUIN (L.)
+         </persName>
+         :
+         <title>
+          Le sacrement de confirmation administré par les curés
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000098.TIF)" n="lie.000039" to="FOREIGN (6555353/000101.TIF)" type="image">
+         96-99
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000040">
+         <persName>
+          BONNES (J.-P.)
+         </persName>
+         :
+         <title>
+          Pour un enseignement du latin liturgique et patristique
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000177.TIF)" n="lie.000040" to="FOREIGN (6555318/000179.TIF)" type="image">
+         175-177
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000041">
+         <persName>
+          BONNES (J.-P.)
+         </persName>
+         :
+         <title>
+          Introduction au problème des traductions liturgiques
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000195.TIF)" n="lie.000041" to="FOREIGN (6555318/000206.TIF)" type="image">
+         193-204
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000042">
+         <persName>
+          BOULARD (F.)
+         </persName>
+         et
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          La discipline des sacrements
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000076.TIF)" n="lie.000042" to="FOREIGN (6555304/000082.TIF)" type="image">
+         66-72
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000043">
+         <persName>
+          BRUNEAU (CH.)
+         </persName>
+         :
+         <title>
+          La langue française est-elle majeure?
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000133.TIF)" n="lie.000043" to="FOREIGN (6555318/000141.TIF)" type="image">
+         131-139
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000044">
+         <persName>
+          BOUYER (L.)
+         </persName>
+         :
+         <title>
+          Principes historiques de l'évolution liturgique
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000049.TIF)" n="lie.000044" to="FOREIGN (6555421/000088.TIF)" type="image">
+         47-86
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000045">
+         <persName>
+          BOUZERAND (chan.)
+         </persName>
+         :
+         <title>
+          L'âge de la Confirmation
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000131.TIF)" n="lie.000045" to="FOREIGN (6555421/000135.TIF)" type="image">
+         129-133
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000046">
+         <persName>
+          BUGNINI (A.)
+         </persName>
+         :
+         <title>
+          La messe sur la place Saint-Pierre
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000084.TIF)" n="lie.000046" to="FOREIGN (6555353/000086.TIF)" type="image">
+         82-84
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000047">
+         <persName>
+          BUGNINI (A.)
+         </persName>
+         : Nécrologie: M
+         <hi rend="sup">
+          gr
+         </hi>
+         Respighi
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000145.TIF)" n="lie.000047" to="FOREIGN (6555304/000146.TIF)" type="image">
+         135-136
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000048">
+         <persName>
+          CASEL (O.)
+         </persName>
+         :
+         <title>
+          Pâques, la fête des fêtes
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000057.TIF)" n="lie.000048" to="FOREIGN (6555353/000061.TIF)" type="image">
+         55-59
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000049">
+         <persName>
+          CHARLIER (Célestin)
+         </persName>
+         :
+         <title>
+          La lecture sapientielle de la Bible
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000024.TIF)" n="lie.000049" to="FOREIGN (6555304/000062.TIF)" type="image">
+         14-52
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000050">
+         <persName>
+          CHENU (M.-D.)
+         </persName>
+         :
+         <title>
+          Anthropologie et liturgie
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000063.TIF)" n="lie.000050" to="FOREIGN (6555304/000075.TIF)" type="image">
+         53-65
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000051">
+         <persName>
+          CHÉRY (H. -CH.)
+         </persName>
+         :
+         <title>
+          Liturgie et prédication de Carême
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000114.TIF)" n="lie.000051" to="FOREIGN (6555304/000118.TIF)" type="image">
+         104-108
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000052">
+         <persName>
+          CHEVROT (M
+          <hi rend="sup">
+           gr
+          </hi>
+          G.)
+         </persName>
+         :
+         <title>
+          L'âge de la profession de foi solennelle
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000136.TIF)" n="lie.000052" to="FOREIGN (6555421/000141.TIF)" type="image">
+         134-139
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000053">
+         <persName>
+          CHOUPAULT (X.)
+         </persName>
+         :
+         <title>
+          Traduction de messes
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000227.TIF)" n="lie.000053" type="image">
+         225
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000054">
+         <persName>
+          CONGAR (Y.)
+         </persName>
+         :
+         <title>
+          Sur les funérailles
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000143.TIF)" n="lie.000054" to="FOREIGN (6555304/000144.TIF)" type="image">
+         133-134
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000055">
+         <persName>
+          CRUIZIAT (A.)
+         </persName>
+         et
+         <persName>
+          TRAVERS (J.)
+         </persName>
+         :
+         <title>
+          L'art de la fête
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000062.TIF)" n="lie.000055" to="FOREIGN (6555353/000071.TIF)" type="image">
+         60-69
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000056">
+         <persName>
+          DALMAIS (I.-H.)
+         </persName>
+         : compte rendu de
+         <persName>
+          FROGER (D. J.)
+         </persName>
+         :
+         <title>
+          Les. origines de Prime
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000147.TIF)" n="lie.000056" to="FOREIGN (6555304/000148.TIF)" type="image">
+         137-138
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000057">
+         <persName>
+          DALMAIS (I.-H.)
+         </persName>
+         :
+         <title>
+          C.-R. de Lauda Jerusalem Dominum!
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000148.TIF)" n="lie.000057" to="FOREIGN (6555304/000151.TIF)" type="image">
+         138-141
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000058">
+         <persName>
+          DUPLOYÉ (P.)
+         </persName>
+         :
+         <title>
+          Préface pour un Congrès
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000009.TIF)" n="lie.000058" to="FOREIGN (6555421/000048.TIF)" type="image">
+         7-46
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000059">
+         <persName>
+          DUPONT (G.)
+         </persName>
+         :
+         <title>
+          Les honneurs funèbres
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000142.TIF)" n="lie.000059" to="FOREIGN (6555304/000143.TIF)" type="image">
+         132-133
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000060">
+         <persName>
+          DUSSAUX (M
+          <hi rend="sup">
+           me
+          </hi>
+          P.)
+         </persName>
+         :
+         <title>
+          Organisation d'une journée liturgique
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000169.TIF)" n="lie.000060" to="FOREIGN (6555421/000171.TIF)" type="image">
+         167-169
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000061">
+         <persName>
+          GÉLINEAU (J.)
+         </persName>
+         :
+         <title>
+          Notes sur le chant religieux populaire en français
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000211.TIF)" n="lie.000061" to="FOREIGN (6555318/000226.TIF)" type="image">
+         209-224
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000062">
+         <persName>
+          GRÉA (Dom)
+         </persName>
+         :
+         <title>
+          Du service de Dieu
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000021.TIF)" n="lie.000062" to="FOREIGN (6555304/000023.TIF)" type="image">
+         11-13
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000063">
+         <persName>
+          GRIESEMANN (R.)
+         </persName>
+         :
+         <title>
+          Une paroisse "liturgique" en Alsace
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000087.TIF)" n="lie.000063" to="FOREIGN (6555353/000097.TIF)" type="image">
+         85-95
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000064">
+         <persName>
+          GRIESEMANN (R.)
+         </persName>
+         :
+         <title>
+          Traduction et langue mystérique
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000207.TIF)" n="lie.000064" to="FOREIGN (6555318/000210.TIF)" type="image">
+         205-208
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000065">
+         <persName>
+          GOUBELY (André)
+         </persName>
+         :
+         <title>
+          L'année du baptême au diocèse de Limoges
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000142.TIF)" n="lie.000065" to="FOREIGN (6555421/000146.TIF)" type="image">
+         140-144
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000066">
+         <persName>
+          HEMON (Yves)
+         </persName>
+         :
+         <title>
+          Le chant en langue vulgaire en présence du Saint-Sacrement exposé
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000146.TIF)" n="lie.000066" to="FOREIGN (6555318/000155.TIF)" type="image">
+         144-153
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000067">
+         <persName>
+          HERBIN (Pierre)
+         </persName>
+         :
+         <title>
+          Pour une technique des célébrations populaires
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000072.TIF)" n="lie.000067" to="FOREIGN (6555353/000083.TIF)" type="image">
+         70-81
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000068">
+         <persName>
+          HERIS (Ch.-V.)
+         </persName>
+         :
+         <title>
+          Le salut des enfants morts sans baptême
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000088.TIF)" n="lie.000068" to="FOREIGN (6555421/000107.TIF)" type="image">
+         86-105
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000069">
+         <persName>
+          HILD (J.)
+         </persName>
+         :
+         <title>
+          La mystique du dimanche
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000009.TIF)" n="lie.000069" to="FOREIGN (6555353/000039.TIF)" type="image">
+         7-37
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000070">
+         <persName>
+          IMBAULT (P.)
+         </persName>
+         :
+         <title>
+          Catéchisme et première communion
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000108.TIF)" n="lie.000070" to="FOREIGN (6555421/000119.TIF)" type="image">
+         106-117
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000071">
+         <persName>
+          IMBAULT (P.)
+         </persName>
+         :
+         <title>
+          Ce que le clergé attend du prédicateur liturgique
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000150.TIF)" n="lie.000071" to="FOREIGN (6555421/000156.TIF)" type="image">
+         148-154
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000072">
+         <persName>
+          KAMMERER (L.)
+         </persName>
+         :
+         <title>
+          Bible et Liturgie dans l'enseignement religieux des lycées
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000120.TIF)" n="lie.000072" to="FOREIGN (6555421/000130.TIF)" type="image">
+         118-128
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000073">
+         <persName>
+          KAMMERER (L.)
+         </persName>
+         :
+         <title>
+          Les missels à l'usage des fidèles. I. Les missels quotidiens
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000115.TIF)" n="lie.000073" to="FOREIGN (6555353/000138.TIF)" type="image">
+         113-136
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000074">
+         <persName>
+          KAMMERER (L.)
+         </persName>
+         :
+         <title>
+          Les missels dominicaux
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000174.TIF)" n="lie.000074" to="FOREIGN (6555304/000179.TIF)" type="image">
+         164-169
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000075">
+         <persName>
+          LECLERCQ (J.)
+         </persName>
+         : compte rendu de
+         <persName>
+          PONTET
+         </persName>
+         (M.):
+         <title>
+          L'exégèse de saint Augustin prédicateur
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000139.TIF)" n="lie.000075" to="FOREIGN (6555353/000144.TIF)" type="image">
+         137-142
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000076">
+         <persName>
+          LECLERCQ (J.)
+         </persName>
+         :
+         <title>
+          Le latin chrétien, langue d'Église
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000057.TIF)" n="lie.000076" to="FOREIGN (6555318/000077.TIF)" type="image">
+         55-75
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000077">
+         <persName>
+          LECLERCQ (J.)
+         </persName>
+         : compte rendu de
+         <persName>
+          J. TRAVERS
+         </persName>
+         :
+         <title>
+          Valeur sociale de la liturgie d'après saint Thomas d'Aquin
+         </title>
+        </seg>
+        <hi rend="bold">
+         21
+        </hi>
+        <xref from="FOREIGN (6555255/000156.TIF)" n="lie.000077" to="FOREIGN (6555255/000162.TIF)" type="image">
+         146-152
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000078">
+         <persName>
+          LELOIR (L.)
+         </persName>
+         :
+         <title>
+          Le sabbat judaïque, préfiguration du dimanche
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000040.TIF)" n="lie.000078" to="FOREIGN (6555353/000053.TIF)" type="image">
+         38-51
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000079">
+         <persName>
+          MARTIMORT (A.-G.)
+         </persName>
+         :
+         <title>
+          La discipline de l'Église en matière de langue liturgique. Essai historique
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000041.TIF)" n="lie.000079" to="FOREIGN (6555318/000056.TIF)" type="image">
+         39-54
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000080">
+         <persName>
+          MARTIMORT (A.-G.)
+         </persName>
+         :
+         <title>
+          Les leçons d'une enquête
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000086.TIF)" n="lie.000080" to="FOREIGN (6555318/000132.TIF)" type="image">
+         84-130
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000081">
+         <persName>
+          MESSERSCHMID (Félix)
+         </persName>
+         :
+         <title>
+          La langue liturgique en pays germanique
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000078.TIF)" n="lie.000081" to="FOREIGN (6555318/000085.TIF)" type="image">
+         76-83
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000082">
+         <persName>
+          MOHRMANN (Chr.)
+         </persName>
+         :
+         <title>
+          L'évolution de la langue française au cours de la guerre
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000142.TIF)" n="lie.000082" to="FOREIGN (6555318/000145.TIF)" type="image">
+         140-143
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000083">
+         <persName>
+          MONTVALON (Robert DE)
+         </persName>
+         :
+         <title>
+          "La route des saintes huiles" dans le diocèse de Meaux
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000119.TIF)" n="lie.000083" to="FOREIGN (6555304/000131.TIF)" type="image">
+         109-121
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000084">
+         <persName>
+          PHILIPPEAU (H.-R.)
+         </persName>
+         :
+         <title>
+          Les intentions de messes
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000134.TIF)" n="lie.000084" to="FOREIGN (6555304/000138.TIF)" type="image">
+         124-128
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000085">
+         <persName>
+          PICHARD (R.-M.)
+         </persName>
+         :
+         <title>
+          Les sept sacrements en sept jours
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000171.TIF)" n="lie.000085" to="FOREIGN (6555421/000172.TIF)" type="image">
+         169-170
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000086">
+         <persName>
+          PIERRET (R.)
+         </persName>
+         :
+         <title>
+          La bibliothèque du prédicateur liturgique
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000083.TIF)" n="lie.000086" to="FOREIGN (6555304/000095.TIF)" type="image">
+         73-85
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000087">
+         <persName>
+          PRESSE (A.)
+         </persName>
+         :
+         <title>
+          Le dimanche monastique
+         </title>
+         ,
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000054.TIF)" n="lie.000087" to="FOREIGN (6555353/000056.TIF)" type="image">
+         52-54
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000088">
+         <persName>
+          RAUCH (C.)
+         </persName>
+         :
+         <title>
+          Les missions
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000160.TIF)" n="lie.000088" to="FOREIGN (6555421/000164.TIF)" type="image">
+         158-162
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000089">
+         <persName>
+          RAUCH (C.)
+         </persName>
+         :
+         <title>
+          Prédication et traductions liturgiques
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000193.TIF)" n="lie.000089" to="FOREIGN (6555318/000194.TIF)" type="image">
+         191-192
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000090">
+         <persName>
+          RICHAUD (S. Exc. M
+          <hi rend="sup">
+           gr
+          </hi>
+          )
+         </persName>
+         compte rendu de
+         <persName>
+          A. -G. MARTIMORT
+         </persName>
+         :
+         <title>
+          De l'évêque
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000156.TIF)" n="lie.000090" to="FOREIGN (6555353/000157.TIF)" type="image">
+         154-155
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000091">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Objectifs de la session (de prédicateurs liturgiques)
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000148.TIF)" n="lie.000091" to="FOREIGN (6555421/000150.TIF)" type="image">
+         146-148
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000092">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          (Prédication liturgique). Une semaine. Un triduum
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000167.TIF)" n="lie.000092" to="FOREIGN (6555421/000169.TIF)" type="image">
+         165-167
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000093">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Les slogans du prédicateur liturgique
+         </title>
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000173.TIF)" n="lie.000093" to="FOREIGN (6555421/000177.TIF)" type="image">
+         171-175
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000094">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Les à-peu-près de la prédication eucharistique
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000180.TIF)" n="lie.000094" to="FOREIGN (6555318/000192.TIF)" type="image">
+         178-190
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000095">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Nouveaux missels français
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000234.TIF)" n="lie.000095" to="FOREIGN (6555318/000242.TIF)" type="image">
+         232-240
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000096">
+         <persName>
+          ROGUET (A. -M.) et BOULARD (F.)
+         </persName>
+         :
+         <title>
+          La discipline des sacrements
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000076.TIF)" n="lie.000096" to="FOREIGN (6555304/000082.TIF)" type="image">
+         66-72
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000097">
+         <persName>
+          ROUSSEAU (O.)
+         </persName>
+         :
+         <title>
+          Retour à l'éloquence sacrée
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000156.TIF)" n="lie.000097" to="FOREIGN (6555318/000176.TIF)" type="image">
+         154-174
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000098">
+         <persName>
+          SÉRÈS (U.)
+         </persName>
+         :
+         <title>
+          Nécrologie: Dom Sunyol
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000168.TIF)" n="lie.000098" to="FOREIGN (6555353/000171.TIF)" type="image">
+         166-169
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000099">
+         <persName>
+          SÉRÈS (U.)
+         </persName>
+         :
+         <title>
+          Ce que tout prédicateur liturgique doit savoir en matière de chant grégorien
+         </title>
+        </seg>
+        <hi rend="bold">
+         2
+        </hi>
+        <xref from="FOREIGN (6555275/000094.TIF)" n="lie.000099" to="FOREIGN (6555275/000105.TIF)" type="image">
+         92-103
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000100">
+         <persName>
+          SERVEL (J.) Quelques remarques sur les cantiques populaires
+         </persName>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000096.TIF)" n="lie.000100" to="FOREIGN (6555304/000101.TIF)" type="image">
+         86-91
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000101">
+         <persName>
+          T. (J.)
+         </persName>
+         :
+         <title>
+          Points de repère
+         </title>
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000009.TIF)" n="lie.000101" to="FOREIGN (6555318/000016.TIF)" type="image">
+         7-14
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000102">
+         <persName>
+          TRAVERS (J.)
+         </persName>
+         et
+         <persName>
+          CRUIZIAT (A.)
+         </persName>
+         :
+         <title>
+          L'art de la fête
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000062.TIF)" n="lie.000102" to="FOREIGN (6555353/000071.TIF)" type="image">
+         60-69
+        </xref>
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       AUTEURS RECENSES DANS LES BIBLIOGRAPHIES
+      </head>
+      <list>
+       <item>
+        <seg n="int.000103">
+         <persName>
+          BORDET (C.)
+         </persName>
+         :
+         <title>
+          Usages et cérémonies de l'Église catholique
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000165.TIF)" n="lie.000103" type="image">
+         163
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000104">
+         <persName>
+          BERNADET (E.)
+         </persName>
+         :
+         <title>
+          Les plus beaux textes de la liturgie romaine
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000165.TIF)" n="lie.000104" type="image">
+         155
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000105">
+         <persName>
+          BOULARD (F.)
+         </persName>
+         :
+         <title>
+          Paysannerie et humanisme
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000149.TIF)" n="lie.000105" type="image">
+         147
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000106">
+         <persName>
+          BRAUN (F. -M.)
+         </persName>
+         :
+         <title>
+          Les origines de la messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000167.TIF)" n="lie.000106" type="image">
+         157
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000107">
+         <persName>
+          BRINKTRINE (G.)
+         </persName>
+         :
+         <title>
+          Il brevairio romano
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000163.TIF)" n="lie.000107" type="image">
+         153
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000108">
+         <persName>
+          CAPELLE (B.)
+         </persName>
+         :
+         <title>
+          Pour une meilleure intelligence de la messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000163.TIF)" n="lie.000108" type="image">
+         153
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000109">
+         <persName>
+          COOPER (D.)
+         </persName>
+         :
+         <title>
+          Le Roi David
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000171.TIF)" n="lie.000109" type="image">
+         161
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000110">
+         <persName>
+          COPPENS
+         </persName>
+         :
+         <title>
+          Tabulae geographicae... in Martyrologium romanum
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000155.TIF)" n="lie.000110" type="image">
+         153
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000111">
+         <persName>
+          COURIER (M. -A.)
+         </persName>
+         :
+         <title>
+          Chantons le psautier de Notre-Dame
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000167.TIF)" n="lie.000111" type="image">
+         165
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000112">
+         <persName>
+          DEMAN (Th.)
+         </persName>
+         :
+         <title>
+          La spiritualité de la messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000166.TIF)" n="lie.000112" type="image">
+         156
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000113">
+         <persName>
+          FLICOTEAUX (Dom)
+         </persName>
+         :
+         <title>
+          Le sens du Carême
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000160.TIF)" n="lie.000113" type="image">
+         158
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000114">
+         <persName>
+          FLORAND (Fr.)
+         </persName>
+         :
+         <title>
+          J.-S. Bach. L'oeuvre d'orgue
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000152.TIF)" n="lie.000114" type="image">
+         142
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000115">
+         <persName>
+          FROGER (D. J.)
+         </persName>
+         :
+         <title>
+          Les origines de prime
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000147.TIF)" n="lie.000115" type="image">
+         137
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000116">
+         <persName>
+          GAZEAU (Dom)
+         </persName>
+         :
+         <title>
+          D'une voix unanime
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000165.TIF)" n="lie.000116" type="image">
+         163
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000117">
+         <persName>
+          GUYON (B.)
+         </persName>
+         :
+         <title>
+          Découverte de la Messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000159.TIF)" n="lie.000117" type="image">
+         157
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000118">
+         <persName>
+          HAMEL (Dom R.)
+         </persName>
+         :
+         <title>
+          La vie liturgique, I
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000171.TIF)" n="lie.000118" type="image">
+         161
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000119">
+         <persName>
+          HERBIN (P.)
+         </persName>
+         :
+         <title>
+          Le mariage
+         </title>
+         :
+         <title>
+          le sacrement, la messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000169.TIF)" n="lie.000119" type="image">
+         159
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000120">
+         <persName>
+          HERBIN (P.)
+         </persName>
+         :
+         <title>
+          Les vêpres du dimanche
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000169.TIF)" n="lie.000120" type="image">
+         159
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000121">
+         <persName>
+          LASHERMES (J.)
+         </persName>
+         :
+         <title>
+          Messe brève en mi bémol de la consolation et de l'espoir
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000166.TIF)" n="lie.000121" type="image">
+         164
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000122">
+         <persName>
+          LAUTRAM (J.)
+         </persName>
+         :
+         <title>
+          Petit missel des paroisses
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000172.TIF)" n="lie.000122" type="image">
+         162
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000123">
+         <persName>
+          LUBIENSKA DE LENVAL (H.)
+         </persName>
+         :
+         <title>
+          L'éducation du sens religieux
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000170.TIF)" n="lie.000123" type="image">
+         160
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000124">
+         <persName>
+          MARTIMORT (A.-G.)
+         </persName>
+         :
+         <title>
+          De l'évêque
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000156.TIF)" n="lie.000124" type="image">
+         154
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000125">
+         <persName>
+          MAURON (Ch.)
+         </persName>
+         :
+         <title>
+          Sagesse de l'eau
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000170.TIF)" n="lie.000125" type="image">
+         160
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000126">
+         <persName>
+          MIALHE (Robert)
+         </persName>
+         :
+         <title>
+          Ce que le baptême donne à l'enfant
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000167.TIF)" n="lie.000126" type="image">
+         165
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000127">
+         <persName>
+          MOSCHUS. (J.)
+         </persName>
+         :
+         <title>
+          Le préspirituel
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000169.TIF)" n="lie.000127" type="image">
+         159
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000128">
+         <persName>
+          OSTY (E.)
+         </persName>
+         :
+         <title>
+          Les Épîtres de saint Paul
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000171.TIF)" n="lie.000128" type="image">
+         161
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000129">
+         <persName>
+          PARIS (M.)
+         </persName>
+         :
+         <title>
+          Nous souvenant donc Seigneur
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000157.TIF)" n="lie.000129" type="image">
+         155
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000130">
+         <persName>
+          PHILIPON (M. -M.)
+         </persName>
+         :
+         <title>
+          Les sacrements dans la vie chrétienne
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000167.TIF)" n="lie.000130" type="image">
+         157
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000131">
+         <persName>
+          PONTET
+         </persName>
+         (M.):
+         <title>
+          L'exégèse de saint Augustin prédicateur
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000039.TIF)" n="lie.000131" type="image">
+         37
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000132">
+         <persName>
+          PRADEL (Henri)
+         </persName>
+         :
+         <title>
+          Vivons notre messe
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000160.TIF)" n="lie.000132" type="image">
+         158
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000133">
+         <persName>
+          RAVOUNEAUX (A.)
+         </persName>
+         :
+         <title>
+          Reflets eucharistiques
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000171.TIF)" n="lie.000133" type="image">
+         161
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000134">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Somme Théologique. Les Sacrements
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000144.TIF)" n="lie.000134" type="image">
+         142
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000135">
+         <persName>
+          ROGUET (A.-M.)
+         </persName>
+         :
+         <title>
+          Catéchisme des petits et des grands
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000154.TIF)" n="lie.000135" type="image">
+         152
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000136">
+         <persName>
+          ROUET DE JOURNEL
+         </persName>
+         :
+         <title>
+          Éd. du Pré spirituel de J. MOSCHUS
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000169.TIF)" n="lie.000136" type="image">
+         159
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000137">
+         <persName>
+          SARMENT (A. pu)
+         </persName>
+         :
+         <title>
+          Claudel et la liturgie
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000067.TIF)" n="lie.000137" type="image">
+         65
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000138">
+         <persName>
+          SCHEEBEN (J.-M.)
+         </persName>
+         :
+         <title>
+          Le mystère de l'Église et de ses sacrements..
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000147.TIF)" n="lie.000138" type="image">
+         145
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000139">
+         <persName>
+          SERVEL (J.)
+         </persName>
+         :
+         <title>
+          Louanges vespérales. Dimanches en chrétienté
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000161.TIF)" n="lie.000139" type="image">
+         159
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000140">
+         <persName>
+          SIROT (P. -M.)
+         </persName>
+         :
+         <title>
+          De source en source
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000144.TIF)" n="lie.000140" type="image">
+         142
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000141">
+         <persName>
+          STEINMANN (J.)
+         </persName>
+         :
+         <title>
+          Job
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000173.TIF)" n="lie.000141" type="image">
+         163
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000142">
+         <persName>
+          THILS (G.)
+         </persName>
+         <title>
+          Nature et spiritualité du clergé diocésain
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000162.TIF)" n="lie.000142" type="image">
+         160
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000143">
+         <persName>
+          THOMAS D'AQUIN (S.)
+         </persName>
+         :
+         <title>
+          Somme théologique. Les sacrements
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000144.TIF)" n="lie.000143" type="image">
+         142
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000144">
+         <persName>
+          TRAVERS (J.)
+         </persName>
+         :
+         <title>
+          Valeur, sociale de la liturgie d'après saint Thomas d'Aquin
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000156.TIF)" n="lie.000144" type="image">
+         146
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000145">
+         <persName>
+          VAN der STAPPEN (J. F.)
+         </persName>
+         et
+         <persName>
+          CROEGAERT (A.)
+         </persName>
+         :
+         <title>
+          Caeremoniale
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000165.TIF)" n="lie.000145" type="image">
+         163
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000146">
+         <persName>
+          VLOBERG (M.)
+         </persName>
+         :
+         <title>
+          L'Eucharistie dans l'art
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000168.TIF)" n="lie.000146" type="image">
+         158
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000147">
+         <persName>
+          VONIER (A.)
+         </persName>
+         :
+         <title>
+          Christianus
+         </title>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000170.TIF)" n="lie.000147" type="image">
+         160
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000148">
+         <persName>
+          ANONYMES
+         </persName>
+         :
+         <title>
+          Les études du prêtre d'aujourd'hui
+         </title>
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000152.TIF)" n="lie.000148" type="image">
+         150
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000149">
+         <hi rend="italic">
+          Lauda Jerusalem Dominum!
+         </hi>
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000148.TIF)" n="lie.000149" type="image">
+         138
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000150">
+         Missel pour les catéchismes et pour les jeunes
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000234.TIF)" n="lie.000150" type="image">
+         232
+        </xref>
+       </item>
+      </list>
+     </div2>
+     <div2>
+      <head>
+       BIBLIOGRAPHIE DE MISSELS:
+      </head>
+      <list>
+       <item>
+        <seg n="int.000151">
+         Les Missels à l'usage des fidèles. I. Missels quotidiens
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000115.TIF)" n="lie.000151" type="image">
+         113
+        </xref>
+       </item>
+      </list>
+      <div3>
+       <list>
+        <item>
+         <seg n="int.000152">
+          . II. Missels dominicaux
+         </seg>
+         <hi rend="bold">
+          12
+         </hi>
+         <xref from="FOREIGN (6555304/000174.TIF)" n="lie.000152" type="image">
+          164
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000153">
+          Nouveaux missels français
+         </seg>
+         <hi rend="bold">
+          11
+         </hi>
+         <xref from="FOREIGN (6555318/000234.TIF)" n="lie.000153" type="image">
+          232
+         </xref>
+        </item>
+       </list>
+      </div3>
+     </div2>
+     <div2>
+      <head>
+       PRINCIPAUX SUJETS TRAITÉS DANS LES DIRECTIVES DE L'ÉGLISE, LE COURRIER, QUESTIONS DISPUTÉES, ETC.
+      </head>
+      <list>
+       <item>
+        <seg n="int.000154">
+         Baptême (Discipline du), par S. Exc. M
+         <hi rend="sup">
+          gr
+         </hi>
+         Grente
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000104.TIF)" n="lie.000154" type="image">
+         102
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000155">
+         Confirmation administrée par les curés
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000098.TIF)" n="lie.000155" type="image">
+         96
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000156">
+         Funérailles
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000184.TIF)" n="lie.000156" type="image">
+         174
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000157">
+         Funérailles:
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000142.TIF)" n="lie.000157" to="FOREIGN (6555304/000143.TIF)" type="image">
+         132-133
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000158">
+         Huiles ("Routes des Saintes")
+        </seg>
+        <xref from="FOREIGN (6555304/000019.TIF)" n="lie.000158" type="image">
+         9
+        </xref>
+        ,
+        <xref from="FOREIGN (6555304/000186.TIF)" n="lie.000158" type="image">
+         176
+        </xref>
+        ,
+        <hi rend="bold">
+         11
+        </hi>
+        <xref from="FOREIGN (6555318/000111.TIF)" n="lie.000158" type="image">
+         109
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000159">
+         Matines et les laïcs
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000174.TIF)" n="lie.000159" type="image">
+         172
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000160">
+         Messes privées ou messe conventuelle?
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000138.TIF)" n="lie.000160" to="FOREIGN (6555304/000141.TIF)" type="image">
+         128-131
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000161">
+         Messes (Intentions de)
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000134.TIF)" n="lie.000161" type="image">
+         124
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000162">
+         Messes du soir et messes nocturnes
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000102.TIF)" n="lie.000162" type="image">
+         100
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000163">
+         Paroisse (Quelques réflexions sur la) par S. Exc. M
+         <hi rend="sup">
+          gr
+         </hi>
+         FELTIN
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000106.TIF)" n="lie.000163" type="image">
+         104
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000164">
+         Personnel des églises
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000176.TIF)" n="lie.000164" type="image">
+         174
+        </xref>
+       </item>
+      </list>
+      <div3>
+       <head>
+        Nécrologie
+       </head>
+       <list>
+        <item>
+         <seg n="int.000165">
+          Dom Sunyol, par
+          <persName>
+           U. Sérès
+          </persName>
+         </seg>
+         <hi rend="bold">
+          9
+         </hi>
+         <xref from="FOREIGN (6555353/000168.TIF)" n="lie.000165" type="image">
+          166
+         </xref>
+        </item>
+        <item>
+         <seg n="int.000166">
+          M
+          <hi rend="sup">
+           gr
+          </hi>
+          Charles Respighi, par
+          <persName>
+           A. Bugnini
+          </persName>
+         </seg>
+         <hi rend="bold">
+          12
+         </hi>
+         <xref from="FOREIGN (6555304/000145.TIF)" n="lie.000166" type="image">
+          135
+         </xref>
+        </item>
+       </list>
+      </div3>
+     </div2>
+     <div2>
+      <head>
+       PRINCIPAUX ENSEMBLES D'ARTICLES
+      </head>
+      <list>
+       <item>
+        <seg n="int.000167">
+         Le Dimanche
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000009.TIF)" n="lie.000167" to="FOREIGN (6555353/000056.TIF)" type="image">
+         7-54
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000168">
+         Fête et célébration chrétienne
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000057.TIF)" n="lie.000168" to="FOREIGN (6555353/000097.TIF)" type="image">
+         55-95
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000169">
+         L'initiation chrétienne
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        <xref from="FOREIGN (6555421/000088.TIF)" n="lie.000169" to="FOREIGN (6555421/000147.TIF)" type="image">
+         86-145
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000170">
+         La Prédication liturgique
+        </seg>
+        <hi rend="bold">
+         10
+        </hi>
+        ,
+        <xref from="FOREIGN (6555421/000148.TIF)" n="lie.000170" to="FOREIGN (6555421/000178.TIF)" type="image">
+         146-176
+        </xref>
+        ;
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000083.TIF)" n="lie.000170" to="FOREIGN (6555304/000133.TIF)" type="image">
+         73-123
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000171">
+         Langues et traductions liturgiques
+        </seg>
+        <hi rend="bold">
+         11
+        </hi>
+        <xref type="unresolved">
+         <gap reason="illegible"/>
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000172">
+         Répertoire des missels des fidèles. I. Quotidiens
+        </seg>
+        <hi rend="bold">
+         9
+        </hi>
+        <xref from="FOREIGN (6555353/000115.TIF)" n="lie.000172" type="image">
+         113
+        </xref>
+       </item>
+       <item>
+        <seg n="int.000173">
+         Répertoire des missels des fidèles. II. Dominicaux
+        </seg>
+        <hi rend="bold">
+         12
+        </hi>
+        <xref from="FOREIGN (6555304/000174.TIF)" n="lie.000173" type="image">
+         164
+        </xref>
+       </item>
+      </list>
+     </div2>
+    </div1>
+   </div0>
+  </body>
+ </text>
+</TEI.2>
