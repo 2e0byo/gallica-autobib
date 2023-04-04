@@ -15,8 +15,6 @@ import jsonpickle
 from requests_downloader import downloader
 from xdg import xdg_cache_home
 
-from .debug import debug
-
 if TYPE_CHECKING:  # pragma: nocover
     from .gallipy import Ark  # pragma: nocover
 
@@ -37,7 +35,6 @@ class Cached(UserDict):
     def __init__(self, *args, enabled: bool = True, **kwargs):
         """Initialise a cached resource, cached in ram."""
         self.enabled = enabled
-        debug(args, kwargs)
         super().__init__(*args, **kwargs)
 
     def __call__(self, fn: Callable) -> Callable:
@@ -71,7 +68,6 @@ class SQLCached(Cached, FSMixin):
 
     def __init__(self, cachename: str, *args: Any, **kwargs: Any) -> None:
         """Initialise a resource in the cache, stored in a separate table."""
-        debug(args, kwargs)
         super().__init__(*args, **kwargs)
         self.tablename = cachename
         self.cachedir.mkdir(exist_ok=True, parents=True)
@@ -120,7 +116,6 @@ class FSCached(Cached, FSMixin):
         """Initialise a new file system cache."""
         self.wdir = self.cachedir / cachename
         self.wdir.mkdir(parents=True, exist_ok=True)
-        debug(args, kwargs)
         super().__init__(*args, **kwargs)
 
     def _fn(self, key: str) -> Path:
@@ -157,7 +152,6 @@ def download(url: str, **kwargs: Any) -> Optional[str]:
     """Download a resource, storing it in the cache if we are caching."""
     outdir = Path(kwargs.get("download_dir", "."))
     if data_cache_enabled:
-        debug("getting data")
         data = data_cache.get(url)
         if not data:
             with TemporaryDirectory() as tmpdir:
@@ -166,7 +160,6 @@ def download(url: str, **kwargs: Any) -> Optional[str]:
                 assert fn
                 with (Path(tmpdir) / fn).open("rb") as f:
                     data = f.read()
-                debug("setting data")
                 data_cache[url] = data
         outf = outdir / kwargs["download_file"]
         with outf.open("wb") as f:
