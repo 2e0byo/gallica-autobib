@@ -112,8 +112,25 @@ class SQLCached(Cached, FSMixin):
             SET = f'REPLACE INTO "{self.tablename}" (key, value) VALUES (?,?)'
             self.con.execute(SET, (key, jsonpickle.dumps(val)))
             self.con.commit()
+            logger.debug(f"Wrote to cache")
+        except Exception as e:
+            logger.error(f"Failed to cache {key}: {e}")
         finally:
             self.write_lock.release()
+
+    def keys(self):
+        GET = f"SELECT key from {self.tablename}"
+        items = self.con.execute(GET).fetchall()
+        return [x[0] for x in items]
+
+    def values(self):
+        return [self[k] for k in self.keys()]
+
+    def items(self):
+        return [(k, self[k]) for k in self.keys()]
+
+    def __iter__(self):
+        return iter(self.keys)
 
 
 class FSCached(Cached, FSMixin):
