@@ -89,7 +89,11 @@ class SQLCached(Cached, FSMixin):
         """Remove an item from the cache."""
         self.write_lock.acquire()
         DELETE = f'DELETE FROM "{self.tablename}" WHERE key = (?)'  # skipcq: BAN-B608
-        self.con.execute(DELETE, (key,))
+        try:
+            self.con.execute(DELETE, (key,))
+            self.con.commit()
+        finally:
+            self.write_lock.release()
 
     def __getitem__(self, key: str) -> Optional[Any]:
         """Get an item from the cache."""
