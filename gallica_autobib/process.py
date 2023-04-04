@@ -16,7 +16,7 @@ from PyPDF4 import PdfFileReader, PdfFileWriter
 from PyPDF4.pdf import PageObject, RectangleObject
 from tqdm import tqdm
 
-# from util import show
+# from .util import show
 
 logger = logging.getLogger(__name__)
 
@@ -253,7 +253,12 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
         lower.x + GROW_PIXELS,
         lower.y + down + GROW_PIXELS,
     )
-    # show(img, [bbox, Bbox(upper.x, upper.y - search, lower.x, lower.y + search)])
+    # show(
+    #     img,
+    #     [bbox, Bbox(upper.x, upper.y - search, lower.x, lower.y + search)],
+    #     [gradient],
+    #     [lower_diff_thresh, upper_diff_thresh],
+    # )
     return bbox
 
 

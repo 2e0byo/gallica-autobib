@@ -85,17 +85,23 @@ def deprettify(rangestr: Union[str, int]) -> Union[list[int], int, None]:
     return pages if len(pages) > 1 else pages[0] if pages else None
 
 
-def show(img: Image.Image, boxes: Iterable[tuple] = None) -> None:
+def show(
+    img: Image.Image,
+    boxes: Iterable[tuple] = None,
+    graphs: "list[tuple] | None" = None,
+    lines: "list[tuple] | None" = None,
+) -> None:
     """Show an image with optional bounds drawn over it."""
     import matplotlib.pyplot as plt
     from matplotlib.patches import Rectangle
 
-    fig, ax = plt.subplots()
+    colours = iter(cycle(("red", "green", "orange", "blue", "violet")))
+
+    fig, (ax1, ax2) = plt.subplots(1, 2)
     plt.imshow(img)
     if boxes:
-        colours = ("red", "green", "orange", "blue", "violet")
-        for bounds, colour in zip(boxes, cycle(colours)):
-            box = ax.add_patch(
+        for bounds, colour in zip(boxes, colours):
+            box = ax2.add_patch(
                 Rectangle(
                     bounds[:2],
                     bounds[2] - bounds[0],
@@ -105,4 +111,14 @@ def show(img: Image.Image, boxes: Iterable[tuple] = None) -> None:
                     lw=0.5,
                 )
             )
+    # fig2, ax2 = plt.subplots()
+    # ax2 = ax.twiny()
+    if graphs is not None:
+        for graph in graphs:
+            ax1.plot(graph, range(len(graph)), color=next(colours))
+
+    if lines is not None:
+        for line in lines:
+            ax1.vlines([line], 0, img.height, color=next(colours))
+    # plt.tight_layout()
     plt.show()
