@@ -20,6 +20,7 @@ https://github.com/GeoHistoricalData/gallipy
 import json
 import re
 import urllib.parse
+from random import randint
 from time import monotonic, sleep
 from urllib.error import URLError
 
@@ -65,7 +66,7 @@ def _fetch(url, timeout=30):
     res = client.get(url, timeout=timeout)
     if res.status_code == 429:
         backoff += 1
-        delay = res.headers.get("wait-until", 150 * backoff)
+        delay = res.headers.get("wait-until", 150 * backoff) + randint(0, 60)
         print("Got 429, sleeping...", delay)
         print(res.headers)
         print(res.text)
