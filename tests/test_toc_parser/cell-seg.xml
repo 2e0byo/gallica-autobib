@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI.2 xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://bibnum.bnf.fr/ns/tdmNum.xsd"><text id="tdm.6554949">
+
+        <body>
+            <div0 type="TdM">
+
+                <head>Sommaire</head>
+
+                <head>N° 114</head>
+                <div1>
+
+                    <head>SÉMIOLOGIE ET LITURGIE</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000001">
+                                    <persName>Michel AMALADOSS</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000001">
+                                    <title>Sémiologie et sacrement</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000009.TIF)" n="lie.000001" type="image">7</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000002">
+                                    <persName>Jean CALLOUD</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000002">
+                                    <title>Sémio-linguistique et texte liturgique</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000038.TIF)" n="lie.000002" type="image">36</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000003">
+                                    <persName>Jean-Yves HAMELINE</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000003">
+                                    <title>Lectures en sémiologie. Biblio graphie sélective</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000061.TIF)" n="lie.000003" type="image">59</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>RECHERCHES LITURGIQUES</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000004">
+                                    <persName>Irénée-Henri DALMAIS</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000004">
+                                    <title>Le reflet de sa gloire. Architecture et iconographie chrétienne</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000070.TIF)" n="lie.000004" type="image">68</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000005">
+                                    <persName>Joseph GELINEAU</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000005">
+                                    <title>Une technique à retrouver: le bon usage d'un modèle dans les prières liturgiques</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000087.TIF)" n="lie.000005" type="image">85</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000006">Sr <persName>MARIE DU SAINT-ESPRIT</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000006">
+                                    <title>La créativité liturgique à travers quelques revues (1969-1972)</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000099.TIF)" n="lie.000006" type="image">97</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>DOCUMENTS</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000007">
+                                    <persName>André VINEL</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000007">
+                                    <title>L'instruction "Immensae Cari-tatis"</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000112.TIF)" n="lie.000007" type="image">110</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000008">
+                                    <persName>CELAM</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000008">
+                                    <title>Liturgie et Communautés Chrétiennes de Base</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000116.TIF)" n="lie.000008" type="image">114</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>NOTES DE LECTURE</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000009">
+                                    <persName>Irénée-Henri DALMAIS</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000009">
+                                    <title>Pour une théologie de la prière eucharistique</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000129.TIF)" n="lie.000009" type="image">127</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000010">
+                                    <persName>Jean GRIBOMONT</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000010">
+                                    <title>Rome et les moines. Le principal document sur l'Office au VI<hi rend="sup">e</hi> siècle remis en question</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000137.TIF)" n="lie.000010" type="image">135</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>CHRONIQUES</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000011">
+                                    <persName>Pierre-Marie GY</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000011">
+                                    <title>L'oeuvre scientifique de Dom Botte</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000143.TIF)" n="lie.000011" type="image">141</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000012">INSTITUT DE LITURGIE</seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000012">
+                                    <hi rend="italic">Questions d'aujourd'hui et recherche sacramentaire fondamentale</hi>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000149.TIF)" n="lie.000012" type="image">147</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000013">
+                                    <persName>Jean BIHAN</persName>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <seg n="int.000013">
+                                    <title>L'Institut de Musique Liturgique de Paris</title>
+                                </seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN (6554949/000153.TIF)" n="lie.000013" type="image">151</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>COMPTES RENDUS</head>
+                    <div2>
+
+                        <head>Etudes bibliques</head>
+                        <table>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000014">
+                                        <persName>CARREZ, M.</persName>
+                                        <persName>MOREL, Fr.</persName>
+                                        <title>Dictionnaire grec-français du Nouveau Testament</title> (<persName>Cl. Wiéner</persName>),
+                                    </seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000157.TIF)" n="lie.000014" type="image">155</xref>.</cell>
+                            </row>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000015">- <persName>TRILLING, W</persName>. <title>L'annonce du Christ dans les Evangiles synoptiques</title> (<persName>Cl. Wiéner</persName>),</seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000158.TIF)" n="lie.000015" type="image">156</xref>.</cell>
+                            </row>
+                        </table>
+                    </div2>
+                    <div2>
+
+                        <head>Etudes liturgiques</head>
+                        <table>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000016">
+                                        <title>La prière des Eglises de rite byzantin, t. 3, Dimanche. Office selon les huit tons</title> (<persName>I.-H. Dalmais</persName>),
+                                    </seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000159.TIF)" n="lie.000016" type="image">157</xref>.</cell>
+                            </row>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000017">- <persName>PINELL, J</persName>. (ed). <title>Liber orationum psalmographus colectas de Salmos del antiguo rito hispanico</title> (<persName>I.-H. Dalmais</persName>),</seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000160.TIF)" n="lie.000017" type="image">158</xref>.</cell>
+                            </row>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000018">- <persName>SCHMIDT, H</persName>. <title>Bidden onderweg van 1960 tot 1970. Documentaire studie met bibliografie en citaten-selectie</title> (<persName>Th. Patfoort</persName>),</seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000161.TIF)" n="lie.000018" type="image">159</xref>.</cell>
+                            </row>
+                        </table>
+                    </div2>
+                    <div2>
+
+                        <head>Mission et liturgie</head>
+                        <table>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000019">
+                                        <persName>BAUMGARTNER, J</persName>. <title>Mission und Liturgie in Mexiko, t. 1 et 2</title> (<persName>J. Lafaye</persName>),
+                                    </seg>
+                                </cell>
+                                <cell>p. <xref from="FOREIGN (6554949/000162.TIF)" n="lie.000019" type="image">160</xref>.</cell>
+                            </row>
+                            <row>
+                                <cell />
+                                <cell>
+                                    <seg n="int.000020">Livres reçus</seg>
+                                </cell>
+                                <cell>
+                                    <xref from="FOREIGN (6554949/000166.TIF)" n="lie.000020" type="image">164</xref>
+                                </cell>
+                            </row>
+                        </table>
+                    </div2>
+                </div1>
+            </div0>
+        </body>
+    </text>
+</TEI.2>

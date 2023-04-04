@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI.2 xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://bibnum.bnf.fr/ns/tdmNum.xsd"><text id="tdm.9736478">
+
+        <body>
+            <div0 type="Index">
+
+                <head>TABLE DES MATIÈRES DU TOME II</head>
+                <div1>
+
+                    <head>Les principes et la pratique</head>
+                    <list>
+                        <item>
+                            <seg n="int.000001">M.-V. Bernadot. - Le développement historique de la dévotion au Sacré-C?ur</seg>
+                            <xref from="FOREIGN(9736478/000179.jp2)" n="lie.000001" type="image">193</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000002">J. Carme. - La pratique de la dévotion au Sacré-C?ur</seg>
+                            <xref from="FOREIGN(9736478/000202.jp2)" n="lie.000002" type="image">216</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000003">J.-M. Dumas. - L?ascétique et la mystique de l'Imitation</seg>
+                            <xref from="FOREIGN(9736478/000419.jp2)" n="lie.000003" type="image">433</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000004">E. Dublanchy. - Marie, modèle et principe de perfection</seg>
+                            <xref from="FOREIGN(9736478/000364.jp2)" n="lie.000004" type="image">378</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000005">R. Garrigou-Lagrange. - La mystique et la doctrine de saint Thomas sur l'efficacité de la grâce</seg>
+                            <xref from="FOREIGN(9736478/000003.jp2)" n="lie.000005" type="image">1</xref>, <xref from="FOREIGN(9736478/000083.jp2)" n="lie.000005" type="image">81</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000006">R. Garrigou-Lagrange. Le C?ur eucharistique de Jésus</seg>
+                            <xref from="FOREIGN(9736478/000173.jp2)" n="lie.000006" type="image">187</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000007">E. Hugon. - Le mérite dans la vie spirituelle</seg>
+                            <xref from="FOREIGN(9736478/000030.jp2)" n="lie.000007" type="image">28</xref>, <xref from="FOREIGN(9736478/000259.jp2)" n="lie.000007" type="image">273</xref>, <xref from="FOREIGN(9736478/000339.jp2)" n="lie.000007" type="image">353</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000008">E. Hugon. Les fondements théologiques de la dévotion au Sacré-C?ur</seg>
+                            <xref from="FOREIGN(9736478/000163.jp2)" n="lie.000008" type="image">177</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000009">D. Joret. - L?ascension de l'âme vers la contemplation</seg>
+                            <xref from="FOREIGN(9736478/000040.jp2)" n="lie.000009" type="image">38</xref>, <xref from="FOREIGN(9736478/000111.jp2)" n="lie.000009" type="image">109</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000010">D. Joret. L?élément fondamental de l'état mystique</seg>
+                            <xref from="FOREIGN(9736478/000269.jp2)" n="lie.000010" type="image">283</xref>, <xref from="FOREIGN(9736478/000344.jp2)" n="lie.000010" type="image">358</xref>, <xref from="FOREIGN(9736478/000435.jp2)" n="lie.000010" type="image">449</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000011">Dom B. Maréchaux. - La perfection d?après saint Augustin</seg>
+                            <xref from="FOREIGN(9736478/000052.jp2)" n="lie.000011" type="image">50</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000012">Dom B. Maréchaux. - Les caractères de l?antique spiritualité</seg>
+                            <xref from="FOREIGN(9736478/000143.jp2)" n="lie.000012" type="image">141</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000013">Dom B. Maréchaux. - Les fruits de la dévotion au Sacré-C?ur</seg>
+                            <xref from="FOREIGN(9736478/000215.jp2)" n="lie.000013" type="image">229</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000014">A. Montagne. - L?organisme surnaturel de l?âme chrétienne</seg>
+                            <xref from="FOREIGN(9736478/000019.jp2)" n="lie.000014" type="image">17</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000015">H.-D. Noble. - L?activité de la conscience morale</seg>
+                            <xref from="FOREIGN(9736478/000102.jp2)" n="lie.000015" type="image">100</xref>
+                        </item>
+                    </list>
+                </div1>
+                <div1>
+
+                    <head>Les maîtres et les modèles</head>
+                    <list>
+                        <item>
+                            <seg n="int.000016">M.-C. de Ganay. - La bienheureuse Jeanne-Marie Bonomo.</seg>
+                            <xref from="FOREIGN(9736478/000296.jp2)" n="lie.000016" type="image">310</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000017">A. Gonon. - Sainte Marguerite-Marie</seg>
+                            <xref from="FOREIGN(9736478/000228.jp2)" n="lie.000017" type="image">242</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000018">Dom P. de Puniet. - La place du Christ dans la doctrine de Louis de Blois</seg>
+                            <xref from="FOREIGN(9736478/000372.jp2)" n="lie.000018" type="image">386</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000019">Dom P. de Puniet. La contemplation d?après Louis de Blois</seg>
+                            <xref from="FOREIGN(9736478/000451.jp2)" n="lie.000019" type="image">465</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000020">A. Saudreau. - Un disciple de saint Macaire</seg>
+                            <xref from="FOREIGN(9736478/000290.jp2)" n="lie.000020" type="image">304</xref>
+                        </item>
+                    </list>
+                </div1>
+                <div1>
+
+                    <head>Textes anciens</head>
+                    <list>
+                        <item>
+                            <seg n="int.000021">Anonyme du XIII<hi rend="sup">e</hi> siècle. - Aspirations au C?ur de Jésus.</seg>
+                            <xref from="FOREIGN(9736478/000242.jp2)" n="lie.000021" type="image">256</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000022">B. Albert le Grand. - La charité</seg>
+                            <xref from="FOREIGN(9736478/000306.jp2)" n="lie.000022" type="image">320</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000023">Sainte Gertrude. - Le Sacré-C?ur et notre sanctification</seg>
+                            <xref from="FOREIGN(9736478/000250.jp2)" n="lie.000023" type="image">264</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000024">S. Léon le Grand. - Pour la Pentecôte</seg>
+                            <xref from="FOREIGN(9736478/000150.jp2)" n="lie.000024" type="image">148</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000025">Louis de Blois. - L?Humanité du Christ et la contemplation</seg>
+                            <xref from="FOREIGN(9736478/000250.jp2)" n="lie.000025" type="image">264</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000026">Louis de Blois. Pour parvenir à la perfection</seg>
+                            <xref from="FOREIGN(9736478/000472.jp2)" n="lie.000026" type="image">486</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000027">S. Thomas d?Aquin. - La charité éternelle de Dieu</seg>
+                            <xref from="FOREIGN(9736478/000244.jp2)" n="lie.000027" type="image">258</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000028">S. Thomas d?Aquin. La parabole de la vigne</seg>
+                            <xref from="FOREIGN(9736478/000061.jp2)" n="lie.000028" type="image">59</xref>
+                        </item>
+                    </list>
+                </div1>
+                <div1>
+
+                    <head>Les idées et les ?uvres</head>
+                    <list>
+                        <item>
+                            <seg n="int.000029">J. du Bourg. - Le Carmel</seg>
+                            <xref from="FOREIGN(9736478/000312.jp2)" n="lie.000029" type="image">326</xref>, <xref from="FOREIGN(9736478/000398.jp2)" n="lie.000029" type="image">412</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000030">J. Carme. - Le surhomme et le saint</seg>
+                            <xref from="FOREIGN(9736478/000406.jp2)" n="lie.000030" type="image">420</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000031">F. Cazes. - La théologie mystique de saint Thomas d'Aquin</seg>
+                            <xref from="FOREIGN(9736478/000072.jp2)" n="lie.000031" type="image">70</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000032">Chefs-d??uvre ascétiques et mystiques</seg>
+                            <xref from="FOREIGN(9736478/000157.jp2)" n="lie.000032" type="image">155</xref>
+                        </item>
+                    </list>
+                </div1>
+                <div1>
+
+                    <head>Comptes-rendus bibliographiques</head>
+                    <list>
+                        <item>
+                            <seg n="int.000033">J. Arintero. - El cantar de los Cantares</seg>
+                            <xref from="FOREIGN(9736478/000411.jp2)" n="lie.000033" type="image">425</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000034">A. Boissel. - Retraites fermées</seg>
+                            <xref from="FOREIGN(9736478/000416.jp2)" n="lie.000034" type="image">430</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000035">P. Cotel. - Catéchisme des v?ux</seg>
+                            <xref from="FOREIGN(9736478/000081.jp2)" n="lie.000035" type="image">79</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000036">P. Emmanuel. - Les Exercices de sainte Gertrude</seg>
+                            <xref from="FOREIGN(9736478/000077.jp2)" n="lie.000036" type="image">75</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000037">La Société d?études religieuses</seg>
+                            <xref from="FOREIGN(9736478/000417.jp2)" n="lie.000037" type="image">431</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000038">A. Gonon. - Jésus vivant dans le chrétien</seg>
+                            <xref from="FOREIGN(9736478/000080.jp2)" n="lie.000038" type="image">78</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000039">M. et R. Havard de la Montagne. - Sainte Catherine de Sienne</seg>
+                            <xref from="FOREIGN(9736478/000080.jp2)" n="lie.000039" type="image">78</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000040">Dom C. Leduc. - Catéchisme liturgique</seg>
+                            <xref from="FOREIGN(9736478/000342.jp2)" n="lie.000040" type="image">356</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000041">Dom C. Marmion. - Le Christ vie de l'âme</seg>
+                            <xref from="FOREIGN(9736478/000490.jp2)" n="lie.000041" type="image">504</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000042">P. Piny. - La présence de Dieu</seg>
+                            <xref from="FOREIGN(9736478/000078.jp2)" n="lie.000042" type="image">76</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000043">P. Piny. La clef du pur amour</seg>
+                            <xref from="FOREIGN(9736478/000078.jp2)" n="lie.000043" type="image">76</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000044">P. Plus. - Dieu en nous</seg>
+                            <xref from="FOREIGN(9736478/000079.jp2)" n="lie.000044" type="image">77</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000045">P. Plus. L?idée réparatrice</seg>
+                            <xref from="FOREIGN(9736478/000079.jp2)" n="lie.000045" type="image">77</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000046">L. Prunel. - Les sacrements</seg>
+                            <xref from="FOREIGN(9736478/000081.jp2)" n="lie.000046" type="image">79</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000047">A. Saudreau. - L?idéal de l'
+                                <gap extent="words" reason="illegible" />.
+                            </seg>
+                            <xref from="FOREIGN(9736478/000418.jp2)" n="lie.000047" type="image">432</xref>
+                        </item>
+                        <item>
+                            <seg n="int.000048">Revue "Lumen"</seg>
+                            <xref from="FOREIGN(9736478/000417.jp2)" n="lie.000048" type="image">431</xref>
+                        </item>
+                    </list>
+                </div1>
+            </div0>
+        </body>
+    </text></TEI.2>

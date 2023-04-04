@@ -34,6 +34,7 @@ from .cache import SQLCached, data_cache, download, img_data_cache, response_cac
 from .debug import debug
 from .gallipy import Ark, Resource
 from .models import Article, Book, Collection, GallicaBibObj, Journal
+from .toc_parser import parse_xml_toc
 
 if TYPE_CHECKING:  # pragma: nocover
     from pydantic.typing import ReprArgs  # pragma: nocover
@@ -599,8 +600,12 @@ class GallicaArticleMixin(Matcheable):
                 return True
         else:
             self.logger.debug("Failed to find author on first page.")
-        end_p = self.get_physical_pno(target.pages[-1], pages)
-        end_page = make_string_boring(self.fetch_text(journal, end_p))
+        end_p = int(self.get_physical_pno(target.pages[-1], pages))
+        end_page = ""
+        while not end_page:
+            end_page = make_string_boring(self.fetch_text(journal, end_p))
+            end_p -= 1
+        assert all((author, end_page))
         if matches := find_near_matches(author, end_page, max_l_dist=5):
             if fuzz.ratio(matches[0].matched, author) > 80:
                 return True
@@ -622,29 +627,27 @@ class GallicaArticleMixin(Matcheable):
 
         """
         target: Article = self.target  # type: ignore
-        target_start_p = str(target.pages[0])
-        entries = [x for x in self.parse_gallica_toc(toc) if x[0] == target_start_p]
-        entries.sort(key=lambda x: int(x[0]))
+        entries = parse_xml_toc(toc)
+        entries.sort(key=lambda e: e.start_pages)
         articles = []
-        for i, x in enumerate(entries):
+        for i, entry in enumerate(entries):
             args = data.copy()
-            start_p, title = x
-            try:
-                author, title = search(r"(.+?)\.* - (.+)", title).groups()  # type: ignore
-            except AttributeError:
-                try:
-                    author, title = search(r"(.+?)\. (.+)", title).groups()  # type: ignore
-                except AttributeError:
-                    self.logger.debug(f"Unable to parse toc entry {x[1]}")
-                    author = ""
 
-            args["author"] = author.strip()
-            args["title"] = title.strip()
+            args["author"] = entry.author
+            args["title"] = entry.title
+            if not entry.start_pages:
+                self.logger.debug(
+                    "Skipping entry with no associated page, perhaps write a better parser..."
+                )
+                continue
+            if len(entry.start_pages) > 1:
+                self.logger.warn("Got multiple first pages; ignore all but first!")
+            start_p = entry.start_pages[0]
             try:
-                end_p = int(entries[i + 1][0]) - 1
+                end_p = entries[i + 1].start_pages[0] - 1
             except IndexError:
-                end_p = self.get_last_pno(pages)  # type: ignore
-            args["pages"] = list(range(int(start_p), int(end_p) + 1))
+                end_p = int(self.get_last_pno(pages))
+            args["pages"] = list(range(start_p, end_p + 1))
             physical_start_p = self.get_physical_pno(start_p, pages)
             physical_end_p = self.get_physical_pno(str(end_p), pages)
             args["physical_pages"] = list(
@@ -749,38 +752,6 @@ class GallicaJournalMixin(Matcheable):
         resp.update({k: int(v.group(1)) for k, v in resp.items() if v})  # type: ignore
         return resp
 
-    @staticmethod
-    def parse_gallica_toc(xml: str) -> List[Tuple[str, str]]:
-        """Parse Gallica' toc xml.  There are, needless to say, *several* forms."""
-        soup = BeautifulSoup(xml, "xml")
-        toc = []
-        if rows := soup.find_all("row"):
-            for row in rows:
-                title = pno = None
-                if seg := row.find("seg"):
-                    title = seg.text.strip()
-                if xref := row.find("xref"):
-                    pno = xref.text.strip()
-                if title and pno:
-                    toc.append((pno, title))
-        elif items := soup.find_all("item"):
-            for item in items:
-                if not item.find("seg"):
-                    continue
-                toc.append((item.xref.text.strip(), item.seg.text.strip()))
-        elif trs := soup.find_all("tr"):
-            for row in trs:
-                tds = row.find_all("td")
-                if len(tds) != 2:
-                    continue
-                title = tds[0].text.strip()
-                pno = tds[1].text.strip()
-                toc.append((pno, title))
-        else:
-            raise Exception("Unable to parse provided toc.")
-
-        return toc
-
 
 class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleMixin):
     """A matched resource on gallica."""
@@ -847,11 +818,14 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
         """The pages we want to get from the target, as views (physical pnos)."""
         if not self._desired_pages:
             if hasattr(self.target, "pages"):
-                self._desired_pages = [
+                # Multiple pages may end up mapping to the same physical page
+                pages = set(
                     self.get_physical_pno(p) for p in self.target.pages  # type: ignore
-                ]
+                )
+                self._desired_pages = list(sorted(pages))
             else:
-                pages = self.pages
+                # just get all pages
+                pages = self.pages["pages"]["page"]
                 self._desired_pages = [int(p["ordre"]) for p in pages]  # type: ignore
 
         return self._desired_pages
@@ -905,7 +879,8 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
     def start_p(self) -> Optional[int]:
         """Physical page we start on."""
         if not self._start_p:
-            self._start_p = int(self.get_physical_pno(self.target.pages[0]))  # type: ignore
+            start = self.target.pages[0]
+            self._start_p = int(self.get_physical_pno(start))  # type: ignore
         return self._start_p
 
     @DownloadableResource.end_p.getter  # type: ignore
