@@ -35,8 +35,8 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[st
             raise NotImplementedError("Finding pages is not implemented.")
 
         if pages and not isinstance(pages, list):
-            roman = "i" in pages.lower()
-            lower = "i" in pages
+            roman = any(x in pages.lower() for x in "ivxlcm")
+            roman = any(x in pages for x in "ivxlcm")
             try:
                 pages = pages.replace("--", "-")
                 start, end = pages.split("-")
