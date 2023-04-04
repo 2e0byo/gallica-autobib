@@ -66,6 +66,13 @@ def process(
     download_args: Dict[str, bool] = {}
     logging.basicConfig(level=log_level[verbosity])
 
+    if ignore_cache:
+        from . import cache
+
+        cache.response_cache.enabled = False
+        cache.data_cache.enabled = False
+        cache.img_data_cache.enabled = False
+
     args = dict(
         outdir=outdir,
         process_args=process_args,

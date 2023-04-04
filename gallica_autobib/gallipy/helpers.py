@@ -20,46 +20,70 @@ https://github.com/GeoHistoricalData/gallipy
 import json
 import re
 import urllib.parse
-from time import sleep
+from time import monotonic, sleep
+from urllib.error import URLError
 
 import httpx
 from bs4 import BeautifulSoup
 
+from ..cache import response_cache
 from .monadic import Either, Left
 
 _BASE_PARTS = {"scheme": "https", "netloc": "gallica.bnf.fr"}
 USER_AGENT = "gallica-autobib/0.1"
 
+_rate_cache = {}
+
+
+def ratelimit(url):
+    """Sleep if required to keep our rates to a given host within bounds."""
+    LIMIT_S = 2
+    host = url.split("/")[2]
+    if last_timestamp := _rate_cache.get(host):
+        to_wait = LIMIT_S - (monotonic() - last_timestamp)
+        if to_wait > 0:
+            print("Waiting", to_wait, "S to avoid ratelimit")
+            sleep(to_wait)
+    _rate_cache[host] = monotonic()
+
+
+def autodetect(content: str) -> str:
+    return chardet.detect(content).get("encoding")
+
+
+client = httpx.Client()
+
+backoff = 0
+
+
+@response_cache
+def _fetch(url, timeout=30):
+    """Fetches data from a URL."""
+    global backoff
+    ratelimit(url)
+    res = client.get(url, headers={"user-agent": USER_AGENT}, timeout=timeout)
+    if res.status_code == 429:
+        backoff += 1
+        delay = res.headers.get("wait-until", 150 * backoff)
+        print("Got 429, sleeping...", delay)
+        print(res.headers)
+        print(res.text)
+        sleep(delay)
+        return fetch(url, timeout)
+    backoff = 0
+    res.raise_for_status()
+    if res.text:
+        return res.text
+    else:
+        raise Exception("Empty response from {}".format(url))
+
 
 def fetch(url, timeout=30):
-    """Fetches data from an URL
-
-    Fetch data from URL and wraps the unicode encoded response in an Either object.
-
-    Args:
-        url (str): An URL to fetch.
-        timeout (:obj:int, optional): Sets a timeout delay (Optional).
-
-    Returns:
-        Either[Exception Unicode]: The response content if everything went fine
-            and Exception otherwise.
-    """
     try:
-        res = httpx.get(url, headers={"user-agent": USER_AGENT}, timeout=timeout)
-        if res.status_code == 429:
-            print("Got 429, sleeping...")
-            print(res.headers)
-            print(res.text)
-            sleep(res.headers.get("wait-until", 150))
-            return fetch(url, timeout)
-        res.raise_for_status()
-        if res.text:
-            return Either.pure(res.text)
-        else:
-            raise Exception("Empty response from {}".format(url))
+        return Either.pure(_fetch(url, timeout))
     except Exception as ex:
         pattern = "Error while fetching URL {}\n{}"
-        err = urllib.error.URLError(pattern.format(url, str(ex)))
+        err = URLError(pattern.format(url, str(ex)))
         return Left(err)
 
 
@@ -81,8 +105,8 @@ def fetch_xml_html(url, parser="xml", timeout=30):
     try:
         return (
             fetch(url, timeout)
-            .map(lambda res: re.sub('encoding=".+?"', 'encoding="utf8"', res))
-            .map(lambda res: str(BeautifulSoup(res, parser, from_encoding="utf-8")))
+            .map(lambda res: re.sub('encoding=".+?"', 'encoding="utf-8"', res))
+            .map(lambda res: str(BeautifulSoup(res, parser)))
         )
     except urllib.error.URLError as ex:
         pattern = "Error while fetching XML from {}\n{}"

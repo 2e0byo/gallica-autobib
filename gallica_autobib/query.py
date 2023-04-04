@@ -39,9 +39,6 @@ if TYPE_CHECKING:  # pragma: nocover
     from pydantic.typing import ReprArgs  # pragma: nocover
 
 
-gallipy.helpers.fetch = response_cache(gallipy.helpers.fetch)
-
-
 Pages = OrderedDict[str, OrderedDict[str, OrderedDict]]
 ark_cache = SQLCached("ark")
 source_match_cache = SQLCached("source_match")

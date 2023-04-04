@@ -48,8 +48,11 @@ class Cached(UserDict):
                 )
                 resp = self.get(key)
                 if not resp:
+                    logger.debug(f"Cache miss for {key}")
                     resp = fn(*args, **kwargs)
                     self[key] = resp
+                else:
+                    logger.debug(f"Cache hit for {key}")
                 return resp
             return fn(*args, **kwargs)
 

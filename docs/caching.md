@@ -57,5 +57,7 @@ Data caching (pdfs) is enabled if the `DATA_CACHE` environment variable is set.
 Once again these caches are *not* intended for use in production. In particular,
 note that these caches currently have *no eviction strategy*.
 
+Setting `--ignore-cache` overrides anything set in the environment.
+
 [^1]: It would make no sense to cache the HEAD request which is used to see if a
       pdf download is possible.  Thus the testsuite will not run fully offline.
