@@ -200,7 +200,10 @@ class Query(
         """Convert resp to GallicaBibObj"""
         resp["ark"] = self.get_at_str(resp["identifier"])
         # could use a Language() obj to internationalise this
-        resp["language"] = resp["language"][1]
+        try:
+            resp["language"] = resp["language"][1]
+        except KeyError:
+            resp["language"] = resp["title"][1]["lang"]
         resp["type"] = resp["type"][0]["text"]
         if "publisher" in resp.keys():
             resp["publisher"] = self.get_at_str(resp["publisher"])
