@@ -51,7 +51,8 @@ def autodetect(content: str) -> str:
     return chardet.detect(content).get("encoding")
 
 
-client = httpx.Client()
+# Sometimes they redirect to retronews.  Later on we could add a note for the user who could go there to read the article (possibly).
+client = httpx.Client(follow_redirects=False, headers={"user-agent": USER_AGENT})
 
 backoff = 0
 
@@ -61,7 +62,7 @@ def _fetch(url, timeout=30):
     """Fetches data from a URL."""
     global backoff
     ratelimit(url)
-    res = client.get(url, headers={"user-agent": USER_AGENT}, timeout=timeout)
+    res = client.get(url, timeout=timeout)
     if res.status_code == 429:
         backoff += 1
         delay = res.headers.get("wait-until", 150 * backoff)
