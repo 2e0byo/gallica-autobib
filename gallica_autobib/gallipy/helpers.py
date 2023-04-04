@@ -70,7 +70,7 @@ def _fetch(url, timeout=30):
         print(res.headers)
         print(res.text)
         sleep(delay)
-        return fetch(url, timeout)
+        return _fetch(url, timeout)
     backoff = 0
     res.raise_for_status()
     if res.text:
