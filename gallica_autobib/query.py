@@ -200,7 +200,7 @@ class Query(
         try:
             resp["language"] = resp["language"][1]
         except KeyError:
-            resp["language"] = resp["title"][1]["lang"]
+            resp["language"] = "fre"  # well it's from gallica, right
         resp["type"] = resp["type"][0]["text"]
         if "publisher" in resp.keys():
             resp["publisher"] = self.get_at_str(resp["publisher"])
