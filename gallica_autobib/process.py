@@ -222,7 +222,7 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     upper_search = gradient[upper.y : upper_bound : -1]
     lower_search = gradient[lower.y : lower_bound]
 
-    thresh = 1.5
+    thresh = 0.5
     lower_diff_thresh = gmean - thresh * gstd
     upper_diff_thresh = gmean + thresh * gstd
 
@@ -235,6 +235,8 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
             break
 
     up = up if peaked == 2 else 0  # skipcq: PYL-W0631
+    if up:
+        up += 20
 
     peaked = 0
     for down, x in enumerate(lower_search):
@@ -245,6 +247,8 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
             break
 
     down = down if peaked == 2 else 0  # skipcq: PYL-W0631
+    if down:
+        down += 20
 
     GROW_PIXELS = 10
     bbox = Bbox(
