@@ -53,7 +53,12 @@ def prettify(pages: list[int], arabic: bool) -> str:
         start = str(pages[0])
         end = str(pages[-1])
         if len(start) == len(end):
-            end = "".join(end[i] for i in range(len(end)) if end[i] != start[i])
+            pretty_end = ""
+            for i, (s, e) in enumerate(zip(start, end)):
+                if s != e:
+                    pretty_end += end[i:]
+                    break
+            end = pretty_end
         return f"{start}--{end}"
     # for now we don't do anything clever with roman numerals, although
     # combining is possible.

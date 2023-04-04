@@ -36,14 +36,14 @@ def parse_bibtex(bibtex: Union[str, TextIO]) -> Tuple[List[RecordTypes], List[st
 
         if pages and not isinstance(pages, list):
             roman = any(x in pages.lower() for x in "ivxlcm")
-            roman = any(x in pages for x in "ivxlcm")
+            lower = any(x in pages for x in "ivxlcm")
             try:
                 pages = pages.replace("--", "-")
                 start, end = pages.split("-")
                 startno = fromRoman(start.upper()) if roman else int(start)
                 endno = fromRoman(end.upper()) if roman else int(end)
                 if not roman and endno < startno:
-                    endno = int(f"{start[0]}{end}")
+                    endno = int(f"{start[:-len(str(endno))]}{end}")
                 record["pages"] = list(range(startno, endno + 1))
                 if roman:
                     record["pages"] = [
