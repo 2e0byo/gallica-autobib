@@ -110,29 +110,38 @@ class TitleXrefPersnameParser(Parser):
             )
 
 
-class ItemSegParser(Parser):
+class XrefSegParser(Parser):
     """Parser for the list/item/seg format."""
 
     def matches(self) -> bool:
-        return bool(self.soup.find_all("item"))
+        return all(
+            (
+                self.soup.find("seg"),
+                self.soup.find("xref"),
+            )
+        )
 
     def parse_soup(self) -> Iterable[TocLine]:
-        for row in self.soup.find_all("item"):
-            segs = row.find_all("seg")
+        done = set()
+        for container in self.soup.find_all("seg"):
+            segs = xrefs = None
+            while not (segs and xrefs):
+                container = container.parent
+                segs = container.find_all("seg")
+                xrefs = container.find_all("xref")
+            if container in done:
+                continue
             if len(segs) != 1:
-                self.logger.debug(f"Skipping line {row.prettify()}")
-            xrefs = row.find_all("xref")
+                self.logger.debug(f"Skipping line {container.prettify()}")
             author, title = self.try_split_author_title(self.concat(segs))
             start_pages, end_pages = self.parse_pages(self.concat(xrefs))
-            try:
-                yield TocLine(
-                    author=author,
-                    title=title,
-                    start_pages=start_pages,
-                    end_pages=end_pages,
-                )
-            except Exception:
-                breakpoint()
+            done.add(container)
+            yield TocLine(
+                author=author,
+                title=title,
+                start_pages=start_pages,
+                end_pages=end_pages,
+            )
 
 
 class TrParser(Parser):
@@ -180,7 +189,7 @@ def parse_xml_toc(xml: str) -> list[TocLine]:
         Path(outdir, "row", f"{c['row']:04}.xml").write_text(soup.prettify())
         return parser.parse()
 
-    parser = ItemSegParser(soup)
+    parser = XrefSegParser(soup)
     if parser.matches():
         c["item"] += 1
         Path(outdir, "item", f"{c['item']:04}.xml").write_text(soup.prettify())

@@ -16,6 +16,7 @@ test_dir = Path(__file__).with_suffix("")
         "item-seg3.xml",
         "tr.xml",
         "cell-seg2.xml",
+        "xref-seg.xml",
     ],
 )
 def test_toc_parser(fn, data_regression):

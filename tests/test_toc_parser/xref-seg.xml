@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TEI.2 xmlns:xlink="http://www.w3.org/TR/xlink" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://bibnum.bnf.fr/ns/tdmNum.xsd"><text id="tdm.9736026">
+
+        <body>
+            <div0 type="TdM">
+
+                <head>Sommaire:</head>
+
+                <head>2<hi rend="sup">e</hi> ANNÉE. - 19 - Tome II. - N°1</head>
+                <div1>
+
+                    <head>LES PRINCIPES ET LA PRATIQUE</head>
+                    <table>
+                        <row>
+                            <cell />
+                            <cell>Pages</cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000001">R. GARRIGOU-LAGRANGE. La perfection de la charité</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000007.jp2)" n="lie.000001" type="image">1</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000002">D. JORET A l?école du Maître intérieur</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000027.jp2)" n="lie.000002" type="image">21</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>LES MAITRES ET LES MODÈLES</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000003">R. GÉNYER La doctrine spirituelle de Saint Jérôme</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000054.jp2)" n="lie.000003" type="image">48</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000004">Dom E. PICHERY Les conférences de Cassien</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000061.jp2)" n="lie.000004" type="image">55</xref>
+                            </cell>
+                        </row>
+                        <row>
+                            <cell>
+                                <seg n="int.000005">Jean CASSIEN Une tentation de lassitude</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000073.jp2)" n="lie.000005" type="image">67</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+                <div1>
+
+                    <head>LES IDÉES ET LES ?UVRES</head>
+                    <table>
+                        <row>
+                            <cell>
+                                <seg n="int.000006">Jacques MISSOFFE La Ligue spirituelle des corporations chrétiennes</seg>
+                            </cell>
+                            <cell>
+                                <xref from="FOREIGN(9736026/000083.jp2)" n="lie.000006" type="image">77</xref>
+                            </cell>
+                        </row>
+                    </table>
+                </div1>
+            </div0>
+        </body>
+    </text></TEI.2>
