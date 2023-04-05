@@ -259,7 +259,11 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     )
     # show(
     #     img,
-    #     [bbox, Bbox(upper.x, upper.y - search, lower.x, lower.y + search)],
+    #     [
+    #         bbox,
+    #         Bbox(upper.x, upper.y - search, lower.x, lower.y + search),
+    #         Bbox(upper.x, upper.y, lower.x, lower.y),
+    #     ],
     #     [gradient],
     #     [lower_diff_thresh, upper_diff_thresh],
     # )
@@ -295,7 +299,6 @@ def _setbox(box: RectangleObject, xdiff: Real, ydiff: Real) -> None:
 
 
 def scale_page(page: PageObject, max_width: int, max_height: int) -> None:
-
     xdiff = max(0, (max_width - page.mediaBox.getWidth()) / 2)
     ydiff = max(0, (max_height - page.mediaBox.getHeight()) / 2)
     _setbox(page.mediaBox, xdiff, ydiff)
@@ -385,7 +388,6 @@ def process_pdf(
 
     # crop pages
     for pno, page in progressbar(interesting_pages):
-
         img, crop_bbox, scale = extract_page(page)
         if ocr_data:
             crop_bbox = ocr_crop_bounds(img, ocr_data[pno])
