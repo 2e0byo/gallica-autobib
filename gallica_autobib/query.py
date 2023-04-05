@@ -640,7 +640,6 @@ class GallicaArticleMixin(Matcheable):
         """
         target: Article = self.target  # type: ignore
         entries = parse_xml_toc(toc)
-        entries.sort(key=lambda e: e.start_pages)
         articles = []
         for i, entry in enumerate(entries):
             args = data.copy()
