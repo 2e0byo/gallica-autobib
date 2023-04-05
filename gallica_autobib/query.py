@@ -344,7 +344,7 @@ class DownloadableResource(Representation):
         for p in pnos:
             if p["numero"] == logical_pno:
                 break
-        return p["ordre"]
+        return int(p["ordre"])
 
     @img_data_cache
     @staticmethod
@@ -830,14 +830,12 @@ class GallicaResource(DownloadableResource, GallicaJournalMixin, GallicaArticleM
         if not self._desired_pages:
             if hasattr(self.target, "pages"):
                 # Multiple pages may end up mapping to the same physical page
-                pages = set(
-                    self.get_physical_pno(p) for p in self.target.pages  # type: ignore
-                )
+                pages = set(self.get_physical_pno(p) for p in self.target.pages)
                 self._desired_pages = list(sorted(pages))
             else:
                 # just get all pages
                 pages = self.pages["pages"]["page"]
-                self._desired_pages = [int(p["ordre"]) for p in pages]  # type: ignore
+                self._desired_pages = [int(p["ordre"]) for p in pages]
 
         return self._desired_pages
 
