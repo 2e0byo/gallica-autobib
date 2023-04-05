@@ -90,14 +90,17 @@ class TitleXrefPersnameParser(Parser):
 
     def parse_soup(self) -> Iterable[TocLine]:
         done = set()
-        for title in self.soup.find_all("title"):
-            container = title.parent.parent
+        for container in self.soup.find_all("title"):
+            titles = persNames = xrefs = None
+            while not (titles and persNames and xrefs):
+                container = container.parent
+                titles = container.find_all("title")
+                persNames = container.find_all("persName")
+                xrefs = container.find_all("xref")
+
             # may have multiple titles in same container
             if container in done:
                 continue
-            titles = container.find_all("title")
-            persNames = container.find_all("persName")
-            xrefs = container.find_all("xref")
             if not titles or not xrefs or not persNames:
                 continue
             start_pages, end_pages = self.parse_pages(self.concat(xrefs))
