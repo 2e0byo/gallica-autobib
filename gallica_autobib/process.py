@@ -216,7 +216,7 @@ def ocr_crop_bounds(img: Image, ocr: "UnscaledPageData") -> Bbox:
     gstd = np.std(gradient)
     gmean = gradient.mean()
 
-    search = round(img.height * 0.05)
+    search = round(img.height * 0.1)
     upper_bound = round(upper.y - search)
     lower_bound = round(lower.y + search)
     upper_search = gradient[upper.y : upper_bound : -1]
