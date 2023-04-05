@@ -97,11 +97,18 @@ class Match(
             # the year we want we can probably just ignore
             # it (assuming the query isn't broken).
         }
+        aliases = {
+            "volume": "number",  # Nobody knows the difference anyhow.
+        }
+        aliases |= {v: k for k, v in aliases.items()}
         target_vals = {k: v for k, v in self.target.dict().items() if k not in IGNORE}
         for k, v in target_vals.items():
             candidate_v = getattr(candidate, k)
             if v and not candidate_v:
-                vals[k] = 0.5
+                if alias := aliases.get(k):
+                    candidate_v = getattr(candidate, alias)
+                    if not candidate_v:
+                        vals[k] = 0.5
 
             if isinstance(v, str):
                 # skip short matches in long
