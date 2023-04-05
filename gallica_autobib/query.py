@@ -660,7 +660,7 @@ class GallicaArticleMixin(Matcheable):
             except IndexError:
                 end_p = int(self.get_last_pno(pages))
             args["pages"] = list(range(start_p, end_p + 1))
-            physical_start_p = self.get_physical_pno(start_p, pages)
+            physical_start_p = self.get_physical_pno(str(start_p), pages)
             physical_end_p = self.get_physical_pno(str(end_p), pages)
             args["physical_pages"] = list(
                 range(int(physical_start_p), int(physical_end_p) + 1)
