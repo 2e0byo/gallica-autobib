@@ -549,13 +549,18 @@ class GallicaArticleMixin(Matcheable):
         self.logger.debug("Getting possible issues.")
         source = self.target._source()
         issues = []
-        years = []
-        if isinstance(source.publicationdate, list):
-            for year in source.publicationdate:
-                years += list(range(year - 1, year + 2))
-        else:
-            years = list(range(source.publicationdate - 1, source.publicationdate + 2))
-        for year in set(years):
+        target_years = set()
+        all_years = set()
+        years = source.publicationdate
+        if not isinstance(years, list):
+            years = [years]
+        for year in years:
+            target_years.add(year)
+            all_years |= {year - 1, year, year + 1}
+
+        all_years -= target_years
+        years = [*target_years, *all_years]
+        for year in years:
             issue = Resource(self.series_ark).issues_sync(str(year))
             if not issue.is_left:
                 issues.append(issue.value)
