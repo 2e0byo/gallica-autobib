@@ -15,7 +15,6 @@ from typing import (
     List,
     Optional,
     OrderedDict,
-    Tuple,
     Union,
 )
 
@@ -508,7 +507,6 @@ class DownloadableResource(Representation):
 
 class Matcheable:
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
         self._ark_matchers = {}
 
     def register_ark_matcher(self, target_t: str, source_t: str, fn: Callable) -> None:
@@ -528,7 +526,7 @@ class GallicaArticleMixin(Matcheable):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.consider_toc = True
+        self.consider_toc = kwargs.pop("consider_toc", True)
         self.register_ark_matcher("Article", "Journal", self.matcher)
 
     def matcher(self) -> None:

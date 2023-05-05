@@ -64,6 +64,7 @@ class InputParser:
         fetch_only: Optional[int] = None,
         ignore_cache: bool = False,
         ocr_bounds: bool = False,
+        consider_toc: bool = True,
     ):
         self.records: List[Record] = []
         self.raw: List[str] = []
@@ -83,6 +84,7 @@ class InputParser:
         self.ignore_cache = ignore_cache
         self.suppress_cover_page: bool = False
         self.ocr_bounds = ocr_bounds
+        self.consider_toc = consider_toc
 
     @property
     def successful(self) -> int:
@@ -178,6 +180,7 @@ class InputParser:
                 cache=not self.ignore_cache,
                 suppress_cover_page=self.suppress_cover_page,
                 ocr_bounds=self.ocr_bounds,
+                consider_toc=self.consider_toc,
             )
             for record in self.records
         ]
@@ -198,6 +201,7 @@ class InputParser:
                 cache=not self.ignore_cache,
                 suppress_cover_page=self.suppress_cover_page,
                 ocr_bounds=self.ocr_bounds,
+                consider_toc=self.consider_toc,
             )
             for record in self.records
         ]
@@ -221,6 +225,7 @@ class InputParser:
     def report(self) -> str:
         return self.output_template.render(obj=self)
 
+    # TODO: this needs state, so it shouldn't be static
     @staticmethod
     def process_record(
         record: Record,
@@ -233,6 +238,7 @@ class InputParser:
         cache: bool = True,
         suppress_cover_page: bool = False,
         ocr_bounds: bool = False,
+        consider_toc: bool = True,
     ) -> Result:
         """
         Run pipeline on item, returning a Result() object.
@@ -256,7 +262,9 @@ class InputParser:
             return Result.parse_obj(args)
 
         logger.debug("Generating gallica resource.")
-        gallica_resource = GallicaResource(record.target, match.candidate, cache=cache)
+        gallica_resource = GallicaResource(
+            record.target, match.candidate, cache=cache, consider_toc=consider_toc
+        )
         gallica_resource.suppress_cover_page = suppress_cover_page
         if not download_args:
             download_args = {}

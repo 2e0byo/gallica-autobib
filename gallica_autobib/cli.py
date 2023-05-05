@@ -33,6 +33,7 @@ def process(
     version: Optional[bool] = typer.Option(
         None, "--version", callback=version_callback
     ),
+    consider_toc: bool = typer.Option(True, help="Consider toc when matching."),
     post_process: bool = typer.Option(True, help="Post-process download."),
     ocr_bounds: bool = typer.Option(
         True, help="Use galllica ocr bounds for cropping if possible (best)."
@@ -82,6 +83,7 @@ def process(
         output_template=template if template else template_format,
         ignore_cache=ignore_cache,
         ocr_bounds=ocr_bounds,
+        consider_toc=consider_toc,
     )
     if bibfile.suffix == ".bib":
         logger.debug("Detected bibtex.")
