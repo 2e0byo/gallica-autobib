@@ -171,38 +171,16 @@ class TrParser(Parser):
             )
 
 
-from collections import Counter
-from pathlib import Path
-
-c = Counter()
-
-outdir = Path("/home/john/volatile-tmp/xmls")
-for d in {"row", "item", "tr"}:
-    current = [x.stem for x in (outdir / d).glob("*.xml")]
-    if current:
-        c[d] = int(max(current))
-
-
-# TODO use a better dispatcher once we don't need to log
 def parse_xml_toc(xml: str) -> list[TocLine]:
     soup = BeautifulSoup(xml, "xml")
-    parser = TitleXrefPersnameParser(soup)
-    if parser.matches():
-        c["row"] += 1
-        Path(outdir, "row", f"{c['row']:04}.xml").write_text(soup.prettify())
-        return parser.parse()
+    parsers = (
+        TitleXrefPersnameParser,
+        XrefSegParser,
+        TrParser,
+    )
+    for parser in (p(soup) for p in parsers):
+        if parser.matches():
+            return parser.parse()
 
-    parser = XrefSegParser(soup)
-    if parser.matches():
-        c["item"] += 1
-        Path(outdir, "item", f"{c['item']:04}.xml").write_text(soup.prettify())
-        return parser.parse()
-
-    parser = TrParser(soup)
-    if parser.matches():
-        c["tr"] += 1
-        Path(outdir, "tr", f"{c['tr']:04}.xml").write_text(soup.prettify())
-        return parser.parse()
-    else:
-        breakpoint()
-        raise NotImplementedError("Other toc")
+    breakpoint()
+    raise NotImplementedError("Other toc")

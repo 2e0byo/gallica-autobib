@@ -12,6 +12,7 @@ from tempfile import TemporaryDirectory
 from typing import TYPE_CHECKING, Any, Callable, Optional
 
 import jsonpickle
+from requests.exceptions import RequestException
 from requests_downloader import downloader
 from xdg import xdg_cache_home
 
@@ -189,4 +190,9 @@ def download(url: str, **kwargs: Any) -> Optional[str]:
         with outf.open("wb") as f:
             f.write(data)
         return str(outf)
-    return downloader.download(url, **kwargs)
+    for attempt in range(5):
+        try:
+            logger.debug(f"Attempting download attempt {attempt + 1}")
+            return downloader.download(url, **kwargs)
+        except RequestException as e:
+            logger.error(e)
